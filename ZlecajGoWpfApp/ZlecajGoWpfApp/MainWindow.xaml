@@ -18,5 +18,7 @@
     WindowStartupLocation="CenterScreen"
     mc:Ignorable="d">
 
-    <Grid/>
+    <Frame
+        x:Name="MainFrame"
+        NavigationUIVisibility="Hidden"/>
 </Window>

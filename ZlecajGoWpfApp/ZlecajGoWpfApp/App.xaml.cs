@@ -1,12 +1,15 @@
 ﻿using System.Windows;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using ZlecajGoWpfApp.Services;
+using ZlecajGoWpfApp.View;
+using ZlecajGoWpfApp.ViewModel;
 
 namespace ZlecajGoWpfApp;
 
 public partial class App : Application
 {
-    public static IHost AppHost { get; private set; }
+    public static IHost AppHost { get; private set; } = null!;
 
     public App()
     {
@@ -14,6 +17,13 @@ public partial class App : Application
             .ConfigureServices((hostContext, services) =>
             {
                 services.AddSingleton<MainWindow>();
+                services.AddSingleton<LogInPage>();
+                services.AddSingleton<SignUpPage>();
+                services.AddSingleton<SetUpUserCredentialsPage>();
+                services.AddSingleton<LogInViewModel>();
+                services.AddSingleton<SignUpViewModel>();
+                services.AddSingleton<SetUpUserCredentialsViewModel>();
+                services.AddSingleton<NavigationService>();
             })
             .Build();
     }
@@ -23,6 +33,8 @@ public partial class App : Application
         await AppHost.StartAsync();
 
         var startupWindow = AppHost.Services.GetRequiredService<MainWindow>();
+        var logInPage = AppHost.Services.GetRequiredService<LogInPage>();
+        startupWindow.MainFrame.Content = logInPage;
         startupWindow.Show();
         
         base.OnStartup(e);
