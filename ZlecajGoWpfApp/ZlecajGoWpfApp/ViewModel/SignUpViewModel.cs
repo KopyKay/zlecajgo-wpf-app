@@ -1,5 +1,6 @@
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.Extensions.DependencyInjection;
+using ZlecajGoApi;
 using ZlecajGoWpfApp.Services;
 using ZlecajGoWpfApp.View;
 
@@ -7,11 +8,9 @@ namespace ZlecajGoWpfApp.ViewModel;
 
 public partial class SignUpViewModel : BaseViewModel
 {
-    private readonly NavigationService _navigationService;
-    
-    public SignUpViewModel(NavigationService navigationService)
+    public SignUpViewModel(NavigationService navigationService, SnackbarService snackbarService, IApiClient apiClient) 
+        : base(navigationService, snackbarService, apiClient)
     {
-        _navigationService = navigationService;
         Title = "Rejestracja";
     }
     
@@ -19,13 +18,13 @@ public partial class SignUpViewModel : BaseViewModel
     private void GoToLogIn()
     {
         var logInPage = App.AppHost.Services.GetRequiredService<LogInPage>();
-        _navigationService.NavigateTo(logInPage);
+        NavigationService.NavigateTo(logInPage);
     }
 
     [RelayCommand]
     private void GoToSetUpUserCredentials()
     {
         var setUpUserCredentialsPage = App.AppHost.Services.GetRequiredService<SetUpUserCredentialsPage>();
-        _navigationService.NavigateTo(setUpUserCredentialsPage);
+        NavigationService.NavigateTo(setUpUserCredentialsPage);
     }
 }

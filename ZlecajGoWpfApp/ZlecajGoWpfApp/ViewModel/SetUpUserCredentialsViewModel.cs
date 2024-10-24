@@ -1,14 +1,13 @@
+using ZlecajGoApi;
 using ZlecajGoWpfApp.Services;
 
 namespace ZlecajGoWpfApp.ViewModel;
 
 public class SetUpUserCredentialsViewModel : BaseViewModel
 {
-    private readonly NavigationService _navigationService;
-    
-    public SetUpUserCredentialsViewModel(NavigationService navigationService)
+    public SetUpUserCredentialsViewModel(NavigationService navigationService, SnackbarService snackbarService, IApiClient apiClient) 
+        : base(navigationService, snackbarService, apiClient)
     {
-        _navigationService = navigationService;
         Title = "Uzupełnienie danych użytkownika";
     }
 }
