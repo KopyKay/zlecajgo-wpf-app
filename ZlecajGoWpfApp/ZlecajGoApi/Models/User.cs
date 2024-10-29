@@ -1,4 +1,4 @@
-namespace ZlecajGoWpfApp.Model;
+namespace ZlecajGoApi.Models;
 
 public class User
 {

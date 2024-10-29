@@ -3,7 +3,7 @@ using MaterialDesignThemes.Wpf;
 using ZlecajGoApi;
 using ZlecajGoWpfApp.Services;
 
-namespace ZlecajGoWpfApp.ViewModel;
+namespace ZlecajGoWpfApp.ViewModels;
 
 public abstract partial class BaseViewModel
 (

@@ -1,5 +1,5 @@
 ﻿using System.Windows;
-using ZlecajGoWpfApp.View;
+using ZlecajGoWpfApp.Views;
 
 namespace ZlecajGoWpfApp;
 

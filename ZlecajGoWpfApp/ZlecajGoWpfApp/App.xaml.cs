@@ -3,8 +3,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using ZlecajGoApi;
 using ZlecajGoWpfApp.Services;
-using ZlecajGoWpfApp.View;
-using ZlecajGoWpfApp.ViewModel;
+using ZlecajGoWpfApp.Views;
+using ZlecajGoWpfApp.ViewModels;
 
 namespace ZlecajGoWpfApp;
 

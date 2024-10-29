@@ -2,11 +2,10 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.Extensions.DependencyInjection;
 using ZlecajGoApi;
-using ZlecajGoWpfApp.Model;
 using ZlecajGoWpfApp.Services;
-using ZlecajGoWpfApp.View;
+using ZlecajGoWpfApp.Views;
 
-namespace ZlecajGoWpfApp.ViewModel;
+namespace ZlecajGoWpfApp.ViewModels;
 
 public partial class LogInViewModel : BaseViewModel
 {

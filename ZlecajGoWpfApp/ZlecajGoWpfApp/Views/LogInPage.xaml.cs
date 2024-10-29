@@ -1,9 +1,7 @@
-using System.Diagnostics;
-using System.Windows;
 using System.Windows.Controls;
-using ZlecajGoWpfApp.ViewModel;
+using ZlecajGoWpfApp.ViewModels;
 
-namespace ZlecajGoWpfApp.View;
+namespace ZlecajGoWpfApp.Views;
 
 public partial class LogInPage : Page
 {

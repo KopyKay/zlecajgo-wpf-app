@@ -2,9 +2,9 @@ using CommunityToolkit.Mvvm.Input;
 using Microsoft.Extensions.DependencyInjection;
 using ZlecajGoApi;
 using ZlecajGoWpfApp.Services;
-using ZlecajGoWpfApp.View;
+using ZlecajGoWpfApp.Views;
 
-namespace ZlecajGoWpfApp.ViewModel;
+namespace ZlecajGoWpfApp.ViewModels;
 
 public partial class SignUpViewModel : BaseViewModel
 {

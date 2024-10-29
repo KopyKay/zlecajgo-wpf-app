@@ -1,7 +1,7 @@
 using ZlecajGoApi;
 using ZlecajGoWpfApp.Services;
 
-namespace ZlecajGoWpfApp.ViewModel;
+namespace ZlecajGoWpfApp.ViewModels;
 
 public class SetUpUserCredentialsViewModel : BaseViewModel
 {
