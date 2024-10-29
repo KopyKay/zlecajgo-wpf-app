@@ -1,5 +1,6 @@
-using System.Text.Json.Nodes;
+using System.Text.Json;
 using RestSharp;
+using ZlecajGoApi.Models;
 
 namespace ZlecajGoApi;
 
@@ -16,6 +17,11 @@ public class ApiClient : IApiClient
     private const string CategoriesEndpoint = "categories";
     private const string StatusesEndpoint = "statuses";
     private const string TypesEndpoint = "types";
+    
+    private readonly JsonSerializerOptions _jsonOptions = new()
+    {
+        PropertyNameCaseInsensitive = true
+    };
 
     public Task<RestResponse> SignUpUserAsync(string email, string password)
     {
@@ -38,16 +44,65 @@ public class ApiClient : IApiClient
         throw new NotImplementedException();
     }
 
-    public Task<string> LogInUserAsync(string email, string password)
+    public async Task<User?> LogInUserAsync(string email, string password)
     {
-        // return whole user object with token
-        throw new NotImplementedException();
+        const string logInResource = $"{IdentityEndpoint}/login";
+        var logInRequest = new RestRequest(logInResource, Method.Post);
+        logInRequest.AddJsonBody(new { Email = email, Password = password });
+        
+        var logInResponse = await _client.ExecuteAsync(logInRequest);
+        if (!logInResponse.IsSuccessful) return null;
+        
+        var responseContent = logInResponse.Content;
+        var jsonDocument = JsonDocument.Parse(responseContent!);
+        var accessToken = jsonDocument.RootElement.GetProperty("accessToken").GetString()!;
+        var refreshToken = jsonDocument.RootElement.GetProperty("refreshToken").GetString()!;
+        var id = await GetCurrentUserIdAsync(accessToken);
+
+        var user = new User
+        {
+            Id = id,
+            AccessToken = accessToken,
+            RefreshToken = refreshToken,
+            Email = email,
+            Password = password
+        };
+
+        await GetCurrentUser(user);
+
+        return user;
     }
 
-    public Task<string> GetCurrentUserIdAsync(string token)
+    private async Task<string> GetCurrentUserIdAsync(string accessToken)
     {
-        // remove this method later and merge it with LogInUser method
-        //request.AddHeader("Authorization", $"Bearer {token}");
-        throw new NotImplementedException();
+        const string currentUserIdResource = $"{UsersEndpoint}/currentUserId";
+        var currentUserIdRequest = new RestRequest(currentUserIdResource, Method.Get);
+        currentUserIdRequest.AddHeader("Authorization", $"Bearer {accessToken}");
+
+        var currentUserIdResponse = await _client.ExecuteAsync(currentUserIdRequest);
+
+        var responseContent = currentUserIdResponse.Content!;
+        var jsonDocument = JsonDocument.Parse(responseContent);
+        var userId = jsonDocument.RootElement.GetString()!;
+
+        return userId;
+    }
+
+    private async Task GetCurrentUser(User user)
+    {
+        var currentUserResource = $"{UsersEndpoint}/{user.Id}";
+        var currentUserRequest = new RestRequest(currentUserResource, Method.Get);
+        currentUserRequest.AddHeader("Authorization", $"Bearer {user.AccessToken}");
+        
+        var currentUserResponse = await _client.ExecuteAsync(currentUserRequest);
+        
+        var responseContent = currentUserResponse.Content!;
+        var currentUser = JsonSerializer.Deserialize<User>(responseContent, _jsonOptions)!;
+        
+        foreach (var property in typeof(User).GetProperties())
+        {
+            if (property.GetValue(user) is null)
+                property.SetValue(user, property.GetValue(currentUser));
+        }
     }
 }

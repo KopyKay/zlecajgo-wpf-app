@@ -28,7 +28,15 @@ public partial class LogInViewModel : BaseViewModel
         {
             IsBusy = true;
             
-            // login logic, create new user object
+            var user = await ApiClient.LogInUserAsync(Email, Password);
+            
+            if (user == null)
+            {
+                SnackbarService.EnqueueMessage("Niepoprawne dane logowania");
+                return;
+            }
+            
+            SnackbarService.EnqueueMessage("Zalogowano pomyślnie");
         }
         finally
         {
