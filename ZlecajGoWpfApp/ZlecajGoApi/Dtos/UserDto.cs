@@ -1,6 +1,6 @@
-namespace ZlecajGoApi.Models;
+namespace ZlecajGoApi.Dtos;
 
-public class User
+public class UserDto
 {
     public string Id { get; set; } = null!;
     public string AccessToken { get; set; } = null!;

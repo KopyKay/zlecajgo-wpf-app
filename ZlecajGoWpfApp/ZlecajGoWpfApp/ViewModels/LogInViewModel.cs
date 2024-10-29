@@ -2,6 +2,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.Extensions.DependencyInjection;
 using ZlecajGoApi;
+using ZlecajGoApi.Dtos;
 using ZlecajGoWpfApp.Services;
 using ZlecajGoWpfApp.Views;
 
@@ -28,7 +29,8 @@ public partial class LogInViewModel : BaseViewModel
         {
             IsBusy = true;
             
-            var user = await ApiClient.LogInUserAsync(Email, Password);
+            var credentials = new LogInDto { Email = Email, Password = Password };
+            var user = await ApiClient.LogInUserAsync(credentials);
             
             if (user == null)
             {

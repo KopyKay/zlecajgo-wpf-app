@@ -1,6 +1,6 @@
 using System.Text.Json;
 using RestSharp;
-using ZlecajGoApi.Models;
+using ZlecajGoApi.Dtos;
 
 namespace ZlecajGoApi;
 
@@ -44,11 +44,11 @@ public class ApiClient : IApiClient
         throw new NotImplementedException();
     }
 
-    public async Task<User?> LogInUserAsync(string email, string password)
+    public async Task<UserDto?> LogInUserAsync(LogInDto logInDto)
     {
         const string logInResource = $"{IdentityEndpoint}/login";
         var logInRequest = new RestRequest(logInResource, Method.Post);
-        logInRequest.AddJsonBody(new { Email = email, Password = password });
+        logInRequest.AddJsonBody(logInDto);
         
         var logInResponse = await _client.ExecuteAsync(logInRequest);
         if (!logInResponse.IsSuccessful) return null;
@@ -59,13 +59,13 @@ public class ApiClient : IApiClient
         var refreshToken = jsonDocument.RootElement.GetProperty("refreshToken").GetString()!;
         var id = await GetCurrentUserIdAsync(accessToken);
 
-        var user = new User
+        var user = new UserDto
         {
             Id = id,
             AccessToken = accessToken,
             RefreshToken = refreshToken,
-            Email = email,
-            Password = password
+            Email = logInDto.Email,
+            Password = logInDto.Password
         };
 
         await GetCurrentUser(user);
@@ -88,21 +88,21 @@ public class ApiClient : IApiClient
         return userId;
     }
 
-    private async Task GetCurrentUser(User user)
+    private async Task GetCurrentUser(UserDto userDto)
     {
-        var currentUserResource = $"{UsersEndpoint}/{user.Id}";
+        var currentUserResource = $"{UsersEndpoint}/{userDto.Id}";
         var currentUserRequest = new RestRequest(currentUserResource, Method.Get);
-        currentUserRequest.AddHeader("Authorization", $"Bearer {user.AccessToken}");
+        currentUserRequest.AddHeader("Authorization", $"Bearer {userDto.AccessToken}");
         
         var currentUserResponse = await _client.ExecuteAsync(currentUserRequest);
         
         var responseContent = currentUserResponse.Content!;
-        var currentUser = JsonSerializer.Deserialize<User>(responseContent, _jsonOptions)!;
+        var currentUser = JsonSerializer.Deserialize<UserDto>(responseContent, _jsonOptions)!;
         
-        foreach (var property in typeof(User).GetProperties())
+        foreach (var property in typeof(UserDto).GetProperties())
         {
-            if (property.GetValue(user) is null)
-                property.SetValue(user, property.GetValue(currentUser));
+            if (property.GetValue(userDto) is null)
+                property.SetValue(userDto, property.GetValue(currentUser));
         }
     }
 }

@@ -1,10 +1,10 @@
 using RestSharp;
-using ZlecajGoApi.Models;
+using ZlecajGoApi.Dtos;
 
 namespace ZlecajGoApi;
 
 public interface IApiClient
 {
     Task<RestResponse> SignUpUserAsync(string email, string password);
-    Task<User?> LogInUserAsync(string email, string password);
+    Task<UserDto?> LogInUserAsync(LogInDto logInDto);
 }
