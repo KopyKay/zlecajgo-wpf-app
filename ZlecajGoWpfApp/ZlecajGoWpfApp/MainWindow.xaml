@@ -4,13 +4,14 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:local="clr-namespace:ZlecajGoWpfApp"
+    xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     Title="ZlecajGO"
     MinWidth="980"
     MinHeight="670"
     Background="{DynamicResource MaterialDesignPaper}"
     FontFamily="{DynamicResource MaterialDesignFont}"
-    TextElement.FontSize="13"
+    TextElement.FontSize="14"
     TextElement.FontWeight="Regular"
     TextElement.Foreground="{DynamicResource MaterialDesignBody}"
     TextOptions.TextFormattingMode="Ideal"
@@ -18,7 +19,16 @@
     WindowStartupLocation="CenterScreen"
     mc:Ignorable="d">
 
-    <Frame
-        x:Name="MainFrame"
-        NavigationUIVisibility="Hidden"/>
+    <Grid>
+        <Grid>
+            <Frame
+                x:Name="MainFrame"
+                NavigationUIVisibility="Hidden"/>
+        </Grid>
+        <Grid>
+            <materialDesign:Snackbar
+                x:Name="MainSnackbar"
+                VerticalAlignment="Top"/>
+        </Grid>
+    </Grid>
 </Window>
