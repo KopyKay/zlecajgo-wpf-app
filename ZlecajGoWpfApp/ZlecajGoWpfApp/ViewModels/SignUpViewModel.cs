@@ -15,16 +15,8 @@ public partial class SignUpViewModel : BaseViewModel
     }
     
     [RelayCommand]
-    private void GoToLogIn()
-    {
-        var logInPage = App.AppHost.Services.GetRequiredService<LogInPage>();
-        NavigationService.NavigateTo(logInPage);
-    }
+    private void GoToLogIn() => NavigationService.NavigateTo<LogInPage>();
 
     [RelayCommand]
-    private void GoToSetUpUserCredentials()
-    {
-        var setUpUserCredentialsPage = App.AppHost.Services.GetRequiredService<SetUpUserCredentialsPage>();
-        NavigationService.NavigateTo(setUpUserCredentialsPage);
-    }
+    private void GoToSetUpUserCredentials() => NavigationService.NavigateTo<SetUpUserCredentialsPage>();
 }

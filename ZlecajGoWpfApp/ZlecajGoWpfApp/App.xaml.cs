@@ -10,7 +10,7 @@ namespace ZlecajGoWpfApp;
 
 public partial class App : Application
 {
-    public static IHost AppHost { get; private set; } = null!;
+    private static IHost AppHost { get; set; } = null!;
 
     public App()
     {
