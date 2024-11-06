@@ -12,6 +12,7 @@ public class UserDto
     public string Password { get; set; } = null!;
     public string? PhoneNumber { get; set; }
     public string? ProfilePictureUrl { get; set; }
+    public bool IsProfileCompleted { get; set; } = false;
 
     public override string ToString()
     {

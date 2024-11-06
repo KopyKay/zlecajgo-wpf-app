@@ -1,8 +1,9 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using Microsoft.Extensions.DependencyInjection;
 using ZlecajGoApi;
 using ZlecajGoApi.Dtos;
+using ZlecajGoApi.Exceptions;
+using ZlecajGoWpfApp.Helpers;
 using ZlecajGoWpfApp.Services;
 using ZlecajGoWpfApp.Views;
 
@@ -28,17 +29,15 @@ public partial class LogInViewModel : BaseViewModel
         try
         {
             IsBusy = true;
-            
-            var credentials = new LogInDto { Email = Email, Password = Password };
-            var user = await ApiClient.LogInUserAsync(credentials);
-            
-            if (user == null)
-            {
-                SnackbarService.EnqueueMessage("Niepoprawne dane logowania");
-                return;
-            }
-            
-            SnackbarService.EnqueueMessage("Zalogowano pomyślnie");
+            await TryLogInAsync();
+        }
+        catch (UnsuccessfulResponseException e)
+        {
+            SnackbarService.EnqueueMessage(e.Message);
+        }
+        catch (ArgumentException e)
+        {
+            SnackbarService.EnqueueMessage(e.Message);
         }
         finally
         {
@@ -48,4 +47,22 @@ public partial class LogInViewModel : BaseViewModel
     
     [RelayCommand]
     private void GoToSignUp() => NavigationService.NavigateTo<SignUpPage>();
+
+    private async Task TryLogInAsync()
+    {
+        var dto = new LogInDto { Email = Email, Password = Password };
+        
+        ValidationHelper.LogInValidation(dto);
+        
+        var result = await ApiClient.LogInUserAsync(dto);
+
+        if (result is false)
+        {
+            SnackbarService.EnqueueMessage("Należy uzupełnić dane użytkownika!");
+            NavigationService.NavigateTo<SetUpUserCredentialsPage>();
+            return;
+        }
+        
+        SnackbarService.EnqueueMessage("Zalogowano pomyślnie!");
+    }
 }

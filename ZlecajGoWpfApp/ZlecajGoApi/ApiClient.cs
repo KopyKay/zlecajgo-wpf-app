@@ -1,6 +1,7 @@
 using System.Text.Json;
 using RestSharp;
 using ZlecajGoApi.Dtos;
+using ZlecajGoApi.Helpers;
 
 namespace ZlecajGoApi;
 
@@ -22,87 +23,77 @@ public class ApiClient : IApiClient
     {
         PropertyNameCaseInsensitive = true
     };
-
-    public Task<RestResponse> SignUpUserAsync(string email, string password)
+    
+    public async Task<bool> SignUpUserAsync(SignUpDto signUpDto)
     {
-        // const string resource = $"{IdentityEndpoint}/register";
-        // var request = new RestRequest(resource, Method.Post);
-        // request.AddJsonBody(new { Email = email, Password = password });
-        //
-        // var response = await _client.ExecuteAsync(request);
-        //
-        // if (!response.IsSuccessful)
-        // {
-        //     Console.WriteLine("Request failed");
-        //     Console.WriteLine("Error: " + response.Content);
-        //     return response;
-        // }
-        //
-        // var logInResponse = await LogInUserAsync(email, password);
-        //
-        // return logInResponse;
-        throw new NotImplementedException();
+        if (await IsEmailExistsAsync(signUpDto.Email))
+            throw new ArgumentException("Podany adres email jest już zarejestrowany!");
+        
+        const string resource = $"{IdentityEndpoint}/register";
+        var request = new RestRequest(resource, Method.Post)
+            .AddBody(signUpDto);
+        
+        var response = await _client.ExecuteAsync(request);
+        RequestHelper.HandleResponse(response);
+        
+        var logInDto = new LogInDto { Email = signUpDto.Email, Password = signUpDto.Password };
+        
+        await LogInUserAsync(logInDto);
+        
+        return true;
     }
-
-    public async Task<UserDto?> LogInUserAsync(LogInDto logInDto)
+    
+    public async Task<bool> LogInUserAsync(LogInDto logInDto)
     {
-        const string logInResource = $"{IdentityEndpoint}/login";
-        var logInRequest = new RestRequest(logInResource, Method.Post);
-        logInRequest.AddJsonBody(logInDto);
+        const string resource = $"{IdentityEndpoint}/login";
+        var request = new RestRequest(resource, Method.Post)
+            .AddBody(logInDto);
         
-        var logInResponse = await _client.ExecuteAsync(logInRequest);
-        if (!logInResponse.IsSuccessful) return null;
+        var response = await _client.ExecuteAsync(request);
+        RequestHelper.HandleResponse(response);
         
-        var responseContent = logInResponse.Content;
-        var jsonDocument = JsonDocument.Parse(responseContent!);
+        var responseContent = response.Content!;
+        var jsonDocument = JsonDocument.Parse(responseContent);
         var accessToken = jsonDocument.RootElement.GetProperty("accessToken").GetString()!;
         var refreshToken = jsonDocument.RootElement.GetProperty("refreshToken").GetString()!;
-        var id = await GetCurrentUserIdAsync(accessToken);
+        
+        var user = await GetCurrentUserAsync(accessToken);
+        user.AccessToken = accessToken;
+        user.RefreshToken = refreshToken;
+        
+        if (user.IsProfileCompleted is false) return false;
 
-        var user = new UserDto
-        {
-            Id = id,
-            AccessToken = accessToken,
-            RefreshToken = refreshToken,
-            Email = logInDto.Email,
-            Password = logInDto.Password
-        };
+        // TODO: Save user to session
+        
+        return true;
+    }
 
-        await GetCurrentUser(user);
-
+    private async Task<UserDto> GetCurrentUserAsync(string accessToken)
+    {
+        const string resource = $"{UsersEndpoint}/currentUser";
+        var request = new RestRequest(resource, Method.Get)
+            .AddAuthorizationHeader(accessToken);
+        
+        var response = await _client.ExecuteAsync(request);
+        RequestHelper.HandleResponse(response);
+        
+        var responseContent = response.Content!;
+        var user = JsonSerializer.Deserialize<UserDto>(responseContent, _jsonOptions)!;
+        
         return user;
     }
-
-    private async Task<string> GetCurrentUserIdAsync(string accessToken)
+    
+    private async Task<bool> IsEmailExistsAsync(string email)
     {
-        const string currentUserIdResource = $"{UsersEndpoint}/currentUserId";
-        var currentUserIdRequest = new RestRequest(currentUserIdResource, Method.Get);
-        currentUserIdRequest.AddHeader("Authorization", $"Bearer {accessToken}");
-
-        var currentUserIdResponse = await _client.ExecuteAsync(currentUserIdRequest);
-
-        var responseContent = currentUserIdResponse.Content!;
-        var jsonDocument = JsonDocument.Parse(responseContent);
-        var userId = jsonDocument.RootElement.GetString()!;
-
-        return userId;
-    }
-
-    private async Task GetCurrentUser(UserDto userDto)
-    {
-        var currentUserResource = $"{UsersEndpoint}/{userDto.Id}";
-        var currentUserRequest = new RestRequest(currentUserResource, Method.Get);
-        currentUserRequest.AddHeader("Authorization", $"Bearer {userDto.AccessToken}");
+        const string resource = $"{IdentityEndpoint}/isEmailExists";
+        var request = new RestRequest(resource, Method.Get)
+            .AddQueryParameter(nameof(email), email);
         
-        var currentUserResponse = await _client.ExecuteAsync(currentUserRequest);
+        var response = await _client.ExecuteAsync(request);
+        RequestHelper.HandleResponse(response);
         
-        var responseContent = currentUserResponse.Content!;
-        var currentUser = JsonSerializer.Deserialize<UserDto>(responseContent, _jsonOptions)!;
-        
-        foreach (var property in typeof(UserDto).GetProperties())
-        {
-            if (property.GetValue(userDto) is null)
-                property.SetValue(userDto, property.GetValue(currentUser));
-        }
+        var result = bool.Parse(response.Content!);
+
+        return result;
     }
 }

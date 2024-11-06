@@ -1,6 +1,9 @@
+using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using Microsoft.Extensions.DependencyInjection;
 using ZlecajGoApi;
+using ZlecajGoApi.Dtos;
+using ZlecajGoApi.Exceptions;
+using ZlecajGoWpfApp.Helpers;
 using ZlecajGoWpfApp.Services;
 using ZlecajGoWpfApp.Views;
 
@@ -14,9 +17,46 @@ public partial class SignUpViewModel : BaseViewModel
         Title = "Rejestracja";
     }
     
-    [RelayCommand]
-    private void GoToLogIn() => NavigationService.NavigateTo<LogInPage>();
+    [ObservableProperty]
+    private string _email = string.Empty;
+    
+    [ObservableProperty]
+    private string _password = string.Empty;
+    
+    [ObservableProperty]
+    private string _confirmPassword = string.Empty;
 
     [RelayCommand]
-    private void GoToSetUpUserCredentials() => NavigationService.NavigateTo<SetUpUserCredentialsPage>();
+    private async Task SignUp()
+    {
+        try
+        {
+            IsBusy = true;
+            await TrySignUpAsync();
+        }
+        catch (UnsuccessfulResponseException e)
+        {
+            SnackbarService.EnqueueMessage(e.Message);
+        }
+        catch (ArgumentException e)
+        {
+            SnackbarService.EnqueueMessage(e.Message);
+        }
+        finally
+        {
+            IsBusy = false;
+        }
+    }
+    
+    [RelayCommand]
+    private void GoToLogIn() => NavigationService.NavigateTo<LogInPage>();
+    
+    private async Task TrySignUpAsync()
+    {
+        var dto = new SignUpDto { Email = Email, Password = Password, ConfirmPassword = ConfirmPassword };
+        ValidationHelper.SignUpValidation(dto);
+        await ApiClient.SignUpUserAsync(dto);
+
+        NavigationService.NavigateTo<SetUpUserCredentialsPage>();
+    }
 }
