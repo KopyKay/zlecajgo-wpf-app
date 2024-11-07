@@ -24,30 +24,30 @@ public class ApiClient : IApiClient
         PropertyNameCaseInsensitive = true
     };
     
-    public async Task<bool> SignUpUserAsync(SignUpDto signUpDto)
+    public async Task<bool> SignUpUserAsync(SignUpDto dto)
     {
-        if (await IsEmailExistsAsync(signUpDto.Email))
+        if (await IsEmailExistsAsync(dto.Email))
             throw new ArgumentException("Podany adres email jest już zarejestrowany!");
         
         const string resource = $"{IdentityEndpoint}/register";
         var request = new RestRequest(resource, Method.Post)
-            .AddBody(signUpDto);
+            .AddBody(dto);
         
         var response = await _client.ExecuteAsync(request);
         RequestHelper.HandleResponse(response);
         
-        var logInDto = new LogInDto { Email = signUpDto.Email, Password = signUpDto.Password };
+        var logInDto = new LogInDto { Email = dto.Email, Password = dto.Password };
         
         await LogInUserAsync(logInDto);
         
         return true;
     }
     
-    public async Task<bool> LogInUserAsync(LogInDto logInDto)
+    public async Task<bool> LogInUserAsync(LogInDto dto)
     {
         const string resource = $"{IdentityEndpoint}/login";
         var request = new RestRequest(resource, Method.Post)
-            .AddBody(logInDto);
+            .AddBody(dto);
         
         var response = await _client.ExecuteAsync(request);
         RequestHelper.HandleResponse(response);
@@ -61,13 +61,49 @@ public class ApiClient : IApiClient
         user.AccessToken = accessToken;
         user.RefreshToken = refreshToken;
         
-        if (user.IsProfileCompleted is false) return false;
-
-        // TODO: Save user to session
+        UserSession.Instance.SetUser(user);
         
-        return true;
+        return user.IsProfileCompleted;
     }
 
+    public async Task UpdateUserCredentialsAsync(UpdateUserCredentialsDto dto)
+    {
+        // TODO: Chceck is phone number exists
+        
+        var currentUser = UserSession.Instance.CurrentUser;
+        
+        if (currentUser is null)
+            throw new InvalidOperationException("Użytkownik nie jest zalogowany!");
+        
+        const string resource = $"{UsersEndpoint}/update";
+        var request = new RestRequest(resource, Method.Patch)
+            .AddAuthorizationHeader(currentUser.AccessToken)
+            .AddBody(dto);
+        
+        var response = await _client.ExecuteAsync(request);
+        RequestHelper.HandleResponse(response);
+
+        await RefreshUserAsync(currentUser);
+    }
+
+    private async Task RefreshUserAsync(UserDto userDto)
+    {
+        const string resource = $"{IdentityEndpoint}/refresh";
+        var request = new RestRequest(resource, Method.Post)
+            .AddBody(new { refreshToken = userDto.RefreshToken });
+        
+        var response = await _client.ExecuteAsync(request);
+        RequestHelper.HandleResponse(response);
+        
+        var responseContent = response.Content!;
+        var jsonDocument = JsonDocument.Parse(responseContent);
+        var accessToken = jsonDocument.RootElement.GetProperty("accessToken").GetString()!;
+        var refreshToken = jsonDocument.RootElement.GetProperty("refreshToken").GetString()!;
+        
+        userDto.AccessToken = accessToken;
+        userDto.RefreshToken = refreshToken;
+    }
+    
     private async Task<UserDto> GetCurrentUserAsync(string accessToken)
     {
         const string resource = $"{UsersEndpoint}/currentUser";
