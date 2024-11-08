@@ -6,6 +6,7 @@ using ZlecajGoApi.Dtos;
 using ZlecajGoApi.Exceptions;
 using ZlecajGoWpfApp.Helpers;
 using ZlecajGoWpfApp.Services;
+using UnauthorizedAccessException = ZlecajGoApi.Exceptions.UnauthorizedAccessException;
 
 namespace ZlecajGoWpfApp.ViewModels;
 
@@ -40,15 +41,19 @@ public partial class SetUpUserCredentialsViewModel : BaseViewModel
             IsBusy = true;
             await TryUpdateUserCredentialsAsync();
         }
+        catch (ArgumentException e)
+        {
+            SnackbarService.EnqueueMessage(e.Message);
+        }
         catch (InvalidOperationException e)
         {
             SnackbarService.EnqueueMessage(e.Message);
         }
-        catch (UnsuccessfulResponseException e)
+        catch (UnauthorizedAccessException e)
         {
             SnackbarService.EnqueueMessage(e.Message);
         }
-        catch (ArgumentException e)
+        catch (UnsuccessfulResponseException e)
         {
             SnackbarService.EnqueueMessage(e.Message);
         }
@@ -60,14 +65,18 @@ public partial class SetUpUserCredentialsViewModel : BaseViewModel
     
     private async Task TryUpdateUserCredentialsAsync()
     {
-        var birthDateTime = DateTime
-            .ParseExact(BirthDate, "M/d/yyyy h:mm:ss tt", CultureInfo.InvariantCulture);
+        var fullName = $"{FirstName} {LastName}";
+        DateOnly birthDate = default;
         const string phoneNumberPrefix = "+48";
         var formatedPhoneNumber = string.Concat(PhoneNumber.Where(c => !char.IsWhiteSpace(c)));
-        
-        var fullName = $"{FirstName} {LastName}";
-        var birthDate = DateOnly.FromDateTime(birthDateTime);
         var phoneNumber = $"{phoneNumberPrefix}{formatedPhoneNumber}";
+        
+        if (!string.IsNullOrWhiteSpace(BirthDate))
+        {
+            var birthDateTime = DateTime
+                .ParseExact(BirthDate, "M/d/yyyy h:mm:ss tt", CultureInfo.InvariantCulture);
+            birthDate = DateOnly.FromDateTime(birthDateTime);
+        }
         
         var dto = new UpdateUserCredentialsDto
         {
@@ -78,8 +87,11 @@ public partial class SetUpUserCredentialsViewModel : BaseViewModel
         };
         
         ValidationHelper.UpdateUserCredentialsValidation(dto);
+        
         await ApiClient.UpdateUserCredentialsAsync(dto);
         
         SnackbarService.EnqueueMessage("Dane użytkownika zostały zaktualizowane!");
+        
+        // TODO: Navigate to home page
     }
 }

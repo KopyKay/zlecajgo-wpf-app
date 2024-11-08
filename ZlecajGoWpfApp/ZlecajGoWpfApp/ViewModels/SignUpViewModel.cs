@@ -6,6 +6,7 @@ using ZlecajGoApi.Exceptions;
 using ZlecajGoWpfApp.Helpers;
 using ZlecajGoWpfApp.Services;
 using ZlecajGoWpfApp.Views;
+using UnauthorizedAccessException = ZlecajGoApi.Exceptions.UnauthorizedAccessException;
 
 namespace ZlecajGoWpfApp.ViewModels;
 
@@ -34,11 +35,15 @@ public partial class SignUpViewModel : BaseViewModel
             IsBusy = true;
             await TrySignUpAsync();
         }
-        catch (UnsuccessfulResponseException e)
+        catch (ArgumentException e)
         {
             SnackbarService.EnqueueMessage(e.Message);
         }
-        catch (ArgumentException e)
+        catch (UnauthorizedAccessException e)
+        {
+            SnackbarService.EnqueueMessage(e.Message);
+        }
+        catch (UnsuccessfulResponseException e)
         {
             SnackbarService.EnqueueMessage(e.Message);
         }
@@ -54,7 +59,9 @@ public partial class SignUpViewModel : BaseViewModel
     private async Task TrySignUpAsync()
     {
         var dto = new SignUpDto { Email = Email, Password = Password, ConfirmPassword = ConfirmPassword };
+        
         ValidationHelper.SignUpValidation(dto);
+        
         await ApiClient.SignUpUserAsync(dto);
 
         NavigationService.NavigateTo<SetUpUserCredentialsPage>();

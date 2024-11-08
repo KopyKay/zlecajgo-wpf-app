@@ -1,6 +1,7 @@
 using System.Net;
 using RestSharp;
 using ZlecajGoApi.Exceptions;
+using UnauthorizedAccessException = ZlecajGoApi.Exceptions.UnauthorizedAccessException;
 
 namespace ZlecajGoApi.Helpers;
 
@@ -9,7 +10,7 @@ internal static class RequestHelper
     public static void HandleResponse(RestResponse response)
     {
         if (response.StatusCode == HttpStatusCode.Unauthorized)
-            throw new ArgumentException("Nieautoryzowany użytkownik! Sprawdź dane logowania.");
+            throw new UnauthorizedAccessException();
         
         if (!response.IsSuccessful)
             throw new UnsuccessfulResponseException();

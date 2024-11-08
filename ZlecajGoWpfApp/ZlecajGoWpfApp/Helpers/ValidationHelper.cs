@@ -5,7 +5,7 @@ namespace ZlecajGoWpfApp.Helpers;
 
 public static partial class ValidationHelper
 {
-    [GeneratedRegex("^(?=.*[@])(?=.*[.]).+$")]
+    [GeneratedRegex("^[a-zA-Z0-9_-]+@[a-zA-Z]+\\.[a-zA-Z]{2,}$")]
     private static partial Regex ValidEmail();
     
     [GeneratedRegex("^(?=.*[0-9])(?=.*[A-Z]).{6,}$")]
@@ -26,26 +26,26 @@ public static partial class ValidationHelper
     public static void LogInValidation(LogInDto dto)
     {
         CheckIfInputsAreEmpty(dto.Email, dto.Password);
-        Email(dto.Email);
+        CheckEmail(dto.Email);
     }
     
     public static void SignUpValidation(SignUpDto dto)
     {
         CheckIfInputsAreEmpty(dto.Email, dto.Password, dto.ConfirmPassword);
-        Email(dto.Email);
-        Password(dto.Password, dto.ConfirmPassword);
+        CheckEmail(dto.Email);
+        CheckPassword(dto.Password, dto.ConfirmPassword);
     }
     
     public static void UpdateUserCredentialsValidation(UpdateUserCredentialsDto dto)
     {
         CheckIfInputsAreEmpty(dto.FullName, dto.BirthDate, dto.UserName, dto.PhoneNumber);
-        FullName(dto.FullName!);
-        BirthDate((DateOnly)dto.BirthDate!);
-        UserName(dto.UserName!);
-        PhoneNumber(dto.PhoneNumber!);
+        CheckFullName(dto.FullName!);
+        CheckBirthDate((DateOnly)dto.BirthDate!);
+        CheckUserName(dto.UserName!);
+        CheckPhoneNumber(dto.PhoneNumber!);
     }
     
-    private static void Email(string email)
+    private static void CheckEmail(string email)
     {
         if (!ValidEmail().IsMatch(email))
         {
@@ -53,7 +53,7 @@ public static partial class ValidationHelper
         }
     }
     
-    private static void Password(string password, string confirmPassword)
+    private static void CheckPassword(string password, string confirmPassword)
     {
         if (!ValidPassword().IsMatch(password))
         {
@@ -66,7 +66,7 @@ public static partial class ValidationHelper
         }
     }
     
-    private static void FullName(string fullName)
+    private static void CheckFullName(string fullName)
     {
         if (!ValidFullName().IsMatch(fullName))
         {
@@ -74,7 +74,15 @@ public static partial class ValidationHelper
         }
     }
     
-    private static void BirthDate(DateOnly birthDate)
+    private static void CheckUserName(string userName)
+    {
+        if (!ValidUserName().IsMatch(userName))
+        {
+            ThrowException("Nazwa użytkownika może zawierać (A-Z, a-z, 0-9, _), od 3 do 30 znaków!");
+        }
+    }
+    
+    private static void CheckBirthDate(DateOnly birthDate)
     {
         if (birthDate.AddYears(18) > DateOnly.FromDateTime(DateTime.Now))
         {
@@ -82,15 +90,7 @@ public static partial class ValidationHelper
         }
     }
     
-    private static void UserName(string userName)
-    {
-        if (!ValidUserName().IsMatch(userName))
-        {
-            ThrowException("Nazwa użytkownika może składać się tylko z liter, cyfr oraz znaku '_' w długości od 3 do 30 znaków!");
-        }
-    }
-    
-    private static void PhoneNumber(string phoneNumber)
+    private static void CheckPhoneNumber(string phoneNumber)
     {
         if (!ValidPhoneNumber().IsMatch(phoneNumber))
         {
@@ -98,7 +98,7 @@ public static partial class ValidationHelper
         }
     }
     
-    private static void ProfilePictureUrl(string profilePictureUrl)
+    private static void CheckProfilePictureUrl(string profilePictureUrl)
     {
         if (!ValidProfilePictureUrl().IsMatch(profilePictureUrl))
         {

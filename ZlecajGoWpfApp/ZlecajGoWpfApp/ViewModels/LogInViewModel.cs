@@ -6,6 +6,7 @@ using ZlecajGoApi.Exceptions;
 using ZlecajGoWpfApp.Helpers;
 using ZlecajGoWpfApp.Services;
 using ZlecajGoWpfApp.Views;
+using UnauthorizedAccessException = ZlecajGoApi.Exceptions.UnauthorizedAccessException;
 
 namespace ZlecajGoWpfApp.ViewModels;
 
@@ -31,11 +32,15 @@ public partial class LogInViewModel : BaseViewModel
             IsBusy = true;
             await TryLogInAsync();
         }
-        catch (UnsuccessfulResponseException e)
+        catch (ArgumentException e)
         {
             SnackbarService.EnqueueMessage(e.Message);
         }
-        catch (ArgumentException e)
+        catch (UnauthorizedAccessException e)
+        {
+            SnackbarService.EnqueueMessage(e.Message);
+        }
+        catch (UnsuccessfulResponseException e)
         {
             SnackbarService.EnqueueMessage(e.Message);
         }
@@ -64,5 +69,7 @@ public partial class LogInViewModel : BaseViewModel
         }
         
         SnackbarService.EnqueueMessage("Zalogowano pomyślnie!");
+        
+        // TODO: Navigate to home page
     }
 }

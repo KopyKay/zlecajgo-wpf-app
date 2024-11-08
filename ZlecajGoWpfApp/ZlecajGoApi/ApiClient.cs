@@ -24,7 +24,7 @@ public class ApiClient : IApiClient
         PropertyNameCaseInsensitive = true
     };
     
-    public async Task<bool> SignUpUserAsync(SignUpDto dto)
+    public async Task SignUpUserAsync(SignUpDto dto)
     {
         if (await IsEmailExistsAsync(dto.Email))
             throw new ArgumentException("Podany adres email jest już zarejestrowany!");
@@ -39,8 +39,6 @@ public class ApiClient : IApiClient
         var logInDto = new LogInDto { Email = dto.Email, Password = dto.Password };
         
         await LogInUserAsync(logInDto);
-        
-        return true;
     }
     
     public async Task<bool> LogInUserAsync(LogInDto dto)
@@ -68,7 +66,8 @@ public class ApiClient : IApiClient
 
     public async Task UpdateUserCredentialsAsync(UpdateUserCredentialsDto dto)
     {
-        // TODO: Chceck is phone number exists
+        if (await IsPhoneNumberExistsAsync(dto.PhoneNumber!))
+            throw new ArgumentException("Podany numer telefonu jest już zarejestrowany!");
         
         var currentUser = UserSession.Instance.CurrentUser;
         
@@ -124,6 +123,20 @@ public class ApiClient : IApiClient
         const string resource = $"{IdentityEndpoint}/isEmailExists";
         var request = new RestRequest(resource, Method.Get)
             .AddQueryParameter(nameof(email), email);
+        
+        var response = await _client.ExecuteAsync(request);
+        RequestHelper.HandleResponse(response);
+        
+        var result = bool.Parse(response.Content!);
+
+        return result;
+    }
+    
+    private async Task<bool> IsPhoneNumberExistsAsync(string phoneNumber)
+    {
+        const string resource = $"{IdentityEndpoint}/isPhoneNumberExists";
+        var request = new RestRequest(resource, Method.Get)
+            .AddQueryParameter(nameof(phoneNumber), phoneNumber);
         
         var response = await _client.ExecuteAsync(request);
         RequestHelper.HandleResponse(response);
