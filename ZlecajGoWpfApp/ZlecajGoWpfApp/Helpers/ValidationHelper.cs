@@ -8,7 +8,7 @@ public static partial class ValidationHelper
     [GeneratedRegex("^[a-zA-Z0-9_-]+@[a-zA-Z]+\\.[a-zA-Z]{2,}$")]
     private static partial Regex ValidEmail();
     
-    [GeneratedRegex("^(?=.*[0-9])(?=.*[A-Z]).{6,}$")]
+    [GeneratedRegex("^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*(),.?\":{}|<>]).{6,}$")]
     private static partial Regex ValidPassword();
     
     [GeneratedRegex("^[A-Za-z]{3,100} [A-Za-z]{3,100}$")]
@@ -57,7 +57,7 @@ public static partial class ValidationHelper
     {
         if (!ValidPassword().IsMatch(password))
         {
-            ThrowException("Hasło musi mieć co najmniej 6 znaków, jedną cyfrę i jedną dużą literę!");
+            ThrowException("Nieprawidłowe hasło!");
         }
         
         if (!string.Equals(password, confirmPassword))
@@ -108,7 +108,7 @@ public static partial class ValidationHelper
     
     private static void CheckIfInputsAreEmpty(params object?[] inputs)
     {
-        var emptyInputsMessage = "Wszytkie pola muszą być wypełnione!";
+        const string emptyInputsMessage = "Wszystkie pola muszą być wypełnione!";
         
         if (inputs.Length == 0)
         {

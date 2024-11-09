@@ -26,6 +26,52 @@ public partial class SignUpViewModel : BaseViewModel
     
     [ObservableProperty]
     private string _confirmPassword = string.Empty;
+    
+    [ObservableProperty]
+    private bool _hasLowerCase;
+    
+    [ObservableProperty]
+    private bool _hasUpperCase;
+
+    [ObservableProperty]
+    private bool _hasNumber;
+
+    [ObservableProperty]
+    private bool _hasSpecialCharacter;
+
+    [ObservableProperty]
+    private bool _hasMinimumLength;
+
+    [ObservableProperty]
+    private bool _passwordsMatch;
+    
+    partial void OnPasswordChanged(string value)
+    {
+        ValidatePassword();
+    }
+
+    partial void OnConfirmPasswordChanged(string value)
+    {
+        ValidatePassword();
+    }
+
+    private void ValidatePassword()
+    {
+        HasLowerCase = Password.Any(char.IsLower);
+        HasUpperCase = Password.Any(char.IsUpper);
+        HasNumber = Password.Any(char.IsDigit);
+        HasSpecialCharacter = Password.Any(ch => !char.IsLetterOrDigit(ch));
+        HasMinimumLength = Password.Length >= 6;
+        
+        if (!string.IsNullOrEmpty(Password) && !string.IsNullOrEmpty(ConfirmPassword))
+        {
+            PasswordsMatch = Password == ConfirmPassword;
+        }
+        else
+        {
+            PasswordsMatch = false;
+        }
+    }
 
     [RelayCommand]
     private async Task SignUp()

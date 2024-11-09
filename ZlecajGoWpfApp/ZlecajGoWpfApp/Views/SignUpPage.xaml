@@ -20,6 +20,7 @@
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
             <RowDefinition Height=".50*"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
@@ -42,21 +43,57 @@
             Grid.Row="3"
             helpers:PasswordBoxHelper.BindPassword="True"
             helpers:PasswordBoxHelper.BoundPassword="{Binding ConfirmPassword, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
-            materialDesign:HintAssist.Hint="Hasło"
+            materialDesign:HintAssist.Hint="Powtórz hasło"
             Style="{StaticResource AuthenticationPasswordBox}"/>
-        <Button
+        <StackPanel
             Grid.Row="4"
+            Width="300"
+            HorizontalAlignment="Center"
+            Orientation="Vertical">
+            <TextBlock
+                Foreground="{Binding HasMinimumLength, Converter={StaticResource BooleanToColorConverter}}"
+                Style="{StaticResource PasswordCriteriaTextBlock}">
+                <Span>• Minimum</Span>
+                <Span FontWeight="Bold">6 znaków</Span>
+            </TextBlock>
+            <TextBlock
+                Foreground="{Binding HasLowerCase, Converter={StaticResource BooleanToColorConverter}}"
+                Style="{StaticResource PasswordCriteriaTextBlock}">
+                <Span>• Minimum</Span>
+                <Span FontWeight="Bold">1 mała litera (a-z)</Span>
+            </TextBlock>
+            <TextBlock
+                Foreground="{Binding HasUpperCase, Converter={StaticResource BooleanToColorConverter}}"
+                Style="{StaticResource PasswordCriteriaTextBlock}">
+                <Span>• Minimum</Span>
+                <Span FontWeight="Bold">1 duża litera (A-Z)</Span>
+            </TextBlock>
+            <TextBlock
+                Foreground="{Binding HasNumber, Converter={StaticResource BooleanToColorConverter}}"
+                Style="{StaticResource PasswordCriteriaTextBlock}">
+                <Span>• Minimum</Span>
+                <Span FontWeight="Bold">1 cyfra (0-9)</Span>
+            </TextBlock>
+            <TextBlock
+                Foreground="{Binding HasSpecialCharacter, Converter={StaticResource BooleanToColorConverter}}"
+                Style="{StaticResource PasswordCriteriaTextBlock}">
+                <Span>• Minimum</Span>
+                <Span FontWeight="Bold">1 znak specjalny (&amp;-@/.)</Span>
+            </TextBlock>
+        </StackPanel>
+        <Button
+            Grid.Row="5"
             Command="{Binding SignUpCommand}"
             Content="Przejdź dalej"
             Style="{StaticResource AuthenticationDefaultButton}"
             Visibility="{Binding IsNotBusy, Converter={StaticResource BooleanToVisibilityConverter}}"/>
         <ProgressBar
-            Grid.Row="4"
+            Grid.Row="5"
             IsIndeterminate="True"
             Style="{StaticResource MaterialDesignCircularProgressBar}"
             Visibility="{Binding IsBusy, Converter={StaticResource BooleanToVisibilityConverter}}"/>
         <StackPanel
-            Grid.Row="5"
+            Grid.Row="6"
             Style="{StaticResource AuthenticationBottomStackPanel}">
             <Label Content="Masz już konto?"/>
             <Button
