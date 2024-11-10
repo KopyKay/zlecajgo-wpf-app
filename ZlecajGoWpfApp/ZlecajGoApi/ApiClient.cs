@@ -66,6 +66,9 @@ public class ApiClient : IApiClient
 
     public async Task UpdateUserCredentialsAsync(UpdateUserCredentialsDto dto)
     {
+        if (await IsUserNameExistsAsync(dto.UserName!))
+            throw new ArgumentException("Podana nazwa użytkownika jest już zajęta!");
+        
         if (await IsPhoneNumberExistsAsync(dto.PhoneNumber!))
             throw new ArgumentException("Podany numer telefonu jest już zarejestrowany!");
         
@@ -137,6 +140,20 @@ public class ApiClient : IApiClient
         const string resource = $"{IdentityEndpoint}/isPhoneNumberExists";
         var request = new RestRequest(resource, Method.Get)
             .AddQueryParameter(nameof(phoneNumber), phoneNumber);
+        
+        var response = await _client.ExecuteAsync(request);
+        RequestHelper.HandleResponse(response);
+        
+        var result = bool.Parse(response.Content!);
+
+        return result;
+    }
+
+    private async Task<bool> IsUserNameExistsAsync(string userName)
+    {
+        const string resource = $"{IdentityEndpoint}/isUserNameExists";
+        var request = new RestRequest(resource, Method.Get)
+            .AddQueryParameter(nameof(userName), userName);
         
         var response = await _client.ExecuteAsync(request);
         RequestHelper.HandleResponse(response);
