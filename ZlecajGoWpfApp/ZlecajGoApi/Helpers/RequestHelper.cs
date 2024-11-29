@@ -14,6 +14,9 @@ internal static class RequestHelper
         
         if (!response.IsSuccessful)
             throw new UnsuccessfulResponseException();
+
+        if (response.Content is null)
+            throw new EmptyContentException();
     }
 
     public static RestRequest AddAuthorizationHeader(this RestRequest request, string accessToken)

@@ -21,11 +21,14 @@ public partial class App : Application
                 services.AddSingleton<LogInPage>();
                 services.AddSingleton<SignUpPage>();
                 services.AddSingleton<SetUpUserCredentialsPage>();
+                services.AddSingleton<OffersPage>();
                 services.AddSingleton<LogInViewModel>();
                 services.AddSingleton<SignUpViewModel>();
                 services.AddSingleton<SetUpUserCredentialsViewModel>();
+                services.AddSingleton<OffersViewModel>();
                 services.AddSingleton<NavigationService>();
                 services.AddSingleton<SnackbarService>();
+                services.AddSingleton<IMapService, MapService>();
                 services.AddSingleton<IApiClient, ApiClient>();
             })
             .Build();

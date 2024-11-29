@@ -69,7 +69,6 @@ public partial class LogInViewModel : BaseViewModel
         }
         
         SnackbarService.EnqueueMessage("Zalogowano pomyślnie!");
-        
-        // TODO: Navigate to home page
+        NavigationService.NavigateTo<OffersPage>();
     }
 }

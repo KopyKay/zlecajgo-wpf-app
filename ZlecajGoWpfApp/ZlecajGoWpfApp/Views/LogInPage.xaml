@@ -41,6 +41,7 @@
             Grid.Row="3"
             Command="{Binding LogInCommand}"
             Content="Zaloguj się"
+            IsDefault="True"
             Style="{StaticResource AuthenticationDefaultButton}"
             Visibility="{Binding IsNotBusy, Converter={StaticResource BooleanToVisibilityConverter}}"/>
         <ProgressBar

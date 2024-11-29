@@ -6,6 +6,7 @@ using ZlecajGoApi.Dtos;
 using ZlecajGoApi.Exceptions;
 using ZlecajGoWpfApp.Helpers;
 using ZlecajGoWpfApp.Services;
+using ZlecajGoWpfApp.Views;
 using UnauthorizedAccessException = ZlecajGoApi.Exceptions.UnauthorizedAccessException;
 
 namespace ZlecajGoWpfApp.ViewModels;
@@ -92,6 +93,6 @@ public partial class SetUpUserCredentialsViewModel : BaseViewModel
         
         SnackbarService.EnqueueMessage("Dane użytkownika zostały zaktualizowane!");
         
-        // TODO: Navigate to home page
+        NavigationService.NavigateTo<OffersPage>();
     }
 }

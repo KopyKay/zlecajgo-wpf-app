@@ -84,7 +84,8 @@
         <Button
             Grid.Row="5"
             Command="{Binding SignUpCommand}"
-            Content="Przejdź dalej"
+            Content="Zarejestruj się"
+            IsDefault="True"
             Style="{StaticResource AuthenticationDefaultButton}"
             Visibility="{Binding IsNotBusy, Converter={StaticResource BooleanToVisibilityConverter}}"/>
         <ProgressBar

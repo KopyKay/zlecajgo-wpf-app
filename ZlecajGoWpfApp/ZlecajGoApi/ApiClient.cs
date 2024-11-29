@@ -64,6 +64,21 @@ public class ApiClient : IApiClient
         return user.IsProfileCompleted;
     }
 
+    public void LogOutUser() 
+        => UserSession.Instance.ClearUser();
+
+    public async Task<List<OfferDto>> GetOffersAsync() 
+        => await GetDataAsync<OfferDto>(OffersEndpoint);
+
+    public async Task<List<CategoryDto>> GetCategoriesAsync() 
+        => await GetDataAsync<CategoryDto>(CategoriesEndpoint);
+
+    public async Task<List<StatusDto>> GetStatusesAsync() 
+        => await GetDataAsync<StatusDto>(StatusesEndpoint);
+
+    public async Task<List<TypeDto>> GetTypesAsync() 
+        => await GetDataAsync<TypeDto>(TypesEndpoint);
+
     public async Task UpdateUserCredentialsAsync(UpdateUserCredentialsDto dto)
     {
         if (await IsUserNameExistsAsync(dto.UserName!))
@@ -161,5 +176,21 @@ public class ApiClient : IApiClient
         var result = bool.Parse(response.Content!);
 
         return result;
+    }
+
+    private async Task<List<T>> GetDataAsync<T>(string endpoint)
+    {
+        var currentUser = UserSession.Instance.CurrentUser;
+        
+        var request = new RestRequest(endpoint)
+            .AddAuthorizationHeader(currentUser!.AccessToken);
+        
+        var response = await _client.ExecuteAsync(request);
+        RequestHelper.HandleResponse(response);
+        
+        var responseContent = response.Content!;
+        var data = JsonSerializer.Deserialize<List<T>>(responseContent, _jsonOptions)!;
+
+        return data;
     }
 }
