@@ -2,17 +2,16 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using ZlecajGoApi;
 using ZlecajGoApi.Dtos;
-using ZlecajGoApi.Exceptions;
 using ZlecajGoWpfApp.Helpers;
-using ZlecajGoWpfApp.Services;
+using ZlecajGoWpfApp.Services.Navigation;
+using ZlecajGoWpfApp.Services.Snackbar;
 using ZlecajGoWpfApp.Views;
-using UnauthorizedAccessException = ZlecajGoApi.Exceptions.UnauthorizedAccessException;
 
 namespace ZlecajGoWpfApp.ViewModels;
 
 public partial class LogInViewModel : BaseViewModel
 {
-    public LogInViewModel(NavigationService navigationService, SnackbarService snackbarService, IApiClient apiClient) 
+    public LogInViewModel(INavigationService navigationService, ISnackbarService snackbarService, IApiClient apiClient) 
         : base(navigationService, snackbarService, apiClient)
     {
         Title = "Logowanie";
@@ -32,15 +31,7 @@ public partial class LogInViewModel : BaseViewModel
             IsBusy = true;
             await TryLogInAsync();
         }
-        catch (ArgumentException e)
-        {
-            SnackbarService.EnqueueMessage(e.Message);
-        }
-        catch (UnauthorizedAccessException e)
-        {
-            SnackbarService.EnqueueMessage(e.Message);
-        }
-        catch (UnsuccessfulResponseException e)
+        catch (Exception e)
         {
             SnackbarService.EnqueueMessage(e.Message);
         }
@@ -51,7 +42,7 @@ public partial class LogInViewModel : BaseViewModel
     }
     
     [RelayCommand]
-    private void GoToSignUp() => NavigationService.NavigateTo<SignUpPage>();
+    private void GoToSignUpPage() => NavigationService.NavigateTo<SignUpPage>();
 
     private async Task TryLogInAsync()
     {

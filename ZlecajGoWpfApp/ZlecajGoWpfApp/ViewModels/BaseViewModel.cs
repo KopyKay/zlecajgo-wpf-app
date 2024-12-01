@@ -1,23 +1,21 @@
 using CommunityToolkit.Mvvm.ComponentModel;
-using MaterialDesignThemes.Wpf;
 using ZlecajGoApi;
-using ZlecajGoWpfApp.Services;
+using ZlecajGoWpfApp.Services.Navigation;
+using ZlecajGoWpfApp.Services.Snackbar;
 
 namespace ZlecajGoWpfApp.ViewModels;
 
 public abstract partial class BaseViewModel
 (
-    NavigationService navigationService,
-    SnackbarService snackbarService,
+    INavigationService navigationService,
+    ISnackbarService snackbarService,
     IApiClient apiClient
 )
 : ObservableObject
 {
-    protected readonly NavigationService NavigationService = navigationService;
-    protected readonly SnackbarService SnackbarService = snackbarService;
+    protected readonly INavigationService NavigationService = navigationService;
+    protected readonly ISnackbarService SnackbarService = snackbarService;
     protected readonly IApiClient ApiClient = apiClient;
-    
-    public SnackbarMessageQueue SnackbarMessageQueue => SnackbarService.MessageQueue;
     
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(IsNotBusy))]

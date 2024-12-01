@@ -3,17 +3,16 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using ZlecajGoApi;
 using ZlecajGoApi.Dtos;
-using ZlecajGoApi.Exceptions;
 using ZlecajGoWpfApp.Helpers;
-using ZlecajGoWpfApp.Services;
+using ZlecajGoWpfApp.Services.Navigation;
+using ZlecajGoWpfApp.Services.Snackbar;
 using ZlecajGoWpfApp.Views;
-using UnauthorizedAccessException = ZlecajGoApi.Exceptions.UnauthorizedAccessException;
 
 namespace ZlecajGoWpfApp.ViewModels;
 
 public partial class SetUpUserCredentialsViewModel : BaseViewModel
 {
-    public SetUpUserCredentialsViewModel(NavigationService navigationService, SnackbarService snackbarService, IApiClient apiClient) 
+    public SetUpUserCredentialsViewModel(INavigationService navigationService, ISnackbarService snackbarService, IApiClient apiClient) 
         : base(navigationService, snackbarService, apiClient)
     {
         Title = "Uzupełnianie danych użytkownika";
@@ -42,19 +41,7 @@ public partial class SetUpUserCredentialsViewModel : BaseViewModel
             IsBusy = true;
             await TryUpdateUserCredentialsAsync();
         }
-        catch (ArgumentException e)
-        {
-            SnackbarService.EnqueueMessage(e.Message);
-        }
-        catch (InvalidOperationException e)
-        {
-            SnackbarService.EnqueueMessage(e.Message);
-        }
-        catch (UnauthorizedAccessException e)
-        {
-            SnackbarService.EnqueueMessage(e.Message);
-        }
-        catch (UnsuccessfulResponseException e)
+        catch (Exception e)
         {
             SnackbarService.EnqueueMessage(e.Message);
         }

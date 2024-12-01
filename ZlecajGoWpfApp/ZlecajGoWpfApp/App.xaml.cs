@@ -2,7 +2,9 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using ZlecajGoApi;
-using ZlecajGoWpfApp.Services;
+using ZlecajGoWpfApp.Services.Map;
+using ZlecajGoWpfApp.Services.Navigation;
+using ZlecajGoWpfApp.Services.Snackbar;
 using ZlecajGoWpfApp.Views;
 using ZlecajGoWpfApp.ViewModels;
 
@@ -26,8 +28,8 @@ public partial class App : Application
                 services.AddSingleton<SignUpViewModel>();
                 services.AddSingleton<SetUpUserCredentialsViewModel>();
                 services.AddSingleton<OffersViewModel>();
-                services.AddSingleton<NavigationService>();
-                services.AddSingleton<SnackbarService>();
+                services.AddSingleton<INavigationService, NavigationService>();
+                services.AddSingleton<ISnackbarService, SnackbarService>();
                 services.AddSingleton<IMapService, MapService>();
                 services.AddSingleton<IApiClient, ApiClient>();
             })

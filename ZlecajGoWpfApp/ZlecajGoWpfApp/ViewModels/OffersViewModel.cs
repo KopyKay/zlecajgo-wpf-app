@@ -8,14 +8,15 @@ using GMap.NET.WindowsPresentation;
 using MaterialDesignThemes.Wpf;
 using ZlecajGoApi;
 using ZlecajGoApi.Dtos;
-using ZlecajGoWpfApp.Services;
+using ZlecajGoWpfApp.Services.Navigation;
+using ZlecajGoWpfApp.Services.Snackbar;
 using ZlecajGoWpfApp.Views;
 
 namespace ZlecajGoWpfApp.ViewModels;
 
 public partial class OffersViewModel : BaseViewModel
 {
-    public OffersViewModel(NavigationService navigationService, SnackbarService snackbarService, IApiClient apiClient) 
+    public OffersViewModel(INavigationService navigationService, ISnackbarService snackbarService, IApiClient apiClient) 
         : base(navigationService, snackbarService, apiClient)
     {
         Title = "Zlecenia";

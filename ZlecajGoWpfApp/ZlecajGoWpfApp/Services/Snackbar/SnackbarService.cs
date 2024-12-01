@@ -1,8 +1,8 @@
 using MaterialDesignThemes.Wpf;
 
-namespace ZlecajGoWpfApp.Services;
+namespace ZlecajGoWpfApp.Services.Snackbar;
 
-public class SnackbarService
+public class SnackbarService : ISnackbarService
 {
     private static readonly TimeSpan MessageDuration = TimeSpan.FromSeconds(5);
     public SnackbarMessageQueue MessageQueue { get; } = new(MessageDuration);

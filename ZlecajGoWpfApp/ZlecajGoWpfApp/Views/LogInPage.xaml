@@ -54,7 +54,7 @@
             Style="{StaticResource AuthenticationBottomStackPanel}">
             <Label Content="Nie posiadasz konta?"/>
             <Button
-                Command="{Binding GoToSignUpCommand}"
+                Command="{Binding GoToSignUpPageCommand}"
                 Content="Utwórz konto"
                 Style="{StaticResource AuthenticationBottomButton}"/>
         </StackPanel>

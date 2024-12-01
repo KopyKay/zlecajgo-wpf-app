@@ -1,6 +1,7 @@
 using System.Windows;
 using System.Windows.Controls;
-using ZlecajGoWpfApp.Services;
+using ZlecajGoWpfApp.Services.Map;
+using ZlecajGoWpfApp.Services.Navigation;
 using ZlecajGoWpfApp.ViewModels;
 
 namespace ZlecajGoWpfApp.Views;
@@ -9,9 +10,9 @@ public partial class OffersPage : Page
 {
     private readonly OffersViewModel _viewModel;
     private readonly IMapService _mapService;
-    private readonly NavigationService _navigationService;
+    private readonly INavigationService _navigationService;
     
-    public OffersPage(OffersViewModel viewModel, IMapService mapService, NavigationService navigationService)
+    public OffersPage(OffersViewModel viewModel, IMapService mapService, INavigationService navigationService)
     {
         InitializeComponent();
         

@@ -1,10 +1,9 @@
-using System.Collections;
 using System.Windows.Input;
 using GMap.NET;
 using GMap.NET.MapProviders;
 using GMap.NET.WindowsPresentation;
 
-namespace ZlecajGoWpfApp.Services;
+namespace ZlecajGoWpfApp.Services.Map;
 
 public class MapService : IMapService
 {

@@ -98,7 +98,7 @@
             Style="{StaticResource AuthenticationBottomStackPanel}">
             <Label Content="Masz już konto?"/>
             <Button
-                Command="{Binding GoToLogInCommand}"
+                Command="{Binding GoToLogInPageCommand}"
                 Content="Zaloguj się"
                 Style="{StaticResource AuthenticationBottomButton}"/>
         </StackPanel>

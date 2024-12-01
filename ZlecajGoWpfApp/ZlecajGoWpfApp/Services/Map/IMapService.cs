@@ -1,6 +1,6 @@
 using GMap.NET.WindowsPresentation;
 
-namespace ZlecajGoWpfApp.Services;
+namespace ZlecajGoWpfApp.Services.Map;
 
 public interface IMapService
 {
