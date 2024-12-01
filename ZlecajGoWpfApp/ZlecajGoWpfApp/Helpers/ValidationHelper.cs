@@ -11,7 +11,7 @@ public static partial class ValidationHelper
     [GeneratedRegex("^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*(),.?\":{}|<>]).{6,}$")]
     private static partial Regex ValidPassword();
     
-    [GeneratedRegex("^[A-Za-z]{3,100} [A-Za-z]{3,100}$")]
+    [GeneratedRegex(@"^\p{L}{3,100} \p{L}{3,100}$")]
     private static partial Regex ValidFullName();
 
     [GeneratedRegex("^[A-Za-z0-9_]{3,30}$")]

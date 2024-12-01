@@ -7,6 +7,9 @@ namespace ZlecajGoApi.Helpers;
 
 internal static class RequestHelper
 {
+    private const string AuthorizationHeaderName = "Authorization";
+    private const string BearerPrefix = "Bearer";
+    
     public static void HandleResponse(RestResponse response)
     {
         if (response.StatusCode == HttpStatusCode.Unauthorized)
@@ -19,8 +22,8 @@ internal static class RequestHelper
             throw new EmptyContentException();
     }
 
-    public static RestRequest AddAuthorizationHeader(this RestRequest request, string accessToken)
+    public static RestRequest AddAuthorizationHeader(this RestRequest request, string bearerToken)
     {
-        return request.AddHeader("Authorization", $"Bearer {accessToken}");
+        return request.AddHeader(AuthorizationHeaderName, $"{BearerPrefix} {bearerToken}");
     }
 }

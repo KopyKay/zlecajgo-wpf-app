@@ -1,6 +1,7 @@
 using System.Text.Json;
 using RestSharp;
 using ZlecajGoApi.Dtos;
+using ZlecajGoApi.Exceptions;
 using ZlecajGoApi.Helpers;
 
 namespace ZlecajGoApi;
@@ -31,10 +32,9 @@ public class ApiClient : IApiClient
         
         const string resource = $"{IdentityEndpoint}/register";
         var request = new RestRequest(resource, Method.Post)
-            .AddBody(dto);
+            .AddJsonBody(dto);
         
-        var response = await _client.ExecuteAsync(request);
-        RequestHelper.HandleResponse(response);
+        await ExecuteRequestAsync<object>(request);
         
         var logInDto = new LogInDto { Email = dto.Email, Password = dto.Password };
         
@@ -45,13 +45,9 @@ public class ApiClient : IApiClient
     {
         const string resource = $"{IdentityEndpoint}/login";
         var request = new RestRequest(resource, Method.Post)
-            .AddBody(dto);
+            .AddJsonBody(dto);
         
-        var response = await _client.ExecuteAsync(request);
-        RequestHelper.HandleResponse(response);
-        
-        var responseContent = response.Content!;
-        var jsonDocument = JsonDocument.Parse(responseContent);
+        var jsonDocument = await ExecuteRequestAsync<JsonDocument>(request);
         var accessToken = jsonDocument.RootElement.GetProperty("accessToken").GetString()!;
         var refreshToken = jsonDocument.RootElement.GetProperty("refreshToken").GetString()!;
         
@@ -64,6 +60,26 @@ public class ApiClient : IApiClient
         return user.IsProfileCompleted;
     }
 
+    public async Task UpdateUserCredentialsAsync(UpdateUserCredentialsDto dto)
+    {
+        if (await IsUserNameExistsAsync(dto.UserName!))
+            throw new ArgumentException("Podana nazwa użytkownika jest już zajęta!");
+        
+        if (await IsPhoneNumberExistsAsync(dto.PhoneNumber!))
+            throw new ArgumentException("Podany numer telefonu jest już zarejestrowany!");
+        
+        var currentUser = UserSession.Instance.CurrentUser;
+        
+        const string resource = $"{UsersEndpoint}/update";
+        var request = new RestRequest(resource, Method.Patch)
+            .AddAuthorizationHeader(currentUser.AccessToken)
+            .AddJsonBody(dto);
+        
+        await ExecuteRequestAsync<object>(request);
+
+        await RefreshUserAsync(currentUser);
+    }
+    
     public void LogOutUser() 
         => UserSession.Instance.ClearUser();
 
@@ -79,41 +95,13 @@ public class ApiClient : IApiClient
     public async Task<List<TypeDto>> GetTypesAsync() 
         => await GetDataAsync<TypeDto>(TypesEndpoint);
 
-    public async Task UpdateUserCredentialsAsync(UpdateUserCredentialsDto dto)
-    {
-        if (await IsUserNameExistsAsync(dto.UserName!))
-            throw new ArgumentException("Podana nazwa użytkownika jest już zajęta!");
-        
-        if (await IsPhoneNumberExistsAsync(dto.PhoneNumber!))
-            throw new ArgumentException("Podany numer telefonu jest już zarejestrowany!");
-        
-        var currentUser = UserSession.Instance.CurrentUser;
-        
-        if (currentUser is null)
-            throw new InvalidOperationException("Użytkownik nie jest zalogowany!");
-        
-        const string resource = $"{UsersEndpoint}/update";
-        var request = new RestRequest(resource, Method.Patch)
-            .AddAuthorizationHeader(currentUser.AccessToken)
-            .AddBody(dto);
-        
-        var response = await _client.ExecuteAsync(request);
-        RequestHelper.HandleResponse(response);
-
-        await RefreshUserAsync(currentUser);
-    }
-
     private async Task RefreshUserAsync(UserDto userDto)
     {
         const string resource = $"{IdentityEndpoint}/refresh";
         var request = new RestRequest(resource, Method.Post)
-            .AddBody(new { refreshToken = userDto.RefreshToken });
+            .AddJsonBody(new { refreshToken = userDto.RefreshToken });
         
-        var response = await _client.ExecuteAsync(request);
-        RequestHelper.HandleResponse(response);
-        
-        var responseContent = response.Content!;
-        var jsonDocument = JsonDocument.Parse(responseContent);
+        var jsonDocument = await ExecuteRequestAsync<JsonDocument>(request);
         var accessToken = jsonDocument.RootElement.GetProperty("accessToken").GetString()!;
         var refreshToken = jsonDocument.RootElement.GetProperty("refreshToken").GetString()!;
         
@@ -124,57 +112,40 @@ public class ApiClient : IApiClient
     private async Task<UserDto> GetCurrentUserAsync(string accessToken)
     {
         const string resource = $"{UsersEndpoint}/currentUser";
-        var request = new RestRequest(resource, Method.Get)
+        var request = new RestRequest(resource)
             .AddAuthorizationHeader(accessToken);
         
-        var response = await _client.ExecuteAsync(request);
-        RequestHelper.HandleResponse(response);
-        
-        var responseContent = response.Content!;
-        var user = JsonSerializer.Deserialize<UserDto>(responseContent, _jsonOptions)!;
-        
+        var user = await ExecuteRequestAsync<UserDto>(request);
         return user;
     }
     
     private async Task<bool> IsEmailExistsAsync(string email)
     {
         const string resource = $"{IdentityEndpoint}/isEmailExists";
-        var request = new RestRequest(resource, Method.Get)
+        var request = new RestRequest(resource)
             .AddQueryParameter(nameof(email), email);
         
-        var response = await _client.ExecuteAsync(request);
-        RequestHelper.HandleResponse(response);
-        
-        var result = bool.Parse(response.Content!);
-
+        var result = await ExecuteRequestAsync<bool>(request);
         return result;
     }
     
     private async Task<bool> IsPhoneNumberExistsAsync(string phoneNumber)
     {
         const string resource = $"{IdentityEndpoint}/isPhoneNumberExists";
-        var request = new RestRequest(resource, Method.Get)
+        var request = new RestRequest(resource)
             .AddQueryParameter(nameof(phoneNumber), phoneNumber);
         
-        var response = await _client.ExecuteAsync(request);
-        RequestHelper.HandleResponse(response);
-        
-        var result = bool.Parse(response.Content!);
-
+        var result = await ExecuteRequestAsync<bool>(request);
         return result;
     }
 
     private async Task<bool> IsUserNameExistsAsync(string userName)
     {
         const string resource = $"{IdentityEndpoint}/isUserNameExists";
-        var request = new RestRequest(resource, Method.Get)
+        var request = new RestRequest(resource)
             .AddQueryParameter(nameof(userName), userName);
         
-        var response = await _client.ExecuteAsync(request);
-        RequestHelper.HandleResponse(response);
-        
-        var result = bool.Parse(response.Content!);
-
+        var result = await ExecuteRequestAsync<bool>(request);
         return result;
     }
 
@@ -183,13 +154,27 @@ public class ApiClient : IApiClient
         var currentUser = UserSession.Instance.CurrentUser;
         
         var request = new RestRequest(endpoint)
-            .AddAuthorizationHeader(currentUser!.AccessToken);
+            .AddAuthorizationHeader(currentUser.AccessToken);
         
+        var data = await ExecuteRequestAsync<List<T>>(request);
+        return data;
+    }
+    
+    private async Task<T> ExecuteRequestAsync<T>(RestRequest request)
+    {        
         var response = await _client.ExecuteAsync(request);
         RequestHelper.HandleResponse(response);
-        
+
+        if (string.IsNullOrWhiteSpace(response.Content))
+        {
+            if (typeof(T) == typeof(object) || typeof(T) == typeof(void))
+                return default!;
+
+            throw new EmptyContentException();
+        }
+
         var responseContent = response.Content!;
-        var data = JsonSerializer.Deserialize<List<T>>(responseContent, _jsonOptions)!;
+        var data = JsonSerializer.Deserialize<T>(responseContent, _jsonOptions)!;
 
         return data;
     }

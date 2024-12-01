@@ -7,7 +7,7 @@ internal class UserSession
     private static UserSession? _instance;
     private static readonly object InstanceLock = new();
 
-    public UserDto? CurrentUser { get; private set; }
+    private UserDto? _currentUser;
 
     private UserSession() { }
     
@@ -22,6 +22,17 @@ internal class UserSession
         }
     }
     
+    public UserDto CurrentUser
+    {
+        get
+        {
+            if (_currentUser is null)
+                throw new InvalidOperationException("Użytkownik nie jest zalogowany!");
+            return _currentUser;
+        }
+        private set => _currentUser = value;
+    }
+    
     public void SetUser(UserDto user)
     {
         CurrentUser = user;
@@ -29,6 +40,6 @@ internal class UserSession
 
     public void ClearUser()
     {
-        CurrentUser = null;
+        _currentUser = null;
     }
 }
