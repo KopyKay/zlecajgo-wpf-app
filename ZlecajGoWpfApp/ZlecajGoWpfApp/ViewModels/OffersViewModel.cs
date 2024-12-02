@@ -1,4 +1,5 @@
 using System.Collections.ObjectModel;
+using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Effects;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -78,6 +79,9 @@ public partial class OffersViewModel : BaseViewModel
                 MapOfferMarkers.Clear();
             }
 
+            var accentColorBrush1 = (Brush)Application.Current.Resources["AccentColorBrush1"]!;
+            var accentColorBrush2 = (Brush)Application.Current.Resources["AccentColorBrush2"]!;
+            
             foreach (var offer in Offers)
             {
                 var marker = new GMapMarker(new PointLatLng(offer.Latitude, offer.Longitude))
@@ -85,7 +89,7 @@ public partial class OffersViewModel : BaseViewModel
                     Shape = new PackIcon
                     {
                         Kind = PackIconKind.MapMarker,
-                        Foreground = offer.TypeId == 1 ? Brushes.OrangeRed : Brushes.Gold,
+                        Foreground = offer.TypeId == 1 ? accentColorBrush1 : accentColorBrush2,
                         Width = 48,
                         Height = 48,
                         ToolTip = $"{offer.TypeName}: {offer.Title}",

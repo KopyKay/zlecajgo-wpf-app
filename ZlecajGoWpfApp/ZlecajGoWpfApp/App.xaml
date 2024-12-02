@@ -15,6 +15,14 @@
 
             <converters:BooleanToColorConverter x:Key="BooleanToColorConverter"/>
 
+            <SolidColorBrush
+                x:Key="AccentColorBrush1"
+                Color="{StaticResource Primary500}"/>
+
+            <SolidColorBrush
+                x:Key="AccentColorBrush2"
+                Color="#BD0F4F"/>
+
             <Style
                 x:Key="AuthenticationTitle"
                 BasedOn="{StaticResource MaterialDesignLabel}"

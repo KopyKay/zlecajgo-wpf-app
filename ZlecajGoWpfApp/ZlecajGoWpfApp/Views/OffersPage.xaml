@@ -15,6 +15,33 @@
                                      IsDesignTimeCreatable=True}"
     mc:Ignorable="d">
 
+    <Page.Resources>
+        <Style
+            x:Key="ButtonDefaultStyle"
+            BasedOn="{StaticResource MaterialDesignRaisedButton}"
+            TargetType="Button">
+            <Setter Property="Height" Value="40"/>
+            <Setter Property="Width" Value="225"/>
+            <Setter Property="FontSize" Value="18"/>
+        </Style>
+        <Style
+            x:Key="ProgressBarBorderStyle"
+            TargetType="Border">
+            <Setter Property="Background" Value="{StaticResource MaterialDesignBackground}"/>
+            <Setter Property="Visibility" Value="{Binding IsBusy, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+        </Style>
+        <Style
+            x:Key="ProgressBarDefaultStyle"
+            BasedOn="{StaticResource MaterialDesignCircularProgressBar}"
+            TargetType="ProgressBar">
+            <Setter Property="Width" Value="128"/>
+            <Setter Property="Height" Value="128"/>
+            <Setter Property="HorizontalAlignment" Value="Center"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="IsIndeterminate" Value="True"/>
+        </Style>
+    </Page.Resources>
+
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
@@ -25,58 +52,89 @@
             <ColumnDefinition Width=".40*"/>
         </Grid.ColumnDefinitions>
 
+        <!--  Top button controls  -->
         <materialDesign:Card
             Grid.Row="0"
             Grid.Column="0"
             Grid.ColumnSpan="2"
             Margin="10">
-            <UniformGrid Columns="4">
+            <UniformGrid
+                Margin="10,10"
+                Columns="4">
                 <Button
-                    Margin="50,10"
-                    VerticalAlignment="Center"
-                    Content="Kalendarz"/>
+                    Content="Kalendarz"
+                    Style="{StaticResource ButtonDefaultStyle}"/>
                 <Button
-                    Margin="50,10"
-                    VerticalAlignment="Center"
-                    Content="Wiadomości"/>
+                    Content="Wiadomości"
+                    Style="{StaticResource ButtonDefaultStyle}"/>
                 <Button
-                    Margin="50,10"
-                    VerticalAlignment="Center"
-                    Content="Konto"/>
+                    Content="Konto"
+                    Style="{StaticResource ButtonDefaultStyle}"/>
                 <Button
-                    Margin="50,10"
-                    VerticalAlignment="Center"
                     Command="{Binding LogOutCommand}"
-                    Content="Wyloguj się"/>
+                    Content="Wyloguj się"
+                    Style="{StaticResource ButtonDefaultStyle}"/>
             </UniformGrid>
         </materialDesign:Card>
 
+        <!--  Left content  -->
         <materialDesign:Card
             Grid.Row="1"
             Grid.Column="0"
             Margin="10">
             <Grid>
                 <gmap:GMapControl x:Name="Map"/>
-                <Border
-                    Background="White"
-                    Visibility="{Binding IsBusy, Converter={StaticResource BooleanToVisibilityConverter}}">
-                    <ProgressBar
-                        Width="128"
-                        Height="128"
-                        HorizontalAlignment="Center"
-                        VerticalAlignment="Center"
-                        IsIndeterminate="True"
-                        Style="{StaticResource MaterialDesignCircularProgressBar}"/>
+                <Border Style="{StaticResource ProgressBarBorderStyle}">
+                    <ProgressBar Style="{StaticResource ProgressBarDefaultStyle}"/>
                 </Border>
             </Grid>
         </materialDesign:Card>
 
+        <!--  Right content  -->
         <materialDesign:Card
             Grid.Row="1"
             Grid.Column="1"
             Margin="10">
             <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+
+                <!--  Filter button  -->
+                <Button
+                    Width="50"
+                    Height="50"
+                    Margin="0,20,20,0"
+                    Padding="0"
+                    HorizontalAlignment="Right"
+                    VerticalAlignment="Top"
+                    Panel.ZIndex="1"
+                    Background="Transparent"
+                    BorderThickness="0">
+                    <Button.Effect>
+                        <DropShadowEffect
+                            BlurRadius="15"
+                            ShadowDepth="0"
+                            Color="Black"/>
+                    </Button.Effect>
+                    <Grid>
+                        <Ellipse
+                            Width="50"
+                            Height="50"
+                            Fill="{StaticResource AccentColorBrush1}"/>
+                        <materialDesign:PackIcon
+                            Width="36"
+                            Height="36"
+                            HorizontalAlignment="Center"
+                            VerticalAlignment="Center"
+                            Kind="Filter"/>
+                    </Grid>
+                </Button>
+
+                <!--  Offers list  -->
                 <ListView
+                    Grid.Row="0"
                     HorizontalContentAlignment="Stretch"
                     ItemsSource="{Binding Offers}"
                     ScrollViewer.HorizontalScrollBarVisibility="Disabled"
@@ -84,9 +142,13 @@
                     VirtualizingPanel.ScrollUnit="Pixel">
                     <ListView.ItemTemplate>
                         <DataTemplate DataType="model:OfferDto">
-                            <materialDesign:Card
-                                Padding="10"
-                                Background="{StaticResource PrimaryHueMidBrush}">
+                            <materialDesign:Card Padding="10">
+                                <materialDesign:Card.Background>
+                                    <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                        <GradientStop Offset="0.0" Color="{Binding Source={StaticResource AccentColorBrush1}, Path=Color}"/>
+                                        <GradientStop Offset="1.0" Color="{Binding Source={StaticResource AccentColorBrush2}, Path=Color}"/>
+                                    </LinearGradientBrush>
+                                </materialDesign:Card.Background>
                                 <StackPanel Orientation="Vertical">
                                     <TextBlock
                                         Margin="0,0,0,5"
@@ -98,19 +160,19 @@
                                         TextWrapping="Wrap"/>
                                     <TextBlock
                                         Margin="0,5"
-                                        FontSize="16"
+                                        FontSize="18"
                                         Foreground="White"
                                         Text="{Binding Title}"
                                         TextWrapping="Wrap"/>
                                     <TextBlock
                                         Margin="0,5"
-                                        FontSize="14"
+                                        FontSize="16"
                                         Foreground="White"
                                         Text="{Binding City}"
                                         TextWrapping="Wrap"/>
                                     <TextBlock
                                         Margin="0,5"
-                                        FontSize="12"
+                                        FontSize="16"
                                         Foreground="White"
                                         Text="{Binding Description}"
                                         TextWrapping="Wrap"/>
@@ -119,7 +181,7 @@
                                             Padding="5"
                                             FontSize="18"
                                             FontWeight="Bold"
-                                            Foreground="{StaticResource PrimaryHueMidBrush}"
+                                            Foreground="{StaticResource AccentColorBrush2}"
                                             Text="{Binding Price, StringFormat='{}{0} zł'}"
                                             TextAlignment="Center"
                                             TextWrapping="Wrap"/>
@@ -130,15 +192,27 @@
                     </ListView.ItemTemplate>
                 </ListView>
                 <Border
-                    Background="White"
-                    Visibility="{Binding IsBusy, Converter={StaticResource BooleanToVisibilityConverter}}">
-                    <ProgressBar
-                        Width="128"
-                        Height="128"
-                        HorizontalAlignment="Center"
-                        VerticalAlignment="Center"
-                        IsIndeterminate="True"
-                        Style="{StaticResource MaterialDesignCircularProgressBar}"/>
+                    Grid.Row="0"
+                    Grid.RowSpan="2"
+                    Style="{StaticResource ProgressBarBorderStyle}">
+                    <ProgressBar Style="{StaticResource ProgressBarDefaultStyle}"/>
+                </Border>
+
+                <!--  Add offer button  -->
+                <Border
+                    Grid.Row="1"
+                    Padding="10"
+                    Background="{StaticResource MaterialDesignBackground}">
+                    <Border.Effect>
+                        <DropShadowEffect
+                            BlurRadius="25"
+                            Direction="270"
+                            ShadowDepth="0"
+                            Color="Black"/>
+                    </Border.Effect>
+                    <Button
+                        Content="Dodaj zlecenie/usługę"
+                        Style="{StaticResource ButtonDefaultStyle}"/>
                 </Border>
             </Grid>
         </materialDesign:Card>

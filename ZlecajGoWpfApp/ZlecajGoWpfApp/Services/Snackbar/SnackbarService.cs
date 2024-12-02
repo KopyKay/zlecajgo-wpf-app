@@ -9,6 +9,7 @@ public class SnackbarService : ISnackbarService
     
     public void EnqueueMessage(string message)
     {
-        MessageQueue.Enqueue(message, "\u2715", () => MessageQueue.Clear());
+        var closeIcon = new PackIcon { Kind = PackIconKind.CloseCircle};
+        MessageQueue.Enqueue(message, closeIcon, () => { });
     }
 }
