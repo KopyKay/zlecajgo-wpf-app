@@ -8,7 +8,7 @@ public interface IApiClient
     Task<bool> LogInUserAsync(LogInDto dto);
     Task UpdateUserCredentialsAsync(UpdateUserCredentialsDto dto);
     void LogOutUser();
-    Task<List<OfferDto>> GetOffersAsync();
+    Task<List<OfferDto>?> GetOffersAsync();
     Task<List<CategoryDto>> GetCategoriesAsync();
     Task<List<StatusDto>> GetStatusesAsync();
     Task<List<TypeDto>> GetTypesAsync();

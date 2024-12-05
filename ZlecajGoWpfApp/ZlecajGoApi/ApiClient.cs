@@ -83,17 +83,17 @@ public class ApiClient : IApiClient
     public void LogOutUser() 
         => UserSession.Instance.ClearUser();
 
-    public async Task<List<OfferDto>> GetOffersAsync() 
+    public async Task<List<OfferDto>?> GetOffersAsync() 
         => await GetDataAsync<OfferDto>(OffersEndpoint);
 
     public async Task<List<CategoryDto>> GetCategoriesAsync() 
-        => await GetDataAsync<CategoryDto>(CategoriesEndpoint);
+        => (await GetDataAsync<CategoryDto>(CategoriesEndpoint))!;
 
     public async Task<List<StatusDto>> GetStatusesAsync() 
-        => await GetDataAsync<StatusDto>(StatusesEndpoint);
+        => (await GetDataAsync<StatusDto>(StatusesEndpoint))!;
 
     public async Task<List<TypeDto>> GetTypesAsync() 
-        => await GetDataAsync<TypeDto>(TypesEndpoint);
+        => (await GetDataAsync<TypeDto>(TypesEndpoint))!;
 
     private async Task RefreshUserAsync(UserDto userDto)
     {
@@ -149,7 +149,7 @@ public class ApiClient : IApiClient
         return result;
     }
 
-    private async Task<List<T>> GetDataAsync<T>(string endpoint)
+    private async Task<List<T>?> GetDataAsync<T>(string endpoint)
     {
         var currentUser = UserSession.Instance.CurrentUser;
         

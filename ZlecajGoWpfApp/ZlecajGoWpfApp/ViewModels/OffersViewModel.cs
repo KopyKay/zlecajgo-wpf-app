@@ -1,5 +1,7 @@
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Windows;
+using System.Windows.Data;
 using System.Windows.Media;
 using System.Windows.Media.Effects;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -24,6 +26,9 @@ public partial class OffersViewModel : BaseViewModel
     }
 
     [ObservableProperty]
+    private ICollectionView? _offersView;
+    
+    [ObservableProperty]
     private ObservableCollection<OfferDto> _offers = [];
     
     [ObservableProperty]
@@ -38,6 +43,22 @@ public partial class OffersViewModel : BaseViewModel
     [ObservableProperty]
     private ObservableCollection<GMapMarker> _mapOfferMarkers = [];
     
+    [ObservableProperty]
+    private ObservableCollection<string> _availableCities = [];
+    
+    private const string DefaultTypeOption = "Wybierz typ";
+    private const string DefaultCategoryOption = "Wybierz kategorię";
+    private const string DefaultCityOption = "Wybierz miasto";
+    
+    [ObservableProperty]
+    private string _selectedType = DefaultTypeOption;
+    
+    [ObservableProperty]
+    private string _selectedCategory = DefaultCategoryOption;
+    
+    [ObservableProperty]
+    private string _selectedCity = DefaultCityOption;
+    
     [RelayCommand]
     private async Task LoadOffersAsync()
     {
@@ -45,16 +66,26 @@ public partial class OffersViewModel : BaseViewModel
         {
             IsBusy = true;
 
-            await FetchDataAsync(Categories, ApiClient.GetCategoriesAsync);
-            await FetchDataAsync(Statuses, ApiClient.GetStatusesAsync);
-            await FetchDataAsync(Types, ApiClient.GetTypesAsync);
+            await FetchDataAsync(Categories, ApiClient.GetCategoriesAsync!);
+            await FetchDataAsync(Statuses, ApiClient.GetStatusesAsync!);
+            await FetchDataAsync(Types, ApiClient.GetTypesAsync!);
             await FetchDataAsync(Offers, ApiClient.GetOffersAsync);
 
-            foreach (var offer in Offers)
+            if (Offers.Count != 0)
             {
-                offer.CategoryName = Categories.First(c => c.Id == offer.CategoryId).Name;
-                offer.StatusName = Statuses.First(s => s.Id == offer.StatusId).Name;
-                offer.TypeName = Types.First(t => t.Id == offer.TypeId).Name;
+                OffersView = CollectionViewSource.GetDefaultView(Offers);
+                GetAvailableCities();
+            
+                foreach (var offer in Offers)
+                {
+                    offer.CategoryName = Categories.First(c => c.Id == offer.CategoryId).Name;
+                    offer.StatusName = Statuses.First(s => s.Id == offer.StatusId).Name;
+                    offer.TypeName = Types.First(t => t.Id == offer.TypeId).Name;
+                }
+            }
+            else
+            {
+                SnackbarService.EnqueueMessage("Nie znaleziono zleceń/usług.");
             }
         }
         catch (Exception e)
@@ -123,10 +154,58 @@ public partial class OffersViewModel : BaseViewModel
         NavigationService.NavigateTo<LogInPage>();
     }
 
-    private async Task FetchDataAsync<T>(ObservableCollection<T> collection, Func<Task<List<T>>> fetchDataFunc)
+    private void GetAvailableCities()
+    {
+        var uniqueCities = Offers
+            .Where(o => !string.IsNullOrWhiteSpace(o.City))
+            .Select(o => o.City)
+            .Distinct()
+            .OrderBy(city => city)
+            .ToList();
+
+        AvailableCities.Clear();
+        
+        foreach (var city in uniqueCities)
+        {
+            AvailableCities.Add(city);
+        }
+    }
+
+    [RelayCommand]
+    private void FilterOffers()
+    {
+        if (OffersView is null) return;
+        
+        OffersView.Filter = o =>
+        {
+            var offer = (OfferDto)o;
+            var isTypeMatch = SelectedType == DefaultTypeOption || offer.TypeName == SelectedType;
+            var isCategoryMatch = SelectedCategory == DefaultCategoryOption || offer.CategoryName == SelectedCategory;
+            var isCityMatch = SelectedCity == DefaultCityOption || offer.City == SelectedCity;
+
+            return isTypeMatch && isCategoryMatch && isCityMatch;
+        };
+    }
+    
+    [RelayCommand]
+    private void ResetFilterOptions()
+    {
+        SelectedType = DefaultTypeOption;
+        SelectedCategory = DefaultCategoryOption;
+        SelectedCity = DefaultCityOption;
+        
+        if (OffersView is not null)
+        {
+            OffersView.Filter = null;
+        }
+    }
+    
+    private async Task FetchDataAsync<T>(ObservableCollection<T> collection, Func<Task<List<T>?>> fetchDataFunc)
     {
         var data = await fetchDataFunc();
 
+        if (data is null) return;
+        
         if (collection.Count != 0)
         {
             collection.Clear();

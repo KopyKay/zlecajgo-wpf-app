@@ -9,8 +9,8 @@ public class MapService : IMapService
 {
     public void InitializeMap(GMapControl map)
     {
-        const double lat = 52.1909;
-        const double lng = 19.3554;
+        const double lat = 52.65208303015435;
+        const double lng = 19.06536041557555;
         
         map.CacheLocation = Environment.CurrentDirectory + @"\GMapCache\";
         GMapProvider.Language = LanguageType.Polish;
@@ -18,7 +18,7 @@ public class MapService : IMapService
 
         map.MinZoom = 6;
         map.MaxZoom = 20;
-        map.Zoom = 7.0;
+        map.Zoom = 12.0;
 
         map.ShowCenter = false;
         map.Position = new PointLatLng(lat, lng);

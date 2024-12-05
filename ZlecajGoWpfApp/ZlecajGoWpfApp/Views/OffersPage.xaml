@@ -101,42 +101,81 @@
                     <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
 
-                <!--  Filter button  -->
-                <Button
-                    Width="50"
-                    Height="50"
+                <!--  Filter toggle button  -->
+                <materialDesign:PopupBox
                     Margin="0,20,20,0"
-                    Padding="0"
+                    Padding="5"
                     HorizontalAlignment="Right"
                     VerticalAlignment="Top"
                     Panel.ZIndex="1"
-                    Background="Transparent"
-                    BorderThickness="0">
-                    <Button.Effect>
+                    materialDesign:RippleAssist.IsDisabled="True"
+                    PopupMode="Click"
+                    StaysOpen="True">
+                    <materialDesign:PopupBox.Effect>
                         <DropShadowEffect
-                            BlurRadius="15"
+                            BlurRadius="10"
                             ShadowDepth="0"
                             Color="Black"/>
-                    </Button.Effect>
-                    <Grid>
-                        <Ellipse
-                            Width="50"
-                            Height="50"
-                            Fill="{StaticResource AccentColorBrush1}"/>
-                        <materialDesign:PackIcon
-                            Width="36"
-                            Height="36"
-                            HorizontalAlignment="Center"
-                            VerticalAlignment="Center"
-                            Kind="Filter"/>
-                    </Grid>
-                </Button>
+                    </materialDesign:PopupBox.Effect>
+                    <materialDesign:PopupBox.ToggleContent>
+                        <Grid>
+                            <Ellipse
+                                Width="50"
+                                Height="50"
+                                Fill="{StaticResource AccentColorBrush1}"/>
+                            <materialDesign:PackIcon
+                                Width="36"
+                                Height="36"
+                                HorizontalAlignment="Center"
+                                VerticalAlignment="Center"
+                                Foreground="White"
+                                Kind="Filter"/>
+                        </Grid>
+                    </materialDesign:PopupBox.ToggleContent>
+                    <UniformGrid
+                        Width="150"
+                        Rows="6">
+                        <TextBlock
+                            FontSize="14"
+                            Text="Filtruj/Sortuj oferty:"/>
+                        <ComboBox
+                            x:Name="ComboBoxTypes"
+                            DisplayMemberPath="Name"
+                            IsEditable="True"
+                            IsReadOnly="True"
+                            ItemsSource="{Binding Types}"
+                            Text="{Binding SelectedType, Mode=TwoWay}"/>
+                        <ComboBox
+                            x:Name="ComboBoxCategories"
+                            DisplayMemberPath="Name"
+                            IsEditable="True"
+                            IsReadOnly="True"
+                            ItemsSource="{Binding Categories}"
+                            Text="{Binding SelectedCategory, Mode=TwoWay}"/>
+                        <ComboBox
+                            x:Name="ComboBoxCities"
+                            IsEditable="True"
+                            IsReadOnly="True"
+                            ItemsSource="{Binding AvailableCities}"
+                            Text="{Binding SelectedCity, Mode=TwoWay}"/>
+                        <Button
+                            Margin="15,5"
+                            Command="{Binding FilterOffersCommand}"
+                            Content="Zastosuj"
+                            Style="{StaticResource MaterialDesignRaisedButton}"/>
+                        <Button
+                            Margin="15,0"
+                            Command="{Binding ResetFilterOptionsCommand}"
+                            Content="Resetuj"
+                            Style="{StaticResource MaterialDesignRaisedButton}"/>
+                    </UniformGrid>
+                </materialDesign:PopupBox>
 
                 <!--  Offers list  -->
                 <ListView
                     Grid.Row="0"
                     HorizontalContentAlignment="Stretch"
-                    ItemsSource="{Binding Offers}"
+                    ItemsSource="{Binding OffersView}"
                     ScrollViewer.HorizontalScrollBarVisibility="Disabled"
                     ScrollViewer.VerticalScrollBarVisibility="Disabled"
                     VirtualizingPanel.ScrollUnit="Pixel">
@@ -168,8 +207,14 @@
                                         Margin="0,5"
                                         FontSize="16"
                                         Foreground="White"
-                                        Text="{Binding City}"
-                                        TextWrapping="Wrap"/>
+                                        TextWrapping="Wrap">
+                                        <TextBlock.Text>
+                                            <MultiBinding StringFormat="{}{0}, {1}">
+                                                <Binding Path="City"/>
+                                                <Binding Path="Street"/>
+                                            </MultiBinding>
+                                        </TextBlock.Text>
+                                    </TextBlock>
                                     <TextBlock
                                         Margin="0,5"
                                         FontSize="16"
