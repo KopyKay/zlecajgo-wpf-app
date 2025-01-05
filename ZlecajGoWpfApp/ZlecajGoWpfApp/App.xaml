@@ -14,6 +14,7 @@
             </ResourceDictionary.MergedDictionaries>
 
             <converters:BooleanToColorConverter x:Key="BooleanToColorConverter"/>
+            <converters:DurationInDaysConverter x:Key="DurationInDaysConverter"/>
 
             <SolidColorBrush
                 x:Key="AccentColorBrush1"

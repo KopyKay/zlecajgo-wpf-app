@@ -1,0 +1,155 @@
+<UserControl
+    x:Class="ZlecajGoWpfApp.Views.CreateOfferUserControl"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:local="clr-namespace:ZlecajGoWpfApp.Views"
+    xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:system="clr-namespace:System;assembly=System.Runtime"
+    xmlns:viewModel="clr-namespace:ZlecajGoWpfApp.ViewModels"
+    d:DataContext="{d:DesignInstance Type=viewModel:CreateOfferViewModel,
+                                     IsDesignTimeCreatable=True}"
+    Background="{StaticResource MaterialDesignBackground}"
+    IsEnabled="{Binding IsNotBusy}"
+    mc:Ignorable="d">
+
+    <UserControl.Resources>
+        <system:Double x:Key="DefaultFontSize">16</system:Double>
+
+        <DataTemplate x:Key="DurationInDaysTemplate">
+            <TextBlock Text="{Binding Converter={StaticResource DurationInDaysConverter}}"/>
+        </DataTemplate>
+
+        <Style
+            x:Key="TextBoxDefaultStyle"
+            BasedOn="{StaticResource MaterialDesignTextBox}"
+            TargetType="TextBox">
+            <Setter Property="materialDesign:HintAssist.IsFloating" Value="True"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="FontSize" Value="{StaticResource DefaultFontSize}"/>
+        </Style>
+
+        <Style
+            x:Key="ComboBoxDefaultStyle"
+            BasedOn="{StaticResource MaterialDesignComboBox}"
+            TargetType="ComboBox">
+            <Setter Property="materialDesign:HintAssist.IsFloating" Value="True"/>
+            <Setter Property="FontSize" Value="{StaticResource DefaultFontSize}"/>
+            <Setter Property="IsReadOnly" Value="True"/>
+        </Style>
+    </UserControl.Resources>
+
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+
+        <UniformGrid Rows="9">
+            <Label
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center"
+                Content="{Binding Title}"
+                FontSize="24"
+                FontWeight="Bold"/>
+            <UniformGrid Columns="2">
+                <ComboBox
+                    Margin="0,0,5,0"
+                    materialDesign:HintAssist.Hint="Typ"
+                    DisplayMemberPath="Name"
+                    ItemsSource="{Binding OfferTypes}"
+                    SelectedItem="{Binding SelectedOfferType, ValidatesOnDataErrors=True, UpdateSourceTrigger=PropertyChanged}"
+                    Style="{StaticResource ComboBoxDefaultStyle}"/>
+                <ComboBox
+                    Margin="5,0,0,0"
+                    materialDesign:HintAssist.Hint="Kategoria"
+                    DisplayMemberPath="Name"
+                    ItemsSource="{Binding OfferCategories}"
+                    SelectedItem="{Binding SelectedOfferCategory, ValidatesOnDataErrors=True, UpdateSourceTrigger=PropertyChanged}"
+                    Style="{StaticResource ComboBoxDefaultStyle}"/>
+            </UniformGrid>
+            <TextBox
+                materialDesign:HintAssist.Hint="Tytuł"
+                MaxLength="70"
+                Style="{StaticResource TextBoxDefaultStyle}"
+                Text="{Binding OfferTitle, ValidatesOnDataErrors=True, UpdateSourceTrigger=PropertyChanged}"/>
+            <TextBox
+                materialDesign:HintAssist.Hint="Opis"
+                MaxLength="500"
+                Style="{StaticResource TextBoxDefaultStyle}"
+                Text="{Binding OfferDescription, ValidatesOnDataErrors=True, UpdateSourceTrigger=PropertyChanged}"/>
+            <UniformGrid Columns="2">
+                <TextBox
+                    Margin="0,0,5,0"
+                    materialDesign:HintAssist.Hint="Kod pocztowy (xx-xxx)"
+                    DataObject.Pasting="TextBox_OnPasting"
+                    LostFocus="PostalCodeTextBox_OnLostFocus"
+                    PreviewKeyDown="TextBox_OnPreviewKeyDown"
+                    PreviewTextInput="PostalCodeTextBox_OnPreviewTextInput"
+                    Style="{StaticResource TextBoxDefaultStyle}"
+                    Text="{Binding PostalCode, ValidatesOnDataErrors=True, UpdateSourceTrigger=PropertyChanged}"/>
+                <ComboBox
+                    Margin="5,0,0,0"
+                    materialDesign:HintAssist.Hint="Miejscowość"
+                    IsEnabled="{Binding PlacesFound}"
+                    ItemsSource="{Binding PlacesView}"
+                    SelectedItem="{Binding SelectedPlace, ValidatesOnDataErrors=True, UpdateSourceTrigger=PropertyChanged}"
+                    Style="{StaticResource ComboBoxDefaultStyle}"/>
+            </UniformGrid>
+            <UniformGrid Columns="2">
+                <TextBox
+                    Margin="0,0,5,0"
+                    materialDesign:HintAssist.Hint="Ulica"
+                    MaxLength="50"
+                    Style="{StaticResource TextBoxDefaultStyle}"
+                    Text="{Binding StreetName, ValidatesOnDataErrors=True, UpdateSourceTrigger=PropertyChanged}"/>
+                <TextBox
+                    Margin="5,0,0,0"
+                    materialDesign:HintAssist.Hint="Numer"
+                    MaxLength="10"
+                    Style="{StaticResource TextBoxDefaultStyle}"
+                    Text="{Binding StreetNumber, ValidatesOnDataErrors=True, UpdateSourceTrigger=PropertyChanged}"/>
+            </UniformGrid>
+            <UniformGrid Columns="2">
+                <ComboBox
+                    Margin="0,0,5,0"
+                    materialDesign:HintAssist.Hint="Czas trwania"
+                    ItemTemplate="{StaticResource DurationInDaysTemplate}"
+                    ItemsSource="{Binding DurationInDays}"
+                    SelectedItem="{Binding SelectedDurationInDays, ValidatesOnDataErrors=True, UpdateSourceTrigger=PropertyChanged}"
+                    Style="{StaticResource ComboBoxDefaultStyle}"/>
+                <TextBox
+                    Margin="5,0,0,0"
+                    materialDesign:HintAssist.Hint="Wynagrodzenie (zł)"
+                    DataObject.Pasting="TextBox_OnPasting"
+                    LostFocus="PriceTextBox_LostFocus"
+                    PreviewKeyDown="TextBox_OnPreviewKeyDown"
+                    PreviewTextInput="PriceTextBox_PreviewTextInput"
+                    Style="{StaticResource TextBoxDefaultStyle}"
+                    Text="{Binding OfferPrice, UpdateSourceTrigger=PropertyChanged}"/>
+            </UniformGrid>
+            <Button
+                Command="{Binding AddOfferCommand}"
+                Content="Potwierdź"
+                Visibility="{Binding IsNotBusy, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+            <Button
+                Background="White"
+                BorderThickness="2"
+                Command="{Binding CancelCommand}"
+                CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=Window}}"
+                Content="Anuluj"
+                Foreground="Red"/>
+        </UniformGrid>
+        <Border
+            Background="{StaticResource MaterialDesignBackground}"
+            Visibility="{Binding IsBusy, Converter={StaticResource BooleanToVisibilityConverter}}">
+            <ProgressBar
+                Width="64"
+                Height="64"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center"
+                IsIndeterminate="True"
+                Style="{StaticResource MaterialDesignCircularProgressBar}"/>
+        </Border>
+    </Grid>
+</UserControl>

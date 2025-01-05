@@ -9,6 +9,7 @@ using CommunityToolkit.Mvvm.Input;
 using GMap.NET;
 using GMap.NET.WindowsPresentation;
 using MaterialDesignThemes.Wpf;
+using Microsoft.Extensions.DependencyInjection;
 using ZlecajGoApi;
 using ZlecajGoApi.Dtos;
 using ZlecajGoWpfApp.Services.Navigation;
@@ -19,14 +20,18 @@ namespace ZlecajGoWpfApp.ViewModels;
 
 public partial class OffersViewModel : BaseViewModel
 {
-    public OffersViewModel(INavigationService navigationService, ISnackbarService snackbarService, IApiClient apiClient) 
+    public OffersViewModel(INavigationService navigationService, ISnackbarService snackbarService, IApiClient apiClient,
+        IServiceProvider serviceProvider) 
         : base(navigationService, snackbarService, apiClient)
     {
+        _serviceProvider = serviceProvider;
         Title = "Zlecenia";
     }
 
+    private readonly IServiceProvider _serviceProvider;
+    
     [ObservableProperty]
-    private ICollectionView? _offersView;
+    private ICollectionView? _availableOffersView;
     
     [ObservableProperty]
     private ObservableCollection<OfferDto> _offers = [];
@@ -46,6 +51,7 @@ public partial class OffersViewModel : BaseViewModel
     [ObservableProperty]
     private ObservableCollection<string> _availableCities = [];
     
+    // TODO: Use materialDesign:HintAssist.Hint instead of declaring default options in string fields
     private const string DefaultTypeOption = "Wybierz typ";
     private const string DefaultCategoryOption = "Wybierz kategorię";
     private const string DefaultCityOption = "Wybierz miasto";
@@ -73,7 +79,7 @@ public partial class OffersViewModel : BaseViewModel
 
             if (Offers.Count != 0)
             {
-                OffersView = CollectionViewSource.GetDefaultView(Offers);
+                GetAvailableOffers();
                 GetAvailableCities();
             
                 foreach (var offer in Offers)
@@ -101,6 +107,8 @@ public partial class OffersViewModel : BaseViewModel
     [RelayCommand]
     private Task LoadMapOfferMarkersAsync()
     {
+        // TODO: Make ICollectionView for Markers
+        // TODO: Markers should be only from available offers!
         try
         {
             IsBusy = true;
@@ -154,9 +162,16 @@ public partial class OffersViewModel : BaseViewModel
         NavigationService.NavigateTo<LogInPage>();
     }
 
+    private void GetAvailableOffers()
+    {
+        AvailableOffersView = CollectionViewSource.GetDefaultView(Offers.Where(o => o.StatusId == 1));
+    }
+    
     private void GetAvailableCities()
     {
-        var uniqueCities = Offers
+        if (AvailableOffersView is null) return;
+        
+        var uniqueCities = AvailableOffersView.Cast<OfferDto>()
             .Where(o => !string.IsNullOrWhiteSpace(o.City))
             .Select(o => o.City)
             .Distinct()
@@ -174,9 +189,9 @@ public partial class OffersViewModel : BaseViewModel
     [RelayCommand]
     private void FilterOffers()
     {
-        if (OffersView is null) return;
+        if (AvailableOffersView is null) return;
         
-        OffersView.Filter = o =>
+        AvailableOffersView.Filter = o =>
         {
             var offer = (OfferDto)o;
             var isTypeMatch = SelectedType == DefaultTypeOption || offer.TypeName == SelectedType;
@@ -194,10 +209,49 @@ public partial class OffersViewModel : BaseViewModel
         SelectedCategory = DefaultCategoryOption;
         SelectedCity = DefaultCityOption;
         
-        if (OffersView is not null)
+        if (AvailableOffersView is not null)
         {
-            OffersView.Filter = null;
+            AvailableOffersView.Filter = null;
         }
+    }
+    
+    [RelayCommand]
+    private void OpenAddOfferForm()
+    {
+        const double value = 20;
+        var createOfferUserControl = _serviceProvider.GetService<CreateOfferUserControl>();
+
+        if (createOfferUserControl?.DataContext is not CreateOfferViewModel createOfferViewModel)
+        {
+            return;
+        }
+        
+        createOfferViewModel.OfferTypes = Types;
+        createOfferViewModel.OfferCategories = Categories;
+
+        var window = new Window
+        {
+            Width = 500,
+            Height = 650,
+            WindowStyle = WindowStyle.None,
+            ResizeMode = ResizeMode.NoResize,
+            WindowStartupLocation = WindowStartupLocation.CenterScreen,
+            AllowsTransparency = true,
+            Background = Brushes.Transparent,
+            Content = new Card
+            {
+                Padding = new Thickness(value),
+                Margin = new Thickness(value),
+                Effect = new DropShadowEffect
+                {
+                    BlurRadius = value,
+                    ShadowDepth = 0
+                },
+                Content = createOfferUserControl
+            }
+        };
+
+        window.ShowDialog();
     }
     
     private async Task FetchDataAsync<T>(ObservableCollection<T> collection, Func<Task<List<T>?>> fetchDataFunc)

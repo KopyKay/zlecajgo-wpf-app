@@ -114,8 +114,7 @@
                     <materialDesign:PopupBox.Effect>
                         <DropShadowEffect
                             BlurRadius="10"
-                            ShadowDepth="0"
-                            Color="Black"/>
+                            ShadowDepth="0"/>
                     </materialDesign:PopupBox.Effect>
                     <materialDesign:PopupBox.ToggleContent>
                         <Grid>
@@ -139,21 +138,18 @@
                             FontSize="14"
                             Text="Filtruj/Sortuj oferty:"/>
                         <ComboBox
-                            x:Name="ComboBoxTypes"
                             DisplayMemberPath="Name"
                             IsEditable="True"
                             IsReadOnly="True"
                             ItemsSource="{Binding Types}"
                             Text="{Binding SelectedType, Mode=TwoWay}"/>
                         <ComboBox
-                            x:Name="ComboBoxCategories"
                             DisplayMemberPath="Name"
                             IsEditable="True"
                             IsReadOnly="True"
                             ItemsSource="{Binding Categories}"
                             Text="{Binding SelectedCategory, Mode=TwoWay}"/>
                         <ComboBox
-                            x:Name="ComboBoxCities"
                             IsEditable="True"
                             IsReadOnly="True"
                             ItemsSource="{Binding AvailableCities}"
@@ -175,7 +171,7 @@
                 <ListView
                     Grid.Row="0"
                     HorizontalContentAlignment="Stretch"
-                    ItemsSource="{Binding OffersView}"
+                    ItemsSource="{Binding AvailableOffersView}"
                     ScrollViewer.HorizontalScrollBarVisibility="Disabled"
                     ScrollViewer.VerticalScrollBarVisibility="Disabled"
                     VirtualizingPanel.ScrollUnit="Pixel">
@@ -252,10 +248,10 @@
                         <DropShadowEffect
                             BlurRadius="25"
                             Direction="270"
-                            ShadowDepth="0"
-                            Color="Black"/>
+                            ShadowDepth="0"/>
                     </Border.Effect>
                     <Button
+                        Command="{Binding OpenAddOfferFormCommand}"
                         Content="Dodaj zlecenie/usługę"
                         Style="{StaticResource ButtonDefaultStyle}"/>
                 </Border>

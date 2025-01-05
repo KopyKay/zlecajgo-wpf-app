@@ -5,6 +5,11 @@ namespace ZlecajGoWpfApp.Helpers;
 
 public static partial class ValidationHelper
 {
+    public const string FieldIsRequiredMessage = "Pole jest wymagane!";
+    public const string FieldContainsIllegalCharactersMessage = "Pole zawiera niedozwolone znaki!";
+    public const string FieldTooShortMessage = "Pole wymaga więcej znaków!";
+    public const string FieldIncorrectFormatMessage = "Pole ma niepoprawny format!";
+    
     [GeneratedRegex("^[a-zA-Z0-9_-]+@[a-zA-Z]+\\.[a-zA-Z]{2,}$")]
     private static partial Regex ValidEmail();
     
@@ -22,6 +27,22 @@ public static partial class ValidationHelper
     
     [GeneratedRegex(@"^(http:\/\/|https:\/\/).+$")]
     private static partial Regex ValidProfilePictureUrl();
+
+    public const string TitleRegex = @"^[a-zA-ZĄĆĘŁŃÓŚŹŻąćęłńóśźż0-9\s\p{P}]+$";
+
+    public const string DescriptionRegex = @"^[a-zA-ZĄĆĘŁŃÓŚŹŻąćęłńóśźż0-9\s\p{P}\p{S}]+$";
+
+    public const string PostalCodeRegex = @"^\d{2}-\d{3}$";
+
+    public const string StreetNameRegex = @"^[a-zA-ZĄĆĘŁŃÓŚŹŻąćęłńóśźż0-9\s\-\']+$";
+
+    public const string StreetNumberRegex = @"^[a-zA-Z0-9\/]+$";
+    
+    [GeneratedRegex(@"^\d{0,2}(-\d{0,3})?$")]
+    public static partial Regex ValidPostalCodePreviewInputRegex();
+    
+    [GeneratedRegex(@"^(?!0)\d{1,7}(\,\d{0,2})?$")]
+    public static partial Regex ValidPricePreviewInputRegex();
     
     public static void LogInValidation(LogInDto dto)
     {

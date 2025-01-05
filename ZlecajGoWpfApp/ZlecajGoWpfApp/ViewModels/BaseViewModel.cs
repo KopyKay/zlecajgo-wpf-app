@@ -11,7 +11,7 @@ public abstract partial class BaseViewModel
     ISnackbarService snackbarService,
     IApiClient apiClient
 )
-: ObservableObject
+: ObservableValidator
 {
     protected readonly INavigationService NavigationService = navigationService;
     protected readonly ISnackbarService SnackbarService = snackbarService;
