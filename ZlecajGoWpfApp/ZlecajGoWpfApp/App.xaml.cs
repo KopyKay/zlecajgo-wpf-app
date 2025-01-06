@@ -23,7 +23,7 @@ public partial class App : Application
                 services.AddTransient<SignUpPage>();
                 services.AddTransient<SetUpUserCredentialsPage>();
                 services.AddSingleton<OffersPage>();
-                services.AddTransient<CreateOfferUserControl>();
+                services.AddTransient<CreateOfferWindow>();
                 services.AddTransient<LogInViewModel>();
                 services.AddTransient<SignUpViewModel>();
                 services.AddTransient<SetUpUserCredentialsViewModel>();

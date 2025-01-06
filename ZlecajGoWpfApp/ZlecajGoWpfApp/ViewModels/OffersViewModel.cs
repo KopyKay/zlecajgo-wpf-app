@@ -218,40 +218,18 @@ public partial class OffersViewModel : BaseViewModel
     [RelayCommand]
     private void OpenAddOfferForm()
     {
-        const double value = 20;
-        var createOfferUserControl = _serviceProvider.GetService<CreateOfferUserControl>();
+        var createOfferWindow = _serviceProvider.GetService<CreateOfferWindow>();
 
-        if (createOfferUserControl?.DataContext is not CreateOfferViewModel createOfferViewModel)
+        if (createOfferWindow?.DataContext is not CreateOfferViewModel createOfferViewModel)
         {
+            SnackbarService.EnqueueMessage("Nie udało się otworzyć okna dodawania oferty. Spróbuj ponownie później.");
             return;
         }
         
         createOfferViewModel.OfferTypes = Types;
         createOfferViewModel.OfferCategories = Categories;
-
-        var window = new Window
-        {
-            Width = 500,
-            Height = 650,
-            WindowStyle = WindowStyle.None,
-            ResizeMode = ResizeMode.NoResize,
-            WindowStartupLocation = WindowStartupLocation.CenterScreen,
-            AllowsTransparency = true,
-            Background = Brushes.Transparent,
-            Content = new Card
-            {
-                Padding = new Thickness(value),
-                Margin = new Thickness(value),
-                Effect = new DropShadowEffect
-                {
-                    BlurRadius = value,
-                    ShadowDepth = 0
-                },
-                Content = createOfferUserControl
-            }
-        };
-
-        window.ShowDialog();
+        
+        createOfferWindow.ShowDialog();
     }
     
     private async Task FetchDataAsync<T>(ObservableCollection<T> collection, Func<Task<List<T>?>> fetchDataFunc)

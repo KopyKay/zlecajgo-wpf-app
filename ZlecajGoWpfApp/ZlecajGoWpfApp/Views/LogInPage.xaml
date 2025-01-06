@@ -4,7 +4,6 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:helpers="clr-namespace:ZlecajGoWpfApp.Helpers"
-    xmlns:local="clr-namespace:ZlecajGoWpfApp.Views"
     xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:viewModel="clr-namespace:ZlecajGoWpfApp.ViewModels"
@@ -14,49 +13,80 @@
     IsEnabled="{Binding IsNotBusy}"
     mc:Ignorable="d">
 
+    <Page.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="/Styles/AuthenticationStyles.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Page.Resources>
+
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="*"/>
             <RowDefinition Height="Auto"/>
+            <RowDefinition Height=".05*"/>
             <RowDefinition Height="Auto"/>
-            <RowDefinition Height=".50*"/>
+            <RowDefinition Height=".60*"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width=".15*"/>
+            <ColumnDefinition Width=".35*"/>
+            <ColumnDefinition Width=".15*"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
         <Label
             Grid.Row="0"
+            Grid.Column="0"
+            Grid.ColumnSpan="5"
             Content="{Binding Title}"
             Style="{StaticResource AuthenticationTitle}"/>
         <TextBox
             Grid.Row="1"
+            Grid.Column="1"
+            Grid.ColumnSpan="3"
             materialDesign:HintAssist.Hint="E-mail"
-            Style="{StaticResource AuthenticationTextBox}"
+            materialDesign:HintAssist.IsFloating="True"
+            FontSize="{StaticResource MediumFontSize}"
             Text="{Binding Email, UpdateSourceTrigger=PropertyChanged}"/>
         <PasswordBox
-            Grid.Row="2"
+            Grid.Row="3"
+            Grid.Column="1"
+            Grid.ColumnSpan="3"
             helpers:PasswordBoxHelper.BindPassword="True"
             helpers:PasswordBoxHelper.BoundPassword="{Binding Password, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
             materialDesign:HintAssist.Hint="Hasło"
-            Style="{StaticResource AuthenticationPasswordBox}"/>
+            materialDesign:HintAssist.IsFloating="True"
+            FontSize="{StaticResource MediumFontSize}"/>
         <Button
-            Grid.Row="3"
+            Grid.Row="4"
+            Grid.Column="2"
             Command="{Binding LogInCommand}"
             Content="Zaloguj się"
+            FontSize="{StaticResource SmallFontSize}"
             IsDefault="True"
-            Style="{StaticResource AuthenticationDefaultButton}"
             Visibility="{Binding IsNotBusy, Converter={StaticResource BooleanToVisibilityConverter}}"/>
         <ProgressBar
-            Grid.Row="3"
+            Grid.Row="4"
+            Grid.Column="2"
             IsIndeterminate="True"
             Style="{StaticResource MaterialDesignCircularProgressBar}"
             Visibility="{Binding IsBusy, Converter={StaticResource BooleanToVisibilityConverter}}"/>
         <StackPanel
-            Grid.Row="4"
+            Grid.Row="5"
+            Grid.Column="1"
+            Grid.ColumnSpan="3"
             Style="{StaticResource AuthenticationBottomStackPanel}">
-            <Label Content="Nie posiadasz konta?"/>
+            <Label
+                Content="Nie posiadasz konta?"
+                FontSize="{StaticResource SmallFontSize}"/>
             <Button
                 Command="{Binding GoToSignUpPageCommand}"
                 Content="Utwórz konto"
                 Style="{StaticResource AuthenticationBottomButton}"/>
         </StackPanel>
     </Grid>
+
 </Page>

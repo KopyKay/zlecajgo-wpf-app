@@ -7,9 +7,9 @@ using ZlecajGoWpfApp.ViewModels;
 
 namespace ZlecajGoWpfApp.Views;
 
-public partial class CreateOfferUserControl : UserControl
+public partial class CreateOfferWindow : Window
 {
-    public CreateOfferUserControl(CreateOfferViewModel viewModel)
+    public CreateOfferWindow(CreateOfferViewModel viewModel)
     {
         InitializeComponent();
         
