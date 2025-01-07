@@ -3,7 +3,6 @@ using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Windows;
 using System.Windows.Data;
-using System.Windows.Input;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using ZlecajGoApi;
@@ -101,8 +100,16 @@ public partial class CreateOfferViewModel : BaseViewModel, IDisposable
 
     partial void OnSelectedOfferTypeChanged(TypeDto? value) => AddOfferCommand.NotifyCanExecuteChanged();
     partial void OnSelectedOfferCategoryChanged(CategoryDto? value) => AddOfferCommand.NotifyCanExecuteChanged();
-    partial void OnOfferTitleChanged(string value) => AddOfferCommand.NotifyCanExecuteChanged();
-    partial void OnOfferDescriptionChanged(string value) => AddOfferCommand.NotifyCanExecuteChanged();
+    partial void OnOfferTitleChanged(string value)
+    {
+        ValidateProperty(value, nameof(OfferTitle));
+        AddOfferCommand.NotifyCanExecuteChanged();
+    }
+    partial void OnOfferDescriptionChanged(string value)
+    {
+        ValidateProperty(value, nameof(OfferDescription));
+        AddOfferCommand.NotifyCanExecuteChanged();
+    }
     partial void OnPostalCodeChanged(string value)
     {
         if (_places is null) return;
@@ -130,7 +137,12 @@ public partial class CreateOfferViewModel : BaseViewModel, IDisposable
         AddOfferCommand.NotifyCanExecuteChanged();
     }
     partial void OnSelectedPlaceChanged(string? value) => AddOfferCommand.NotifyCanExecuteChanged();
-    partial void OnStreetNumberChanged(string value) => AddOfferCommand.NotifyCanExecuteChanged();
+    partial void OnStreetNameChanged(string value) => ValidateProperty(value, nameof(StreetName));
+    partial void OnStreetNumberChanged(string value)
+    {
+        ValidateProperty(value, nameof(StreetNumber));
+        AddOfferCommand.NotifyCanExecuteChanged();
+    }
     partial void OnSelectedDurationInDaysChanged(int? value) => AddOfferCommand.NotifyCanExecuteChanged();
     partial void OnOfferPriceChanged(string value) => AddOfferCommand.NotifyCanExecuteChanged();
     

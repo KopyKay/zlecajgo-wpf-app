@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using ZlecajGoApi;
@@ -17,13 +18,22 @@ public partial class SignUpViewModel : BaseViewModel
         Title = "Rejestracja";
     }
     
+    private const int PasswordMinLength = 6;
+    
     [ObservableProperty]
+    [Required(ErrorMessage = ValidationHelper.FieldIsRequiredMessage)]
+    [EmailAddress(ErrorMessage = ValidationHelper.IncorrectEmailMessage)]
     private string _email = string.Empty;
     
     [ObservableProperty]
+    [Required(ErrorMessage = ValidationHelper.FieldIsRequiredMessage)]
+    [MinLength(PasswordMinLength, ErrorMessage = ValidationHelper.PasswordIsTooShortMessage)]
+    [RegularExpression(ValidationHelper.PasswordRegex, ErrorMessage = ValidationHelper.PasswordDoesNotMeetRequirementsMessage)]
     private string _password = string.Empty;
     
     [ObservableProperty]
+    [Required(ErrorMessage = ValidationHelper.FieldIsRequiredMessage)]
+    [ValidationHelper.ComparePasswords(nameof(Password))]
     private string _confirmPassword = string.Empty;
     
     [ObservableProperty]
@@ -43,6 +53,45 @@ public partial class SignUpViewModel : BaseViewModel
 
     [ObservableProperty]
     private bool _passwordsMatch;
+
+    [RelayCommand]
+    private async Task SignUp()
+    {
+        try
+        {
+            IsBusy = true;
+            await TrySignUpAsync();
+        }
+        catch (Exception e)
+        {
+            SnackbarService.EnqueueMessage(e.Message);
+        }
+        finally
+        {
+            IsBusy = false;
+        }
+    }
+    
+    [RelayCommand]
+    private void GoToLogInPage() => NavigationService.NavigateTo<LogInPage>();
+    
+    private async Task TrySignUpAsync()
+    {
+        ValidateAllProperties();
+
+        if (HasErrors) return;
+        
+        var dto = new SignUpDto
+        {
+            Email = Email, 
+            Password = Password, 
+            ConfirmPassword = ConfirmPassword
+        };
+        
+        await ApiClient.SignUpUserAsync(dto);
+
+        NavigationService.NavigateTo<SetUpUserCredentialsPage>();
+    }
     
     partial void OnPasswordChanged(string value)
     {
@@ -70,37 +119,5 @@ public partial class SignUpViewModel : BaseViewModel
         {
             PasswordsMatch = false;
         }
-    }
-
-    [RelayCommand]
-    private async Task SignUp()
-    {
-        try
-        {
-            IsBusy = true;
-            await TrySignUpAsync();
-        }
-        catch (Exception e)
-        {
-            SnackbarService.EnqueueMessage(e.Message);
-        }
-        finally
-        {
-            IsBusy = false;
-        }
-    }
-    
-    [RelayCommand]
-    private void GoToLogInPage() => NavigationService.NavigateTo<LogInPage>();
-    
-    private async Task TrySignUpAsync()
-    {
-        var dto = new SignUpDto { Email = Email, Password = Password, ConfirmPassword = ConfirmPassword };
-        
-        ValidationHelper.SignUpValidation(dto);
-        
-        await ApiClient.SignUpUserAsync(dto);
-
-        NavigationService.NavigateTo<SetUpUserCredentialsPage>();
     }
 }

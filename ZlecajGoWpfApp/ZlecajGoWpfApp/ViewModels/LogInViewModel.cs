@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using ZlecajGoApi;
@@ -18,9 +19,12 @@ public partial class LogInViewModel : BaseViewModel
     }
     
     [ObservableProperty]
+    [Required(ErrorMessage = ValidationHelper.FieldIsRequiredMessage)]
+    [EmailAddress(ErrorMessage = ValidationHelper.IncorrectEmailMessage)]
     private string _email = string.Empty;
     
     [ObservableProperty]
+    [Required(ErrorMessage = ValidationHelper.FieldIsRequiredMessage)]
     private string _password = string.Empty;
     
     [RelayCommand]
@@ -46,9 +50,15 @@ public partial class LogInViewModel : BaseViewModel
 
     private async Task TryLogInAsync()
     {
-        var dto = new LogInDto { Email = Email, Password = Password };
+        ValidateAllProperties();
+
+        if (HasErrors) return;
         
-        ValidationHelper.LogInValidation(dto);
+        var dto = new LogInDto
+        {
+            Email = Email, 
+            Password = Password
+        };
         
         var result = await ApiClient.LogInUserAsync(dto);
 
