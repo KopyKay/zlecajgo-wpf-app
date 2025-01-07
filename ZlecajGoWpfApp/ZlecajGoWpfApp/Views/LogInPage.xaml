@@ -3,7 +3,6 @@
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-    xmlns:helpers="clr-namespace:ZlecajGoWpfApp.Helpers"
     xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:viewModel="clr-namespace:ZlecajGoWpfApp.ViewModels"
@@ -55,10 +54,9 @@
             Grid.Row="3"
             Grid.Column="1"
             Grid.ColumnSpan="3"
-            helpers:PasswordBoxHelper.BindPassword="True"
-            helpers:PasswordBoxHelper.BoundPassword="{Binding Password, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
             materialDesign:HintAssist.Hint="Hasło"
             materialDesign:HintAssist.IsFloating="True"
+            materialDesign:PasswordBoxAssist.Password="{Binding Password, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
             FontSize="{StaticResource MediumFontSize}"/>
         <Button
             Grid.Row="4"
