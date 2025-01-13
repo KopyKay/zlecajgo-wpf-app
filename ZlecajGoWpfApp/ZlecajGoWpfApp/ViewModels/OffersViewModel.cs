@@ -12,6 +12,7 @@ using MaterialDesignThemes.Wpf;
 using Microsoft.Extensions.DependencyInjection;
 using ZlecajGoApi;
 using ZlecajGoApi.Dtos;
+using ZlecajGoWpfApp.Services.Map;
 using ZlecajGoWpfApp.Services.Navigation;
 using ZlecajGoWpfApp.Services.Snackbar;
 using ZlecajGoWpfApp.Views;
@@ -21,14 +22,25 @@ namespace ZlecajGoWpfApp.ViewModels;
 public partial class OffersViewModel : BaseViewModel
 {
     public OffersViewModel(INavigationService navigationService, ISnackbarService snackbarService, IApiClient apiClient,
-        IServiceProvider serviceProvider) 
+        IServiceProvider serviceProvider, IMapService mapService) 
         : base(navigationService, snackbarService, apiClient)
     {
         _serviceProvider = serviceProvider;
+        _mapService = mapService;
+        _mapControl = mapService.MapControl;
+        
         Title = "Zlecenia";
     }
 
+    private readonly Brush _accentColorBrush1 = (Brush)Application.Current.Resources["AccentColorBrush1"]!;
+    private readonly Brush _accentColorBrush2 = (Brush)Application.Current.Resources["AccentColorBrush2"]!;
+    
     private readonly IServiceProvider _serviceProvider;
+    
+    private readonly IMapService _mapService;
+    
+    [ObservableProperty]
+    private GMapControl _mapControl;
     
     [ObservableProperty]
     private ICollectionView? _availableOffersView;
@@ -46,9 +58,6 @@ public partial class OffersViewModel : BaseViewModel
     private ObservableCollection<TypeDto> _types = [];
     
     [ObservableProperty]
-    private ObservableCollection<GMapMarker> _mapOfferMarkers = [];
-    
-    [ObservableProperty]
     private ObservableCollection<string> _availableCities = [];
     
     [ObservableProperty]
@@ -61,131 +70,12 @@ public partial class OffersViewModel : BaseViewModel
     private string? _selectedCity;
     
     [RelayCommand]
-    private async Task LoadOffersAsync()
+    private async Task FilterOffers()
     {
-        try
-        {
-            IsBusy = true;
-
-            await FetchDataAsync(Categories, ApiClient.GetCategoriesAsync!);
-            await FetchDataAsync(Statuses, ApiClient.GetStatusesAsync!);
-            await FetchDataAsync(Types, ApiClient.GetTypesAsync!);
-            await FetchDataAsync(Offers, ApiClient.GetOffersAsync);
-
-            if (Offers.Count != 0)
-            {
-                GetAvailableOffers();
-                GetAvailableCities();
-            
-                foreach (var offer in Offers)
-                {
-                    offer.CategoryName = Categories.First(c => c.Id == offer.CategoryId).Name;
-                    offer.StatusName = Statuses.First(s => s.Id == offer.StatusId).Name;
-                    offer.TypeName = Types.First(t => t.Id == offer.TypeId).Name;
-                }
-            }
-            else
-            {
-                SnackbarService.EnqueueMessage("Nie znaleziono zleceń/usług.");
-            }
-        }
-        catch (Exception e)
-        {
-            SnackbarService.EnqueueMessage(e.Message);
-        }
-        finally
-        {
-            IsBusy = false;
-        }
-    }
-
-    [RelayCommand]
-    private Task LoadMapOfferMarkersAsync()
-    {
-        // TODO: Make ICollectionView for Markers
-        // TODO: Markers should be only from available offers!
-        try
-        {
-            IsBusy = true;
-
-            if (MapOfferMarkers.Count != 0)
-            {
-                MapOfferMarkers.Clear();
-            }
-
-            var accentColorBrush1 = (Brush)Application.Current.Resources["AccentColorBrush1"]!;
-            var accentColorBrush2 = (Brush)Application.Current.Resources["AccentColorBrush2"]!;
-            
-            foreach (var offer in Offers)
-            {
-                var marker = new GMapMarker(new PointLatLng(offer.Latitude, offer.Longitude))
-                {
-                    Shape = new PackIcon
-                    {
-                        Kind = PackIconKind.MapMarker,
-                        Foreground = offer.TypeId == 1 ? accentColorBrush1 : accentColorBrush2,
-                        Width = 48,
-                        Height = 48,
-                        ToolTip = $"{offer.TypeName}: {offer.Title}",
-                        Effect = new DropShadowEffect
-                        {
-                            ShadowDepth = 0,
-                            BlurRadius = 15,
-                            Color = Colors.Black
-                        }
-                    }
-                };
-                MapOfferMarkers.Add(marker);
-            }
-        }
-        catch (Exception e)
-        {
-            SnackbarService.EnqueueMessage(e.Message);
-        }
-        finally
-        {
-            IsBusy = false;
-        }
+        IsBusy = true;
         
-        return Task.CompletedTask;
-    }
-    
-    [RelayCommand]
-    private void LogOut()
-    {
-        ApiClient.LogOutUser();
-        NavigationService.NavigateTo<LogInPage>();
-    }
-
-    private void GetAvailableOffers()
-    {
-        AvailableOffersView = CollectionViewSource.GetDefaultView(Offers.Where(o => o.StatusId == 1));
-    }
-    
-    private void GetAvailableCities()
-    {
         if (AvailableOffersView is null) return;
-        
-        var uniqueCities = AvailableOffersView.Cast<OfferDto>()
-            .Where(o => !string.IsNullOrWhiteSpace(o.City))
-            .Select(o => o.City)
-            .Distinct()
-            .OrderBy(city => city)
-            .ToList();
-
-        AvailableCities.Clear();
-        
-        foreach (var city in uniqueCities)
-        {
-            AvailableCities.Add(city);
-        }
-    }
-
-    [RelayCommand]
-    private void FilterOffers()
-    {
-        if (AvailableOffersView is null) return;
-        
+    
         AvailableOffersView.Filter = o =>
         {
             var offer = (OfferDto)o;
@@ -195,11 +85,17 @@ public partial class OffersViewModel : BaseViewModel
 
             return isTypeMatch && isCategoryMatch && isCityMatch;
         };
+
+        await LoadMapMarkersFromAvailableOffersAsync();
+        
+        IsBusy = false;
     }
     
     [RelayCommand]
-    private void ResetFilterOptions()
+    private async Task ResetFilterOptions()
     {
+        IsBusy = true;
+        
         SelectedType = null;
         SelectedCategory = null;
         SelectedCity = null;
@@ -208,6 +104,10 @@ public partial class OffersViewModel : BaseViewModel
         {
             AvailableOffersView.Filter = null;
         }
+
+        await LoadMapMarkersFromAvailableOffersAsync();
+        
+        IsBusy = false;
     }
     
     [RelayCommand]
@@ -225,6 +125,134 @@ public partial class OffersViewModel : BaseViewModel
         createOfferViewModel.OfferCategories = Categories;
         
         createOfferWindow.ShowDialog();
+    }
+    
+    [RelayCommand]
+    private void LogOut()
+    {
+        ApiClient.LogOutUser();
+        NavigationService.NavigateTo<LogInPage>();
+    }
+    
+    public async Task InitializeOffersAndMapAsync()
+    {
+        try
+        {
+            IsBusy = true;
+            
+            await LoadOffersAsync();
+            await LoadMapMarkersFromAvailableOffersAsync();
+        }
+        catch (Exception)
+        {
+            LogOut();
+
+            MessageBox.Show("Wystąpił błąd podczas ładowania zleceń. Spróbuj ponownie później.",
+                "Błąd", MessageBoxButton.OK, MessageBoxImage.Error);
+        }
+        finally
+        {
+            IsBusy = false;
+        }
+    }
+    
+    private async Task LoadOffersAsync()
+    {
+        await FetchDataAsync(Categories, ApiClient.GetCategoriesAsync!);
+        await FetchDataAsync(Statuses, ApiClient.GetStatusesAsync!);
+        await FetchDataAsync(Types, ApiClient.GetTypesAsync!);
+        await FetchDataAsync(Offers, ApiClient.GetOffersAsync);
+
+        if (Offers.Count != 0)
+        {
+            GetAvailableOffers();
+            GetAvailableCities();
+        
+            foreach (var offer in Offers)
+            {
+                // Fulfill offer with additional data
+                offer.CategoryName = Categories.First(c => c.Id == offer.CategoryId).Name;
+                offer.StatusName = Statuses.First(s => s.Id == offer.StatusId).Name;
+                offer.TypeName = Types.First(t => t.Id == offer.TypeId).Name;
+            }
+        }
+        else
+        {
+            SnackbarService.EnqueueMessage("Nie znaleziono zleceń/usług.");
+        }
+    }
+    
+    private Task LoadMapMarkersFromAvailableOffersAsync()
+    {
+        if (AvailableOffersView is null)
+        {
+            return Task.CompletedTask;
+        }
+        
+        if (MapControl.Markers.Count != 0)
+        {
+            MapControl.Markers.Clear();
+        }
+        
+        var availableOffers = AvailableOffersView.Cast<OfferDto>();
+        
+        foreach (var offer in availableOffers)
+        {
+            AddMapMarker(offer);
+        }
+        
+        return Task.CompletedTask;
+    }
+    
+    private void AddMapMarker(OfferDto dto)
+    {
+        var marker = new GMapMarker(new PointLatLng(dto.Latitude, dto.Longitude))
+        {
+            Shape = new PackIcon
+            {
+                Kind = PackIconKind.MapMarker,
+                Foreground = dto.TypeId == 1 ? _accentColorBrush1 : _accentColorBrush2,
+                Width = 48,
+                Height = 48,
+                ToolTip = $"{dto.TypeName}: {dto.Title}",
+                Effect = new DropShadowEffect
+                {
+                    ShadowDepth = 0,
+                    BlurRadius = 15,
+                    Color = Colors.Black
+                }
+            },
+            Tag = dto
+        };
+        MapControl.Markers.Add(marker);
+    }
+    
+    private void GetAvailableOffers()
+    {
+        var availableOffers = Offers
+            .Where(o => 
+                o.StatusId == 1 &&
+                o.ProviderId != UserSession.Instance.CurrentUser.Id);
+        
+        AvailableOffersView = CollectionViewSource.GetDefaultView(availableOffers);
+    }
+    
+    private void GetAvailableCities()
+    {
+        if (AvailableOffersView is null) return;
+        
+        var uniqueCities = AvailableOffersView.Cast<OfferDto>()
+            .Select(o => o.City)
+            .Distinct()
+            .OrderBy(city => city)
+            .ToList();
+
+        AvailableCities.Clear();
+        
+        foreach (var city in uniqueCities)
+        {
+            AvailableCities.Add(city);
+        }
     }
     
     private async Task FetchDataAsync<T>(ObservableCollection<T> collection, Func<Task<List<T>?>> fetchDataFunc)

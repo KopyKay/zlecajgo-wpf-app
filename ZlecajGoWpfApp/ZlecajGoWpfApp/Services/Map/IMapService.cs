@@ -1,9 +1,9 @@
 using GMap.NET.WindowsPresentation;
+using ZlecajGoApi.Dtos;
 
 namespace ZlecajGoWpfApp.Services.Map;
 
 public interface IMapService
 {
-    void InitializeMap(GMapControl map);
-    void AddMarkers(GMapControl map, ICollection<GMapMarker> markers);
+    GMapControl MapControl { get; }
 }

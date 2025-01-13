@@ -2,7 +2,7 @@ using ZlecajGoApi.Dtos;
 
 namespace ZlecajGoApi;
 
-internal class UserSession
+public class UserSession
 {
     private static UserSession? _instance;
     private static readonly object InstanceLock = new();
@@ -33,12 +33,12 @@ internal class UserSession
         private set => _currentUser = value;
     }
     
-    public void SetUser(UserDto user)
+    internal void SetUser(UserDto user)
     {
         CurrentUser = user;
     }
 
-    public void ClearUser()
+    internal void ClearUser()
     {
         _currentUser = null;
     }
