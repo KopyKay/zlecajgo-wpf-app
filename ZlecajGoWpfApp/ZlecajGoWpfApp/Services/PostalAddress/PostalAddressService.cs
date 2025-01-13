@@ -15,17 +15,13 @@ public class PostalAddressService
     private static readonly string ProjectDirectory = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, @"..\..\..\..\"));
     private static readonly string ProjectXlsxFilePath = Path.Combine(ProjectDirectory, XlsxFilePath);
 
-    public EventHandler? PostalAddressesLoading;
-    public EventHandler? PostalAddressesLoaded;
-    public EventHandler<string>? PostalAddressesLoadingFailed;
-
     private Dictionary<string, List<string>>? _postalAddresses;
     
     public async Task<Dictionary<string, List<string>>?> GetPostalAddressesAsync()
     {
         if (_postalAddresses is null)
         {
-            await LoadPostalAddressesFromFileAsync();
+            await Task.Run(LoadPostalAddressesFromFileAsync);
         }
 
         return _postalAddresses;
@@ -39,8 +35,6 @@ public class PostalAddressService
             {
                 throw new FileNotFoundException($"Plik {XlsxFileName} nie został znaleziony!");
             }
-            
-            PostalAddressesLoading?.Invoke(this, EventArgs.Empty);
 
             var xlsxFileInfo = new FileInfo(ProjectXlsxFilePath);
             using var package = new ExcelPackage(xlsxFileInfo);
@@ -66,17 +60,15 @@ public class PostalAddressService
 
                 row++;
             }
-            
-            PostalAddressesLoaded?.Invoke(this, EventArgs.Empty);
         }
-        catch (FileNotFoundException ex)
+        catch (FileNotFoundException)
         {
-            PostalAddressesLoadingFailed?.Invoke(this, ex.Message);
+            throw;
         }
         catch (Exception)
         {
             _postalAddresses = null;
-            PostalAddressesLoadingFailed?.Invoke(this, "Wystąpił błąd podczas ładowania danych adresowych!");
+            throw new Exception("Wystąpił błąd podczas wczytywania danych adresowych!");
         }
     }
 }

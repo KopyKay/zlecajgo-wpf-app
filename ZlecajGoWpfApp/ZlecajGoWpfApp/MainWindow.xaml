@@ -25,6 +25,7 @@
             <Grid>
                 <Frame
                     x:Name="MainFrame"
+                    Focusable="False"
                     NavigationUIVisibility="Hidden"/>
             </Grid>
             <Grid>

@@ -16,13 +16,13 @@ public partial class CreateOfferWindow : Window
         DataContext = viewModel;
         
         SubscribeToViewModelEvents(viewModel);
+        
+        Loaded += async (s, e) => await viewModel.LoadPostalAddressesAsync();
     }
 
     private void SubscribeToViewModelEvents(CreateOfferViewModel viewModel)
     {
-        Loaded += async (s, e) => await viewModel.LoadPostalAddressesAsync();
         viewModel.RequestWindowClose += (s, e) => Window.GetWindow(this)?.Close();
-        Unloaded += (s, e) => viewModel.Dispose(); // Unsubscribe from events
     }
     
     private void HandleTextInput(object sender, TextCompositionEventArgs e, Regex regex, int firstInsertPosition, int secondInsertPosition, string insertChar)

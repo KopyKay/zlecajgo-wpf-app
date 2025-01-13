@@ -15,15 +15,13 @@ using ZlecajGoWpfApp.Services.Snackbar;
 namespace ZlecajGoWpfApp.ViewModels;
 
 // This class lifecycle is transient, that's why it implements IDisposable to unsubscribe events from PostalAddressService which is a singleton
-public partial class CreateOfferViewModel : BaseViewModel, IDisposable
+public partial class CreateOfferViewModel : BaseViewModel
 {
     public CreateOfferViewModel(INavigationService navigationService, ISnackbarService snackbarService, IApiClient apiClient,
         PostalAddressService postalAddressService) 
         : base(navigationService, snackbarService, apiClient)
     {
         _postalAddressService = postalAddressService;
-        
-        SubscribeToPostalAddressServiceEvents();
         
         Title = "Nowe zlecenie/usługa";
     }
@@ -169,40 +167,22 @@ public partial class CreateOfferViewModel : BaseViewModel, IDisposable
 
     [RelayCommand]
     private void Cancel(Window window) => window.Close();
-
-    private void SubscribeToPostalAddressServiceEvents()
-    {
-        _postalAddressService.PostalAddressesLoading += OnPostalAddressesLoading;
-        _postalAddressService.PostalAddressesLoaded += OnPostalAddressesLoaded;
-        _postalAddressService.PostalAddressesLoadingFailed += OnPostalAddressesLoadingFailed;
-    }
-    
-    public void Dispose()
-    {
-        _postalAddressService.PostalAddressesLoading -= OnPostalAddressesLoading;
-        _postalAddressService.PostalAddressesLoaded -= OnPostalAddressesLoaded;
-        _postalAddressService.PostalAddressesLoadingFailed -= OnPostalAddressesLoadingFailed;
-    }
     
     public async Task LoadPostalAddressesAsync()
     {
-        _places = await _postalAddressService.GetPostalAddressesAsync();
-    }
-    
-    private void OnPostalAddressesLoading(object? sender, EventArgs e)
-    {
-        IsBusy = true;
-    }
-    
-    private void OnPostalAddressesLoaded(object? sender, EventArgs e)
-    {
-        IsBusy = false;
-    }
-
-    private void OnPostalAddressesLoadingFailed(object? sender, string message)
-    {
-        IsBusy = false;
-        SnackbarService.EnqueueMessage(message);
-        RequestWindowClose?.Invoke(this, EventArgs.Empty);
+        try
+        {
+            IsBusy = true;
+            _places = await _postalAddressService.GetPostalAddressesAsync();
+        }
+        catch (Exception e)
+        {
+            SnackbarService.EnqueueMessage(e.Message);
+            RequestWindowClose?.Invoke(this, EventArgs.Empty);
+        }
+        finally
+        {
+            IsBusy = false;
+        }
     }
 }
