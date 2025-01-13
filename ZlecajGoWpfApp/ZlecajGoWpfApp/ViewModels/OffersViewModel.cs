@@ -51,19 +51,14 @@ public partial class OffersViewModel : BaseViewModel
     [ObservableProperty]
     private ObservableCollection<string> _availableCities = [];
     
-    // TODO: Use materialDesign:HintAssist.Hint instead of declaring default options in string fields
-    private const string DefaultTypeOption = "Wybierz typ";
-    private const string DefaultCategoryOption = "Wybierz kategorię";
-    private const string DefaultCityOption = "Wybierz miasto";
+    [ObservableProperty]
+    private TypeDto? _selectedType;
     
     [ObservableProperty]
-    private string _selectedType = DefaultTypeOption;
+    private CategoryDto? _selectedCategory;
     
     [ObservableProperty]
-    private string _selectedCategory = DefaultCategoryOption;
-    
-    [ObservableProperty]
-    private string _selectedCity = DefaultCityOption;
+    private string? _selectedCity;
     
     [RelayCommand]
     private async Task LoadOffersAsync()
@@ -194,9 +189,9 @@ public partial class OffersViewModel : BaseViewModel
         AvailableOffersView.Filter = o =>
         {
             var offer = (OfferDto)o;
-            var isTypeMatch = SelectedType == DefaultTypeOption || offer.TypeName == SelectedType;
-            var isCategoryMatch = SelectedCategory == DefaultCategoryOption || offer.CategoryName == SelectedCategory;
-            var isCityMatch = SelectedCity == DefaultCityOption || offer.City == SelectedCity;
+            var isTypeMatch = SelectedType is null || SelectedType.Name == offer.TypeName;
+            var isCategoryMatch = SelectedCategory is null || SelectedCategory.Name == offer.CategoryName;
+            var isCityMatch = string.IsNullOrEmpty(SelectedCity) || SelectedCity == offer.City;
 
             return isTypeMatch && isCategoryMatch && isCityMatch;
         };
@@ -205,9 +200,9 @@ public partial class OffersViewModel : BaseViewModel
     [RelayCommand]
     private void ResetFilterOptions()
     {
-        SelectedType = DefaultTypeOption;
-        SelectedCategory = DefaultCategoryOption;
-        SelectedCity = DefaultCityOption;
+        SelectedType = null;
+        SelectedCategory = null;
+        SelectedCity = null;
         
         if (AvailableOffersView is not null)
         {
