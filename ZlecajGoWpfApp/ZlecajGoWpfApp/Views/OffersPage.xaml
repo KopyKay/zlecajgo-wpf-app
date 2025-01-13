@@ -14,13 +14,24 @@
     mc:Ignorable="d">
 
     <Page.Resources>
+        <Thickness x:Key="ContainerMargin">10</Thickness>
         <Style
             x:Key="ButtonDefaultStyle"
             BasedOn="{StaticResource MaterialDesignRaisedButton}"
             TargetType="Button">
-            <Setter Property="Height" Value="40"/>
-            <Setter Property="Width" Value="225"/>
-            <Setter Property="FontSize" Value="18"/>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="{StaticResource AccentColorBrush1}"/>
+                    <Setter Property="Foreground" Value="White"/>
+                </Trigger>
+            </Style.Triggers>
+            <Setter Property="Height" Value="Auto"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="FontSize" Value="{StaticResource MediumFontSize}"/>
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="Foreground" Value="{StaticResource AccentColorBrush1}"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="BorderThickness" Value="0"/>
         </Style>
         <Style
             x:Key="ProgressBarBorderStyle"
@@ -42,12 +53,14 @@
 
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="100"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width=".60*"/>
-            <ColumnDefinition Width=".40*"/>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition
+                Width="*"
+                MaxWidth="500"/>
         </Grid.ColumnDefinitions>
 
         <!--  Top button controls  -->
@@ -55,31 +68,39 @@
             Grid.Row="0"
             Grid.Column="0"
             Grid.ColumnSpan="2"
-            Margin="10">
-            <UniformGrid
-                Margin="10,10"
-                Columns="4">
+            Margin="{StaticResource ContainerMargin}">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
                 <Button
+                    Grid.Column="0"
                     Content="Kalendarz"
                     Style="{StaticResource ButtonDefaultStyle}"/>
                 <Button
+                    Grid.Column="1"
                     Content="Wiadomości"
                     Style="{StaticResource ButtonDefaultStyle}"/>
                 <Button
+                    Grid.Column="2"
                     Content="Konto"
                     Style="{StaticResource ButtonDefaultStyle}"/>
                 <Button
+                    Grid.Column="3"
                     Command="{Binding LogOutCommand}"
                     Content="Wyloguj się"
                     Style="{StaticResource ButtonDefaultStyle}"/>
-            </UniformGrid>
+            </Grid>
         </materialDesign:Card>
 
-        <!--  Left content  -->
+        <!--  Left content - Map  -->
         <materialDesign:Card
             Grid.Row="1"
             Grid.Column="0"
-            Margin="10">
+            Margin="{StaticResource ContainerMargin}">
             <Grid>
                 <gmap:GMapControl x:Name="Map"/>
                 <Border Style="{StaticResource ProgressBarBorderStyle}">
@@ -88,11 +109,11 @@
             </Grid>
         </materialDesign:Card>
 
-        <!--  Right content  -->
+        <!--  Right content - List of offers  -->
         <materialDesign:Card
             Grid.Row="1"
             Grid.Column="1"
-            Margin="10">
+            Margin="{StaticResource ContainerMargin}">
             <Grid>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="*"/>
@@ -102,7 +123,6 @@
                 <!--  Filter toggle button  -->
                 <materialDesign:PopupBox
                     Margin="0,20,20,0"
-                    Padding="5"
                     HorizontalAlignment="Right"
                     VerticalAlignment="Top"
                     Panel.ZIndex="1"
@@ -129,40 +149,87 @@
                                 Kind="Filter"/>
                         </Grid>
                     </materialDesign:PopupBox.ToggleContent>
-                    <UniformGrid
+                    <Grid
                         Width="150"
-                        Rows="6">
+                        Height="200">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height=".10*"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height=".10*"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height=".10*"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height=".10*"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width=".10*"/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width=".10*"/>
+                        </Grid.ColumnDefinitions>
                         <TextBlock
-                            FontSize="14"
+                            Grid.Row="0"
+                            Grid.Column="1"
+                            HorizontalAlignment="Center"
+                            VerticalAlignment="Center"
+                            FontSize="{StaticResource SmallFontSize}"
                             Text="Filtruj/Sortuj oferty:"/>
                         <ComboBox
+                            Grid.Row="2"
+                            Grid.Column="1"
+                            materialDesign:HintAssist.Hint="Typ"
                             DisplayMemberPath="Name"
-                            IsEditable="True"
                             IsReadOnly="True"
                             ItemsSource="{Binding Types}"
-                            Text="{Binding SelectedType, Mode=TwoWay}"/>
+                            SelectedItem="{Binding SelectedType}"/>
                         <ComboBox
+                            Grid.Row="4"
+                            Grid.Column="1"
+                            materialDesign:HintAssist.Hint="Kategoria"
                             DisplayMemberPath="Name"
-                            IsEditable="True"
                             IsReadOnly="True"
                             ItemsSource="{Binding Categories}"
-                            Text="{Binding SelectedCategory, Mode=TwoWay}"/>
+                            SelectedItem="{Binding SelectedCategory}"/>
                         <ComboBox
-                            IsEditable="True"
+                            Grid.Row="6"
+                            Grid.Column="1"
+                            materialDesign:HintAssist.Hint="Miasto"
                             IsReadOnly="True"
                             ItemsSource="{Binding AvailableCities}"
-                            Text="{Binding SelectedCity, Mode=TwoWay}"/>
-                        <Button
-                            Margin="15,5"
-                            Command="{Binding FilterOffersCommand}"
-                            Content="Zastosuj"
-                            Style="{StaticResource MaterialDesignRaisedButton}"/>
-                        <Button
-                            Margin="15,0"
-                            Command="{Binding ResetFilterOptionsCommand}"
-                            Content="Resetuj"
-                            Style="{StaticResource MaterialDesignRaisedButton}"/>
-                    </UniformGrid>
+                            SelectedItem="{Binding SelectedCity}"/>
+                        <Grid
+                            Grid.Row="8"
+                            Grid.Column="1">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width=".10*"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <Button
+                                Grid.Column="0"
+                                Command="{Binding FilterOffersCommand}"
+                                Style="{StaticResource MaterialDesignRaisedButton}">
+                                <Button.Content>
+                                    <materialDesign:PackIcon
+                                        Width="20"
+                                        Height="20"
+                                        Kind="Check"/>
+                                </Button.Content>
+                            </Button>
+                            <Button
+                                Grid.Column="2"
+                                Command="{Binding ResetFilterOptionsCommand}"
+                                Style="{StaticResource MaterialDesignRaisedButton}">
+                                <Button.Content>
+                                    <materialDesign:PackIcon
+                                        Width="20"
+                                        Height="20"
+                                        Kind="Refresh"/>
+                                </Button.Content>
+                            </Button>
+                        </Grid>
+                    </Grid>
                 </materialDesign:PopupBox>
 
                 <!--  Offers list  -->
@@ -175,33 +242,46 @@
                     VirtualizingPanel.ScrollUnit="Pixel">
                     <ListView.ItemTemplate>
                         <DataTemplate DataType="model:OfferDto">
-                            <materialDesign:Card Padding="10">
+                            <materialDesign:Card
+                                Height="250"
+                                Padding="10">
                                 <materialDesign:Card.Background>
                                     <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
                                         <GradientStop Offset="0.0" Color="{Binding Source={StaticResource AccentColorBrush1}, Path=Color}"/>
                                         <GradientStop Offset="1.0" Color="{Binding Source={StaticResource AccentColorBrush2}, Path=Color}"/>
                                     </LinearGradientBrush>
                                 </materialDesign:Card.Background>
-                                <StackPanel Orientation="Vertical">
+                                <Grid>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height=".10*"/>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height=".10*"/>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height=".10*"/>
+                                        <RowDefinition Height="*"/>
+                                        <RowDefinition Height=".10*"/>
+                                        <RowDefinition Height=".50*"/>
+                                    </Grid.RowDefinitions>
                                     <TextBlock
-                                        Margin="0,0,0,5"
-                                        FontSize="24"
+                                        Grid.Row="0"
+                                        FontSize="{StaticResource BigFontSize}"
                                         FontWeight="Bold"
                                         Foreground="White"
                                         Text="{Binding TypeName}"
                                         TextAlignment="Center"
-                                        TextWrapping="Wrap"/>
+                                        TextTrimming="CharacterEllipsis"/>
                                     <TextBlock
-                                        Margin="0,5"
-                                        FontSize="18"
+                                        Grid.Row="2"
+                                        FontSize="{StaticResource MediumFontSize}"
                                         Foreground="White"
                                         Text="{Binding Title}"
-                                        TextWrapping="Wrap"/>
+                                        TextTrimming="CharacterEllipsis"/>
                                     <TextBlock
-                                        Margin="0,5"
-                                        FontSize="16"
+                                        Grid.Row="4"
+                                        FontSize="{StaticResource RegularFontSize}"
                                         Foreground="White"
-                                        TextWrapping="Wrap">
+                                        TextTrimming="CharacterEllipsis">
                                         <TextBlock.Text>
                                             <MultiBinding StringFormat="{}{0}, {1}">
                                                 <Binding Path="City"/>
@@ -210,22 +290,24 @@
                                         </TextBlock.Text>
                                     </TextBlock>
                                     <TextBlock
-                                        Margin="0,5"
-                                        FontSize="16"
+                                        Grid.Row="6"
+                                        VerticalAlignment="Center"
+                                        FontSize="{StaticResource RegularFontSize}"
                                         Foreground="White"
                                         Text="{Binding Description}"
+                                        TextTrimming="CharacterEllipsis"
                                         TextWrapping="Wrap"/>
-                                    <materialDesign:Card Margin="0,10,0,0">
+                                    <materialDesign:Card Grid.Row="8">
                                         <TextBlock
-                                            Padding="5"
-                                            FontSize="18"
+                                            VerticalAlignment="Center"
+                                            FontSize="{StaticResource MediumFontSize}"
                                             FontWeight="Bold"
                                             Foreground="{StaticResource AccentColorBrush2}"
                                             Text="{Binding Price, StringFormat='{}{0} zł'}"
                                             TextAlignment="Center"
-                                            TextWrapping="Wrap"/>
+                                            TextTrimming="CharacterEllipsis"/>
                                     </materialDesign:Card>
-                                </StackPanel>
+                                </Grid>
                             </materialDesign:Card>
                         </DataTemplate>
                     </ListView.ItemTemplate>
@@ -240,7 +322,7 @@
                 <!--  Add offer button  -->
                 <Border
                     Grid.Row="1"
-                    Padding="10"
+                    Height="75"
                     Background="{StaticResource MaterialDesignBackground}">
                     <Border.Effect>
                         <DropShadowEffect
