@@ -7,6 +7,8 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using ZlecajGoApi;
 using ZlecajGoApi.Dtos;
+using ZlecajGoWpfApp.CustomControls;
+using ZlecajGoWpfApp.Enums;
 using ZlecajGoWpfApp.Helpers;
 using ZlecajGoWpfApp.Services.Navigation;
 using ZlecajGoWpfApp.Services.PostalAddress;
@@ -177,8 +179,8 @@ public partial class CreateOfferViewModel : BaseViewModel
         }
         catch (Exception e)
         {
-            SnackbarService.EnqueueMessage(e.Message);
             RequestWindowClose?.Invoke(this, EventArgs.Empty);
+            CustomMessageBox.Show(e.Message, CustomMessageBoxTypes.Error);
         }
         finally
         {

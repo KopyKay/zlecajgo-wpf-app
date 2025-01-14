@@ -12,6 +12,8 @@ using MaterialDesignThemes.Wpf;
 using Microsoft.Extensions.DependencyInjection;
 using ZlecajGoApi;
 using ZlecajGoApi.Dtos;
+using ZlecajGoWpfApp.CustomControls;
+using ZlecajGoWpfApp.Enums;
 using ZlecajGoWpfApp.Services.Map;
 using ZlecajGoWpfApp.Services.Navigation;
 using ZlecajGoWpfApp.Services.Snackbar;
@@ -147,8 +149,8 @@ public partial class OffersViewModel : BaseViewModel
         {
             LogOut();
 
-            MessageBox.Show("Wystąpił błąd podczas ładowania zleceń. Spróbuj ponownie później.",
-                "Błąd", MessageBoxButton.OK, MessageBoxImage.Error);
+            CustomMessageBox.Show("Wystąpił błąd podczas ładowania zleceń. Zostałeś wylogowany.",
+                CustomMessageBoxTypes.Error, "Błąd");
         }
         finally
         {
