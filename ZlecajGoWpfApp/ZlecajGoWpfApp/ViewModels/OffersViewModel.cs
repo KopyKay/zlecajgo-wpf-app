@@ -213,7 +213,7 @@ public partial class OffersViewModel : BaseViewModel
             Shape = new PackIcon
             {
                 Kind = PackIconKind.MapMarker,
-                Foreground = dto.TypeId == 1 ? _accentColorBrush1 : _accentColorBrush2,
+                Foreground = dto.TypeId == (int)OfferType.Request ? _accentColorBrush1 : _accentColorBrush2,
                 Width = 48,
                 Height = 48,
                 ToolTip = $"{dto.TypeName}: {dto.Title}",
@@ -233,7 +233,7 @@ public partial class OffersViewModel : BaseViewModel
     {
         var availableOffers = Offers
             .Where(o => 
-                o.StatusId == 1 &&
+                o.StatusId == (int)OfferStatus.Pending &&
                 o.ProviderId != UserSession.Instance.CurrentUser.Id);
         
         AvailableOffersView = CollectionViewSource.GetDefaultView(availableOffers);
