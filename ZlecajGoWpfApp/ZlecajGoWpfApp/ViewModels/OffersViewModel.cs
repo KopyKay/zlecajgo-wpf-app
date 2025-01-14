@@ -150,7 +150,7 @@ public partial class OffersViewModel : BaseViewModel
             LogOut();
 
             CustomMessageBox.Show("Wystąpił błąd podczas ładowania zleceń. Zostałeś wylogowany.",
-                CustomMessageBoxTypes.Error, "Błąd");
+                CustomMessageBoxType.Error, "Błąd");
         }
         finally
         {

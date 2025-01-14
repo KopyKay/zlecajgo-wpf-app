@@ -180,7 +180,7 @@ public partial class CreateOfferViewModel : BaseViewModel
         catch (Exception e)
         {
             RequestWindowClose?.Invoke(this, EventArgs.Empty);
-            CustomMessageBox.Show(e.Message, CustomMessageBoxTypes.Error);
+            CustomMessageBox.Show(e.Message, CustomMessageBoxType.Error);
         }
         finally
         {

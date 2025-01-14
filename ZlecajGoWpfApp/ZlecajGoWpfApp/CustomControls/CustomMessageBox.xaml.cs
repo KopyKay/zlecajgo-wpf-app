@@ -31,7 +31,7 @@ public partial class CustomMessageBox : Window
         SetWindowLong(hwnd, GWL_STYLE, currentStyle & ~WS_SYSMENU);
     }
     
-    public static void Show(string message, CustomMessageBoxTypes type, string? title = null)
+    public static void Show(string message, CustomMessageBoxType type, string? title = null)
     {
         title ??= "Powiadomienie";
         
@@ -47,18 +47,18 @@ public partial class CustomMessageBox : Window
             {
                 Kind = type switch
                 {
-                    CustomMessageBoxTypes.Information => PackIconKind.InformationOutline,
-                    CustomMessageBoxTypes.Confirmation => PackIconKind.CheckCircleOutline,
-                    CustomMessageBoxTypes.Warning => PackIconKind.AlertOutline,
-                    CustomMessageBoxTypes.Error => PackIconKind.CloseCircleOutline,
+                    CustomMessageBoxType.Information => PackIconKind.InformationOutline,
+                    CustomMessageBoxType.Confirmation => PackIconKind.CheckCircleOutline,
+                    CustomMessageBoxType.Warning => PackIconKind.AlertOutline,
+                    CustomMessageBoxType.Error => PackIconKind.CloseCircleOutline,
                     _ => PackIconKind.AlertBoxOutline
                 },
                 Foreground = type switch
                 {
-                    CustomMessageBoxTypes.Information => Brushes.Blue,
-                    CustomMessageBoxTypes.Confirmation => Brushes.Green,
-                    CustomMessageBoxTypes.Warning => Brushes.Orange,
-                    CustomMessageBoxTypes.Error => Brushes.Red,
+                    CustomMessageBoxType.Information => Brushes.Blue,
+                    CustomMessageBoxType.Confirmation => Brushes.Green,
+                    CustomMessageBoxType.Warning => Brushes.Orange,
+                    CustomMessageBoxType.Error => Brushes.Red,
                     _ => Brushes.BlueViolet
                 }
             }
