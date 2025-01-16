@@ -95,6 +95,20 @@ public class ApiClient : IApiClient
     public async Task<List<TypeDto>> GetTypesAsync() 
         => (await GetDataAsync<TypeDto>(TypesEndpoint))!;
 
+    public async Task CreateOfferAsync(OfferDto dto)
+    {
+        var currentUser = UserSession.Instance.CurrentUser;
+        
+        const string resource = $"{OffersEndpoint}/create";
+        var request = new RestRequest(resource, Method.Post)
+            .AddAuthorizationHeader(currentUser.AccessToken)
+            .AddJsonBody(dto);
+        
+        await ExecuteRequestAsync<object>(request);
+        
+        // TODO: Send hidden notification to users via api to refresh their offers
+    }
+    
     private async Task RefreshUserAsync(UserDto userDto)
     {
         const string resource = $"{IdentityEndpoint}/refresh";

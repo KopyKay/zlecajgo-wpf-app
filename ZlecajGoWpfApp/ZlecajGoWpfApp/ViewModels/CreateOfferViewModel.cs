@@ -7,9 +7,11 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using ZlecajGoApi;
 using ZlecajGoApi.Dtos;
+using ZlecajGoApi.Exceptions;
 using ZlecajGoWpfApp.CustomControls;
 using ZlecajGoWpfApp.Enums;
 using ZlecajGoWpfApp.Helpers;
+using ZlecajGoWpfApp.Services.Map;
 using ZlecajGoWpfApp.Services.Navigation;
 using ZlecajGoWpfApp.Services.PostalAddress;
 using ZlecajGoWpfApp.Services.Snackbar;
@@ -20,15 +22,18 @@ namespace ZlecajGoWpfApp.ViewModels;
 public partial class CreateOfferViewModel : BaseViewModel
 {
     public CreateOfferViewModel(INavigationService navigationService, ISnackbarService snackbarService, IApiClient apiClient,
-        PostalAddressService postalAddressService) 
+        PostalAddressService postalAddressService, IMapService mapService) 
         : base(navigationService, snackbarService, apiClient)
     {
         _postalAddressService = postalAddressService;
+        _mapService = mapService;
         
         Title = "Nowe zlecenie/usługa";
     }
     
     private readonly PostalAddressService _postalAddressService;
+    
+    private readonly IMapService _mapService;
     
     private Dictionary<string, List<string>>? _places;
     
@@ -160,11 +165,58 @@ public partial class CreateOfferViewModel : BaseViewModel
     }
     
     [RelayCommand(CanExecute = nameof(CanAddOffer))]
-    private void AddOffer(Window window)
+    private async Task AddOffer(Window window)
     {
         ValidateAllProperties();
         
-        // TODO: Implement add offer logic
+        if (HasErrors) return;
+        
+        var street = string.IsNullOrWhiteSpace(StreetName) ? StreetNumber : $"{StreetName} {StreetNumber}";
+
+        try
+        {
+            IsBusy = true;
+            
+            var coordinates = await _mapService.GetCoordinates(PostalCode, SelectedPlace!, street);
+            
+            var dto = new OfferDto
+            {
+                Title = OfferTitle,
+                Description = OfferDescription,
+                Price = decimal.Parse(OfferPrice),
+                ExpiryDateTime = DateTime.Now.AddDays(SelectedDurationInDays!.Value),
+                City = SelectedPlace!,
+                Street = street,
+                ZipCode = PostalCode,
+                Latitude = coordinates.lat,
+                Longitude = coordinates.lon,
+                TypeId = SelectedOfferType!.Id,
+                CategoryId = SelectedOfferCategory!.Id
+            };
+            
+            await ApiClient.CreateOfferAsync(dto);
+            
+            RequestWindowClose?.Invoke(this, EventArgs.Empty);
+            
+            var typeName = SelectedOfferType.Id == (int)OfferType.Request ? "zlecenie" : "usługę";
+            SnackbarService.EnqueueMessage($"Pomyślnie dodano {typeName}!");
+        }
+        catch (InvalidAddressException e)
+        {
+            CustomMessageBox.Show(e.Message, CustomMessageBoxType.Warning);
+        }
+        catch (CoordinatesNotFoundException e)
+        {
+            CustomMessageBox.Show(e.Message, CustomMessageBoxType.Error);
+        }
+        catch (Exception)
+        {
+            CustomMessageBox.Show("Wystąpił problem po stronie serwera, spróbuj ponownie później.", CustomMessageBoxType.Error);
+        }
+        finally
+        {
+            IsBusy = false;
+        }
     }
 
     [RelayCommand]
