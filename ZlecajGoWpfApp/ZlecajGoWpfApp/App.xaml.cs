@@ -24,11 +24,13 @@ public partial class App : Application
                 services.AddTransient<SetUpUserCredentialsPage>();
                 services.AddTransient<OffersPage>();
                 services.AddTransient<CreateOfferWindow>();
+                services.AddTransient<OfferDetailsWindow>();
                 services.AddTransient<LogInViewModel>();
                 services.AddTransient<SignUpViewModel>();
                 services.AddTransient<SetUpUserCredentialsViewModel>();
                 services.AddTransient<OffersViewModel>();
                 services.AddTransient<CreateOfferViewModel>();
+                services.AddTransient<OfferDetailsViewModel>();
                 services.AddSingleton<INavigationService, NavigationService>();
                 services.AddSingleton<ISnackbarService, SnackbarService>();
                 services.AddSingleton<IMapService, MapService>();

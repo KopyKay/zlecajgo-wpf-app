@@ -94,6 +94,9 @@ public class ApiClient : IApiClient
 
     public async Task<List<TypeDto>> GetTypesAsync() 
         => (await GetDataAsync<TypeDto>(TypesEndpoint))!;
+    
+    public async Task<List<UserDto>> GetUsersAsync() 
+        => (await GetDataAsync<UserDto>(UsersEndpoint))!;
 
     public async Task CreateOfferAsync(OfferDto dto)
     {

@@ -3,7 +3,6 @@
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-    xmlns:gmap="clr-namespace:GMap.NET.WindowsPresentation;assembly=GMap.NET.WindowsPresentation"
     xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:model="clr-namespace:ZlecajGoApi.Dtos;assembly=ZlecajGoApi"
@@ -49,10 +48,6 @@
             <Setter Property="VerticalAlignment" Value="Center"/>
             <Setter Property="IsIndeterminate" Value="True"/>
         </Style>
-        <LinearGradientBrush x:Key="GradientBrush" StartPoint="0,0" EndPoint="1,1">
-            <GradientStop Offset="0.0" Color="{Binding Source={StaticResource AccentColorBrush1}, Path=Color}"/>
-            <GradientStop Offset="1.0" Color="{Binding Source={StaticResource AccentColorBrush2}, Path=Color}"/>
-        </LinearGradientBrush>
     </Page.Resources>
 
     <Grid>
@@ -248,7 +243,7 @@
                         FontWeight="Bold"
                         TextAlignment="Center"
                         Text="Nie znaleziono ofert"
-                        Foreground="{StaticResource GradientBrush}"/>
+                        Foreground="{StaticResource AccentColorsGradientBrush}"/>
                     <materialDesign:PackIcon
                         Width="128"
                         Height="128"
@@ -256,7 +251,7 @@
                         HorizontalAlignment="Center"
                         VerticalAlignment="Center"
                         Kind="MapMarkerRemoveVariant"
-                        Foreground="{StaticResource GradientBrush}"/>
+                        Foreground="{StaticResource AccentColorsGradientBrush}"/>
                 </StackPanel>
 
                 <!--  Offers list  -->
@@ -272,7 +267,13 @@
                             <materialDesign:Card
                                 Height="250"
                                 Padding="10"
-                                Background="{StaticResource GradientBrush}">
+                                Background="{StaticResource AccentColorsGradientBrush}">
+                                <materialDesign:Card.InputBindings>
+                                    <MouseBinding
+                                        Command="{Binding DataContext.ShowOfferDetailsCommand, RelativeSource={RelativeSource AncestorType=ListView}}"
+                                        CommandParameter="{Binding .}"
+                                        MouseAction="LeftClick"/>
+                                </materialDesign:Card.InputBindings>
                                 <Grid>
                                     <Grid.RowDefinitions>
                                         <RowDefinition Height="Auto"/>

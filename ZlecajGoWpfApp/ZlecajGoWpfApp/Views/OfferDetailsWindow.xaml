@@ -1,0 +1,264 @@
+﻿<Window
+    x:Class="ZlecajGoWpfApp.Views.OfferDetailsWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+    xmlns:viewModel="clr-namespace:ZlecajGoWpfApp.ViewModels"
+    Width="500"
+    Height="Auto"
+    MinHeight="680"
+    MaxHeight="720"
+    d:DataContext="{d:DesignInstance Type=viewModel:OfferDetailsViewModel,
+                                     IsDesignTimeCreatable=True}"
+    SizeToContent="Height"
+    AllowsTransparency="True"
+    Background="Transparent"
+    FontFamily="{DynamicResource MaterialDesignFont}"
+    IsEnabled="{Binding IsNotBusy}"
+    ResizeMode="NoResize"
+    TextElement.FontSize="{StaticResource SmallFontSize}"
+    TextElement.FontWeight="Regular"
+    TextElement.Foreground="{DynamicResource MaterialDesignBody}"
+    TextOptions.TextFormattingMode="Ideal"
+    TextOptions.TextRenderingMode="Auto"
+    WindowStartupLocation="CenterScreen"
+    WindowStyle="None"
+    mc:Ignorable="d">
+
+    <Window.Resources>
+        <Style
+            x:Key="DetailKey"
+            TargetType="Label"
+            BasedOn="{StaticResource MaterialDesignLabel}">
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="FontSize" Value="{StaticResource RegularFontSize}"/>
+            <Setter Property="Margin" Value="0,10"/>
+        </Style>
+        <Style
+            x:Key="DetailValue"
+            TargetType="TextBlock"
+            BasedOn="{StaticResource MaterialDesignTextBlock}">
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="TextAlignment" Value="Center"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="FontSize" Value="{StaticResource SmallFontSize}"/>
+            <Setter Property="TextWrapping" Value="Wrap"/>
+            <Setter Property="Margin" Value="0,10"/>
+        </Style>
+        <Style
+            x:Key="CardDefaultStyle"
+            TargetType="{x:Type materialDesign:Card}">
+            <Setter Property="Padding" Value="0,5"/>
+            <Setter Property="Background" Value="{StaticResource AccentColorsGradientBrush}"/>
+        </Style>
+        <Style
+            x:Key="CardTextBlock"
+            TargetType="TextBlock"
+            BasedOn="{StaticResource MaterialDesignTextBlock}">
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="TextAlignment" Value="Center"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="FontSize" Value="{StaticResource BigFontSize}"/>
+            <Setter Property="TextTrimming" Value="CharacterEllipsis"/>
+        </Style>
+        <Style
+            x:Key="ButtonDefaultStyle"
+            BasedOn="{StaticResource MaterialDesignRaisedButton}"
+            TargetType="Button">
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="{StaticResource AccentColorBrush1}"/>
+                    <Setter Property="Foreground" Value="White"/>
+                </Trigger>
+            </Style.Triggers>
+            <Setter Property="Height" Value="Auto"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="FontSize" Value="{StaticResource RegularFontSize}"/>
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="Foreground" Value="{StaticResource AccentColorBrush1}"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="BorderThickness" Value="0"/>
+        </Style>
+    </Window.Resources>
+
+    <materialDesign:Card
+        Margin="20"
+        Background="{StaticResource MaterialDesignPaper}">
+        <materialDesign:Card.Effect>
+            <DropShadowEffect
+                BlurRadius="20"
+                ShadowDepth="0"/>
+        </materialDesign:Card.Effect>
+        <Border
+            BorderBrush="{StaticResource AccentColorsGradientBrush}"
+            BorderThickness="10">
+            <Grid Margin="10">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="50"/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <materialDesign:Card
+                    Grid.Row="0"
+                    Grid.Column="0"
+                    Grid.ColumnSpan="2"
+                    Style="{StaticResource CardDefaultStyle}">
+                    <TextBlock Style="{StaticResource CardTextBlock}">
+                        <TextBlock.Text>
+                            <MultiBinding StringFormat="{}{0}: {1}">
+                                <Binding Path="Offer.TypeName"/>
+                                <Binding Path="Offer.CategoryName"/>
+                            </MultiBinding>
+                        </TextBlock.Text>
+                    </TextBlock>
+                </materialDesign:Card>
+                <TextBlock
+                    Grid.Row="1"
+                    Grid.Column="0"
+                    Grid.ColumnSpan="2"
+                    Style="{StaticResource DetailValue}"
+                    Text="{Binding Offer.Title}"/>
+                <Separator
+                    Grid.Row="2"
+                    Grid.Column="0"
+                    Grid.ColumnSpan="2"/>
+                <Label
+                    Grid.Row="3"
+                    Grid.Column="0"
+                    Style="{StaticResource DetailKey}"
+                    Content="Właściciel:"/>
+                <TextBlock
+                    Grid.Row="3"
+                    Grid.Column="1"
+                    Style="{StaticResource DetailValue}"
+                    Text="{Binding Offer.ProviderFullName}"/>
+                <Separator
+                    Grid.Row="4"
+                    Grid.Column="0"
+                    Grid.ColumnSpan="2"/>
+                <Label
+                    Grid.Row="5"
+                    Grid.Column="0"
+                    Style="{StaticResource DetailKey}"
+                    Content="Ważne do:"/>
+                <TextBlock
+                    Grid.Row="5"
+                    Grid.Column="1"
+                    Style="{StaticResource DetailValue}"
+                    Text="{Binding Offer.ExpiryDateTime, StringFormat='{}{0:dd MMMM yyyy}', ConverterCulture='pl-PL'}"/>
+                <Separator
+                    Grid.Row="6"
+                    Grid.Column="0"
+                    Grid.ColumnSpan="2"/>
+                <Label
+                    Grid.Row="7"
+                    Grid.Column="0"
+                    Style="{StaticResource DetailKey}"
+                    Content="Kod pocztowy:"/>
+                <TextBlock
+                    Grid.Row="7"
+                    Grid.Column="1"
+                    Style="{StaticResource DetailValue}"
+                    Text="{Binding Offer.ZipCode}"/>
+                <Separator
+                    Grid.Row="8"
+                    Grid.Column="0"
+                    Grid.ColumnSpan="2"/>
+                <Label
+                    Grid.Row="9"
+                    Grid.Column="0"
+                    Style="{StaticResource DetailKey}"
+                    Content="Miejscowość:"/>
+                <TextBlock
+                    Grid.Row="9"
+                    Grid.Column="1"
+                    Style="{StaticResource DetailValue}"
+                    Text="{Binding Offer.City}"/>
+                <Separator
+                    Grid.Row="10"
+                    Grid.Column="0"
+                    Grid.ColumnSpan="2"/>
+                <Label
+                    Grid.Row="11"
+                    Grid.Column="0"
+                    Style="{StaticResource DetailKey}"
+                    Content="Ulica/Numer:"/>
+                <TextBlock
+                    Grid.Row="11"
+                    Grid.Column="1"
+                    Style="{StaticResource DetailValue}"
+                    Text="{Binding Offer.Street}"/>
+                <Separator
+                    Grid.Row="12"
+                    Grid.Column="0"
+                    Grid.ColumnSpan="2"/>
+                <Label
+                    Grid.Row="13"
+                    Grid.Column="0"
+                    Style="{StaticResource DetailKey}"
+                    Content="Cena:"/>
+                <TextBlock
+                    Grid.Row="13"
+                    Grid.Column="1"
+                    Style="{StaticResource DetailValue}"
+                    Text="{Binding Offer.Price, StringFormat='{}{0} zł'}"/>
+                <Separator
+                    Grid.Row="14"
+                    Grid.Column="0"
+                    Grid.ColumnSpan="2"/>
+                <Label
+                    Grid.Row="15"
+                    Grid.Column="0"
+                    Style="{StaticResource DetailKey}"
+                    Content="Opis"/>
+                <ScrollViewer
+                    Grid.Row="16"
+                    Grid.Column="0"
+                    Grid.ColumnSpan="2"
+                    Margin="0,0,0,20"
+                    HorizontalScrollBarVisibility="Disabled"
+                    VerticalScrollBarVisibility="Auto"
+                    VirtualizingPanel.ScrollUnit="Pixel">
+                    <TextBlock
+                        TextWrapping="Wrap"
+                        Text="{Binding Offer.Description}"/>
+                </ScrollViewer>
+                <Button
+                    Grid.Row="17"
+                    Grid.Column="0"
+                    Command="{Binding ReportInterestToProviderCommand}"
+                    Style="{StaticResource ButtonDefaultStyle}"
+                    Content="Zgłoś zainteresowanie"/>
+                <Button
+                    Grid.Row="17"
+                    Grid.Column="1"
+                    Command="{Binding CloseWindowCommand}"
+                    CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=Window}}"
+                    Style="{StaticResource ButtonDefaultStyle}"
+                    Content="Zamknij"/>
+            </Grid>
+        </Border>
+    </materialDesign:Card>
+</Window>

@@ -135,6 +135,22 @@ public partial class OffersViewModel : BaseViewModel
         ApiClient.LogOutUser();
         NavigationService.NavigateTo<LogInPage>();
     }
+
+    [RelayCommand]
+    private void ShowOfferDetails(OfferDto dto)
+    {
+        var offerDetailsWindow = _serviceProvider.GetService<OfferDetailsWindow>();
+        
+        if (offerDetailsWindow?.DataContext is not OfferDetailsViewModel offerDetailsViewModel)
+        {
+            SnackbarService.EnqueueMessage("Nie udało się otworzyć szczegółów oferty. Spróbuj ponownie później.");
+            return;
+        }
+        
+        offerDetailsViewModel.Offer = dto;
+        
+        offerDetailsWindow.ShowDialog();
+    }
     
     public async Task InitializeOffersAndMapAsync()
     {
@@ -165,6 +181,8 @@ public partial class OffersViewModel : BaseViewModel
         await FetchDataAsync(Types, ApiClient.GetTypesAsync!);
         await FetchDataAsync(Offers, ApiClient.GetOffersAsync);
 
+        var users = await ApiClient.GetUsersAsync();
+
         if (Offers.Count != 0)
         {
             GetAvailableOffers();
@@ -176,6 +194,7 @@ public partial class OffersViewModel : BaseViewModel
                 offer.CategoryName = Categories.First(c => c.Id == offer.CategoryId).Name;
                 offer.StatusName = Statuses.First(s => s.Id == offer.StatusId).Name;
                 offer.TypeName = Types.First(t => t.Id == offer.TypeId).Name;
+                offer.ProviderFullName = users.First(u => u.Id == offer.ProviderId).FullName!;
             }
         }
         else
@@ -226,6 +245,13 @@ public partial class OffersViewModel : BaseViewModel
             },
             Tag = dto
         };
+        
+        marker.Shape.MouseLeftButtonDown += (sender, args) =>
+        {
+            var offer = (OfferDto)marker.Tag;
+            ShowOfferDetails(offer);
+        };
+        
         MapControl.Markers.Add(marker);
     }
     
@@ -234,6 +260,7 @@ public partial class OffersViewModel : BaseViewModel
         var availableOffers = Offers
             .Where(o => 
                 o.StatusId == (int)OfferStatus.Pending &&
+                o.ExpiryDateTime > DateTime.Now &&
                 o.ProviderId != UserSession.Instance.CurrentUser.Id);
         
         AvailableOffersView = CollectionViewSource.GetDefaultView(availableOffers);

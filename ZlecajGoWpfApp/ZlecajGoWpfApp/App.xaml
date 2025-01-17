@@ -30,6 +30,11 @@
             <SolidColorBrush
                 x:Key="AccentColorBrush2"
                 Color="#BD0F4F"/>
+
+            <LinearGradientBrush x:Key="AccentColorsGradientBrush" StartPoint="0,0" EndPoint="1,1">
+                <GradientStop Offset="0.0" Color="{Binding Source={StaticResource AccentColorBrush1}, Path=Color}"/>
+                <GradientStop Offset="1.0" Color="{Binding Source={StaticResource AccentColorBrush2}, Path=Color}"/>
+            </LinearGradientBrush>
         </ResourceDictionary>
     </Application.Resources>
 

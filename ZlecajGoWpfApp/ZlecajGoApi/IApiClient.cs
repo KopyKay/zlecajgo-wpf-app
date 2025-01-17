@@ -12,5 +12,6 @@ public interface IApiClient
     Task<List<CategoryDto>> GetCategoriesAsync();
     Task<List<StatusDto>> GetStatusesAsync();
     Task<List<TypeDto>> GetTypesAsync();
+    Task<List<UserDto>> GetUsersAsync();
     Task CreateOfferAsync(OfferDto dto);
 }

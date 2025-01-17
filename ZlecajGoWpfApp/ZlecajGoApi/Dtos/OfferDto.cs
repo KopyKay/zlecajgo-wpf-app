@@ -57,6 +57,18 @@ public class OfferDto : INotifyPropertyChanged
             OnPropertyChanged();
         }
     }
+    
+    private string _providerFullName = string.Empty;
+    public string ProviderFullName
+    {
+        get => _providerFullName;
+        set
+        {
+            if (_providerFullName == value) return;
+            _providerFullName = value;
+            OnPropertyChanged();
+        }
+    }
 
     public event PropertyChangedEventHandler? PropertyChanged;
 
