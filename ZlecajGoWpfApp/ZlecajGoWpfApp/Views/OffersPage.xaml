@@ -15,24 +15,6 @@
     <Page.Resources>
         <Thickness x:Key="ContainerMargin">10</Thickness>
         <Style
-            x:Key="ButtonDefaultStyle"
-            BasedOn="{StaticResource MaterialDesignRaisedButton}"
-            TargetType="Button">
-            <Style.Triggers>
-                <Trigger Property="IsMouseOver" Value="True">
-                    <Setter Property="Background" Value="{StaticResource AccentColorBrush1}"/>
-                    <Setter Property="Foreground" Value="White"/>
-                </Trigger>
-            </Style.Triggers>
-            <Setter Property="Height" Value="Auto"/>
-            <Setter Property="VerticalContentAlignment" Value="Center"/>
-            <Setter Property="FontSize" Value="{StaticResource MediumFontSize}"/>
-            <Setter Property="Background" Value="Transparent"/>
-            <Setter Property="Foreground" Value="{StaticResource AccentColorBrush1}"/>
-            <Setter Property="FontWeight" Value="Bold"/>
-            <Setter Property="BorderThickness" Value="0"/>
-        </Style>
-        <Style
             x:Key="ProgressBarBorderStyle"
             TargetType="Border">
             <Setter Property="Background" Value="{StaticResource MaterialDesignBackground}"/>
@@ -78,20 +60,20 @@
                 <Button
                     Grid.Column="0"
                     Content="Kalendarz"
-                    Style="{StaticResource ButtonDefaultStyle}"/>
+                    Style="{StaticResource HoverTriggerButton}"/>
                 <Button
                     Grid.Column="1"
                     Content="Wiadomości"
-                    Style="{StaticResource ButtonDefaultStyle}"/>
+                    Style="{StaticResource HoverTriggerButton}"/>
                 <Button
                     Grid.Column="2"
                     Content="Konto"
-                    Style="{StaticResource ButtonDefaultStyle}"/>
+                    Style="{StaticResource HoverTriggerButton}"/>
                 <Button
                     Grid.Column="3"
                     Command="{Binding LogOutCommand}"
                     Content="Wyloguj się"
-                    Style="{StaticResource ButtonDefaultStyle}"/>
+                    Style="{StaticResource HoverTriggerButton}"/>
             </Grid>
         </materialDesign:Card>
 
@@ -356,7 +338,7 @@
                     <Button
                         Command="{Binding OpenAddOfferFormCommand}"
                         Content="Dodaj zlecenie/usługę"
-                        Style="{StaticResource ButtonDefaultStyle}"/>
+                        Style="{StaticResource HoverTriggerButton}"/>
                 </Border>
             </Grid>
         </materialDesign:Card>

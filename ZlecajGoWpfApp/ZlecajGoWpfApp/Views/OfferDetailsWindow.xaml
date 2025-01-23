@@ -64,24 +64,6 @@
             <Setter Property="FontSize" Value="{StaticResource BigFontSize}"/>
             <Setter Property="TextTrimming" Value="CharacterEllipsis"/>
         </Style>
-        <Style
-            x:Key="ButtonDefaultStyle"
-            BasedOn="{StaticResource MaterialDesignRaisedButton}"
-            TargetType="Button">
-            <Style.Triggers>
-                <Trigger Property="IsMouseOver" Value="True">
-                    <Setter Property="Background" Value="{StaticResource AccentColorBrush1}"/>
-                    <Setter Property="Foreground" Value="White"/>
-                </Trigger>
-            </Style.Triggers>
-            <Setter Property="Height" Value="Auto"/>
-            <Setter Property="VerticalContentAlignment" Value="Center"/>
-            <Setter Property="FontSize" Value="{StaticResource RegularFontSize}"/>
-            <Setter Property="Background" Value="Transparent"/>
-            <Setter Property="Foreground" Value="{StaticResource AccentColorBrush1}"/>
-            <Setter Property="FontWeight" Value="Bold"/>
-            <Setter Property="BorderThickness" Value="0"/>
-        </Style>
     </Window.Resources>
 
     <materialDesign:Card
@@ -249,14 +231,14 @@
                     Grid.Row="17"
                     Grid.Column="0"
                     Command="{Binding ReportInterestToProviderCommand}"
-                    Style="{StaticResource ButtonDefaultStyle}"
-                    Content="Zgłoś zainteresowanie"/>
+                    Style="{StaticResource HoverTriggerButton}"
+                    Content="Zgłoś się"/>
                 <Button
                     Grid.Row="17"
                     Grid.Column="1"
                     Command="{Binding CloseWindowCommand}"
                     CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=Window}}"
-                    Style="{StaticResource ButtonDefaultStyle}"
+                    Style="{StaticResource HoverTriggerButton}"
                     Content="Zamknij"/>
             </Grid>
         </Border>
