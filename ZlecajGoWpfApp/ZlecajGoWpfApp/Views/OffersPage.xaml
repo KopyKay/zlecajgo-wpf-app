@@ -60,14 +60,17 @@
                 <Button
                     Grid.Column="0"
                     Content="Kalendarz"
+                    Command="{Binding OpenCalendarCommand}"
                     Style="{StaticResource HoverTriggerButton}"/>
                 <Button
                     Grid.Column="1"
                     Content="Wiadomości"
+                    Command="{Binding OpenMessagesCommand}"
                     Style="{StaticResource HoverTriggerButton}"/>
                 <Button
                     Grid.Column="2"
                     Content="Konto"
+                    Command="{Binding OpenAccountMenuWindowCommand}"
                     Style="{StaticResource HoverTriggerButton}"/>
                 <Button
                     Grid.Column="3"

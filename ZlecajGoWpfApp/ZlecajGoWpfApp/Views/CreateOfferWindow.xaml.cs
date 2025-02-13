@@ -22,7 +22,7 @@ public partial class CreateOfferWindow : Window
 
     private void SubscribeToViewModelEvents(CreateOfferViewModel viewModel)
     {
-        viewModel.RequestWindowClose += (s, e) => Window.GetWindow(this)?.Close();
+        viewModel.RequestWindowClose += (s, e) => Close();
     }
     
     private void HandleTextInput(object sender, TextCompositionEventArgs e, Regex regex, int firstInsertPosition, int secondInsertPosition, string insertChar)

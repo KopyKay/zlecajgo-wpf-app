@@ -37,6 +37,8 @@ public partial class OffersViewModel : BaseViewModel
     private readonly Brush _accentColorBrush1 = (Brush)Application.Current.Resources["AccentColorBrush1"]!;
     private readonly Brush _accentColorBrush2 = (Brush)Application.Current.Resources["AccentColorBrush2"]!;
     
+    private readonly UserDto _currentUser = UserSession.Instance.CurrentUser;
+    
     private readonly IServiceProvider _serviceProvider;
     
     private readonly IMapService _mapService;
@@ -127,6 +129,27 @@ public partial class OffersViewModel : BaseViewModel
         createOfferViewModel.OfferCategories = Categories;
         
         createOfferWindow.ShowDialog();
+    }
+    
+    [RelayCommand]
+    private void OpenCalendar()
+    {
+        // TODO: Implement OpenCalendar logic
+        CustomMessageBox.Show("Ten przycisk nie ma jeszcze implementacji.", CustomMessageBoxType.Warning, "Brak implementacji");
+    }
+
+    [RelayCommand]
+    private void OpenMessages()
+    {
+        // TODO: Implement OpenMessages logic
+        CustomMessageBox.Show("Ten przycisk nie ma jeszcze implementacji.", CustomMessageBoxType.Warning, "Brak implementacji");
+    }
+    
+    [RelayCommand]
+    private void OpenAccountMenuWindow()
+    {
+        // TODO: Implement OpenAccountMenuWindow logic
+        CustomMessageBox.Show("Ten przycisk nie ma jeszcze implementacji.", CustomMessageBoxType.Warning, "Brak implementacji");
     }
     
     [RelayCommand]
@@ -261,7 +284,7 @@ public partial class OffersViewModel : BaseViewModel
             .Where(o => 
                 o.StatusId == (int)OfferStatus.Pending &&
                 o.ExpiryDateTime > DateTime.Now &&
-                o.ProviderId != UserSession.Instance.CurrentUser.Id);
+                o.ProviderId != _currentUser.Id);
         
         AvailableOffersView = CollectionViewSource.GetDefaultView(availableOffers);
     }
