@@ -3,6 +3,7 @@ using RestSharp;
 using ZlecajGoApi.Dtos;
 using ZlecajGoApi.Exceptions;
 using ZlecajGoApi.Helpers;
+using UnauthorizedAccessException = ZlecajGoApi.Exceptions.UnauthorizedAccessException;
 
 namespace ZlecajGoApi;
 
@@ -43,6 +44,13 @@ public class ApiClient : IApiClient
     
     public async Task<bool> LogInUserAsync(LogInDto dto)
     {
+        const string findUserNameEndpoint = $"{IdentityEndpoint}/findUserName";
+        var findUserNameRequest = new RestRequest(findUserNameEndpoint, Method.Get)
+            .AddQueryParameter(nameof(dto.Email), dto.Email);
+
+        try { dto.Email = await ExecuteRequestAsync<string>(findUserNameRequest); }
+        catch (UnsuccessfulResponseException) { throw new UnauthorizedAccessException(); }
+        
         const string resource = $"{IdentityEndpoint}/login";
         var request = new RestRequest(resource, Method.Post)
             .AddJsonBody(dto);
