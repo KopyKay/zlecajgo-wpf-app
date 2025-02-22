@@ -14,6 +14,7 @@ public partial class CustomMessageBox : Window
         InitializeComponent();
     }
 
+    #region Hide window default buttons
     [DllImport("user32.dll")]
     private static extern int GetWindowLong(IntPtr hWnd, int nIndex);
 
@@ -30,6 +31,7 @@ public partial class CustomMessageBox : Window
         int currentStyle = GetWindowLong(hwnd, GWL_STYLE);
         SetWindowLong(hwnd, GWL_STYLE, currentStyle & ~WS_SYSMENU);
     }
+    #endregion
     
     public static void Show(string message, CustomMessageBoxType type, string? title = null)
     {

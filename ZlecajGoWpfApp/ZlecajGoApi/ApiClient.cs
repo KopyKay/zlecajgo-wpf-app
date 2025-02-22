@@ -70,11 +70,17 @@ public class ApiClient : IApiClient
 
     public async Task UpdateUserCredentialsAsync(UpdateUserCredentialsDto dto)
     {
-        if (await IsUserNameExistsAsync(dto.UserName!))
-            throw new ArgumentException("Podana nazwa użytkownika jest już zajęta!");
-        
-        if (await IsPhoneNumberExistsAsync(dto.PhoneNumber!))
-            throw new ArgumentException("Podany numer telefonu jest już zarejestrowany!");
+        if (!string.IsNullOrWhiteSpace(dto.UserName))
+        {
+            if (await IsUserNameExistsAsync(dto.UserName))
+                throw new ArgumentException("Podana nazwa użytkownika jest już zajęta!");
+        }
+
+        if (!string.IsNullOrWhiteSpace(dto.PhoneNumber))
+        {
+            if (await IsPhoneNumberExistsAsync(dto.PhoneNumber))
+                throw new ArgumentException("Podany numer telefonu jest już zarejestrowany!");
+        }
         
         var currentUser = UserSession.Instance.CurrentUser;
         
@@ -86,6 +92,32 @@ public class ApiClient : IApiClient
         await ExecuteRequestAsync<object>(request);
 
         await RefreshUserAsync(currentUser);
+    }
+    
+    public async Task<bool> CheckUserPassword(string password)
+    {
+        var currentUser = UserSession.Instance.CurrentUser;
+        
+        const string resource = $"{UsersEndpoint}/confirmPassword";
+        var request = new RestRequest(resource, Method.Post)
+            .AddAuthorizationHeader(currentUser.AccessToken)
+            .AddJsonBody(new { Password = password });
+        
+        var result = await ExecuteRequestAsync<bool>(request);
+        return result;
+    }
+    
+    public async Task<bool> ChangeUserPassword(ChangeUserPasswordDto dto)
+    {
+        var currentUser = UserSession.Instance.CurrentUser;
+        
+        const string resource = $"{UsersEndpoint}/changePassword";
+        var request = new RestRequest(resource, Method.Post)
+            .AddAuthorizationHeader(currentUser.AccessToken)
+            .AddJsonBody(dto);
+        
+        var result = await ExecuteRequestAsync<bool>(request);
+        return result;
     }
     
     public void LogOutUser() 
@@ -130,8 +162,11 @@ public class ApiClient : IApiClient
         var accessToken = jsonDocument.RootElement.GetProperty("accessToken").GetString()!;
         var refreshToken = jsonDocument.RootElement.GetProperty("refreshToken").GetString()!;
         
+        userDto = await GetCurrentUserAsync(accessToken);
         userDto.AccessToken = accessToken;
         userDto.RefreshToken = refreshToken;
+        
+        UserSession.Instance.SetUser(userDto);
     }
     
     private async Task<UserDto> GetCurrentUserAsync(string accessToken)

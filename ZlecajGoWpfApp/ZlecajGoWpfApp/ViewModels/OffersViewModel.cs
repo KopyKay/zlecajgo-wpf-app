@@ -148,8 +148,25 @@ public partial class OffersViewModel : BaseViewModel
     [RelayCommand]
     private void OpenAccountMenuWindow()
     {
-        // TODO: Implement OpenAccountMenuWindow logic
-        CustomMessageBox.Show("Ten przycisk nie ma jeszcze implementacji.", CustomMessageBoxType.Warning, "Brak implementacji");
+        var accountMenuWindow = _serviceProvider.GetService<UserAccountMenuContextWindow>();
+
+        if (accountMenuWindow?.DataContext is not UserAccountMenuViewModel userAccountMenuViewModel)
+        {
+            SnackbarService.EnqueueMessage("Nie udało się otworzyć okna konta użytkownika. Spróbuj ponownie później.");
+            return;
+        }
+        
+        var userOffers = Offers.Where(o => o.ProviderId == _currentUser.Id).ToList();
+
+        if (userOffers.Count == 0)
+        {
+            accountMenuWindow.ShowDialog();
+            return;
+        }
+        
+        userAccountMenuViewModel.UserOffers = new ObservableCollection<OfferDto>(userOffers);
+        
+        accountMenuWindow.ShowDialog();
     }
     
     [RelayCommand]
@@ -157,6 +174,7 @@ public partial class OffersViewModel : BaseViewModel
     {
         ApiClient.LogOutUser();
         NavigationService.NavigateTo<LogInPage>();
+        SnackbarService.EnqueueMessage("Wylogowano pomyślnie!");
     }
 
     [RelayCommand]
