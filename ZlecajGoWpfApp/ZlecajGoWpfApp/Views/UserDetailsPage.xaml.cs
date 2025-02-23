@@ -1,6 +1,7 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using ZlecajGoWpfApp.Constants;
 using ZlecajGoWpfApp.ViewModels;
 
 namespace ZlecajGoWpfApp.Views;
@@ -13,8 +14,6 @@ public partial class UserDetailsPage : Page
         
         DataContext = viewModel;
     }
-    
-    private const string PhoneNumberPolandPrefix = "+48";
     
     private void TextBox_OnPasting(object sender, DataObjectPastingEventArgs e)
     {
@@ -29,8 +28,8 @@ public partial class UserDetailsPage : Page
         {
             case Key.Space:
             case Key.Clear:
-            case Key.Back when textBox.CaretIndex <= PhoneNumberPolandPrefix.Length:
-            case Key.Delete when textBox.SelectionStart < PhoneNumberPolandPrefix.Length:
+            case Key.Back when textBox.CaretIndex <= CountryCode.Poland.Length:
+            case Key.Delete when textBox.SelectionStart < CountryCode.Poland.Length:
                 e.Handled = true;
                 break;
         }
@@ -42,7 +41,7 @@ public partial class UserDetailsPage : Page
         var newText = textBox.Text.Insert(textBox.CaretIndex, e.Text);
         
         if (!char.IsDigit(e.Text, 0) ||
-            textBox.CaretIndex < PhoneNumberPolandPrefix.Length ||
+            textBox.CaretIndex < CountryCode.Poland.Length ||
             newText.Length > 12)
         {
             e.Handled = true;
@@ -58,7 +57,7 @@ public partial class UserDetailsPage : Page
             return;
         }
         
-        textBox.Text = PhoneNumberPolandPrefix;
+        textBox.Text = CountryCode.Poland;
         textBox.CaretIndex = textBox.Text.Length;
     }
 
@@ -66,7 +65,7 @@ public partial class UserDetailsPage : Page
     {
         var textBox = (TextBox)sender;
 
-        if (textBox.Text != PhoneNumberPolandPrefix)
+        if (textBox.Text != CountryCode.Poland)
         {
             return;
         }

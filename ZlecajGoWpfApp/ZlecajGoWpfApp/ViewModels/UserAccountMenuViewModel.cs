@@ -50,7 +50,7 @@ public partial class UserAccountMenuViewModel
     partial void OnNewUserNameChanged(string? value) => SaveChangesCommand.NotifyCanExecuteChanged();
 
     [ObservableProperty]
-    [RegularExpression(ValidationHelper.PhoneNumberRegex, ErrorMessage = ValidationHelper.IncorrectPhoneNumberMessage)]
+    [RegularExpression(ValidationHelper.PolishPhoneNumberRegex, ErrorMessage = ValidationHelper.IncorrectPhoneNumberMessage)]
     private string? _newPhoneNumber;
     partial void OnNewPhoneNumberChanged(string? value) => SaveChangesCommand.NotifyCanExecuteChanged();
     
