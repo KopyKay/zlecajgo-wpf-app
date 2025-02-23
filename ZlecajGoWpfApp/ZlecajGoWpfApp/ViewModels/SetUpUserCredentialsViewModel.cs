@@ -19,30 +19,27 @@ public partial class SetUpUserCredentialsViewModel : BaseViewModel
         Title = "Uzupełnianie danych użytkownika";
     }
     
-    private const int FirstNameMinLength = 3;
-    private const int LastNameMinLength = 3;
-    private const int UserMinAge = 18;
-    
     [ObservableProperty]
     [Required(ErrorMessage = ValidationHelper.ErrorMessage.FieldIsRequired)]
-    [MinLength(FirstNameMinLength, ErrorMessage = ValidationHelper.ErrorMessage.FieldIsTooShort)]
+    [MinLength(ValidationHelper.Constraint.FirstNameMinLength, ErrorMessage = ValidationHelper.ErrorMessage.FieldIsTooShort)]
     [RegularExpression(ValidationHelper.RegularExpression.FirstName, ErrorMessage = ValidationHelper.ErrorMessage.FieldContainsIllegalCharacters)]
     private string _firstName = string.Empty;
     
     [ObservableProperty]
     [Required(ErrorMessage = ValidationHelper.ErrorMessage.FieldIsRequired)]
-    [MinLength(LastNameMinLength, ErrorMessage = ValidationHelper.ErrorMessage.FieldIsTooShort)]
+    [MinLength(ValidationHelper.Constraint.LastNameMinLength, ErrorMessage = ValidationHelper.ErrorMessage.FieldIsTooShort)]
     [RegularExpression(ValidationHelper.RegularExpression.LastName, ErrorMessage = ValidationHelper.ErrorMessage.FieldContainsIllegalCharacters)]
     private string _lastName = string.Empty;
     
     [ObservableProperty]
     [Required(ErrorMessage = ValidationHelper.ErrorMessage.FieldIsRequired)]
+    [MinLength(ValidationHelper.Constraint.UserNameMinLength, ErrorMessage = ValidationHelper.ErrorMessage.FieldIsTooShort)]
     [RegularExpression(ValidationHelper.RegularExpression.UserName, ErrorMessage = ValidationHelper.ErrorMessage.FieldContainsIllegalCharacters)]
     private string _userName = string.Empty;
 
     [ObservableProperty]
     [Required(ErrorMessage = ValidationHelper.ErrorMessage.FieldIsRequired)]
-    [ValidationHelper.MinimumAge(UserMinAge)]
+    [ValidationHelper.MinimumAge(ValidationHelper.Constraint.UserMinAge)]
     private string _birthDate = string.Empty;
     
     [ObservableProperty]

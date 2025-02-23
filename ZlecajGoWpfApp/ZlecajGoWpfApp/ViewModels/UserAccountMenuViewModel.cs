@@ -24,8 +24,6 @@ public partial class UserAccountMenuViewModel
 )
 : BaseViewModel(navigationService, snackbarService, apiClient)
 {
-    private const int PasswordMinLength = 6;
-    
     internal static Window? UserAccountMenuContextWindow;
     internal static Frame? UserAccountMenuContextWindowFrame;
     
@@ -44,7 +42,7 @@ public partial class UserAccountMenuViewModel
     private string? _newEmail;
     
     [ObservableProperty]
-    [MinLength(3, ErrorMessage = ValidationHelper.ErrorMessage.FieldIsTooShort)]
+    [MinLength(ValidationHelper.Constraint.UserNameMinLength, ErrorMessage = ValidationHelper.ErrorMessage.FieldIsTooShort)]
     [RegularExpression(ValidationHelper.RegularExpression.UserName, ErrorMessage = ValidationHelper.ErrorMessage.FieldContainsIllegalCharacters)]
     private string? _newUserName;
     partial void OnNewUserNameChanged(string? value) => SaveChangesCommand.NotifyCanExecuteChanged();
@@ -55,7 +53,7 @@ public partial class UserAccountMenuViewModel
     partial void OnNewPhoneNumberChanged(string? value) => SaveChangesCommand.NotifyCanExecuteChanged();
     
     [ObservableProperty]
-    [MinLength(PasswordMinLength, ErrorMessage = ValidationHelper.ErrorMessage.PasswordIsTooShort)]
+    [MinLength(ValidationHelper.Constraint.PasswordMinLength, ErrorMessage = ValidationHelper.ErrorMessage.PasswordIsTooShort)]
     [RegularExpression(ValidationHelper.RegularExpression.Password, ErrorMessage = ValidationHelper.ErrorMessage.PasswordDoesNotMeetRequirements)]
     private string? _newPassword;
     partial void OnNewPasswordChanged(string? value) => SaveChangesCommand.NotifyCanExecuteChanged();

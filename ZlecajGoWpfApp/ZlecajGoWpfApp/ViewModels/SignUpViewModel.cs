@@ -18,8 +18,6 @@ public partial class SignUpViewModel : BaseViewModel
         Title = "Rejestracja";
     }
     
-    private const int PasswordMinLength = 6;
-    
     [ObservableProperty]
     [Required(ErrorMessage = ValidationHelper.ErrorMessage.FieldIsRequired)]
     [EmailAddress(ErrorMessage = ValidationHelper.ErrorMessage.IncorrectEmail)]
@@ -27,7 +25,7 @@ public partial class SignUpViewModel : BaseViewModel
     
     [ObservableProperty]
     [Required(ErrorMessage = ValidationHelper.ErrorMessage.FieldIsRequired)]
-    [MinLength(PasswordMinLength, ErrorMessage = ValidationHelper.ErrorMessage.PasswordIsTooShort)]
+    [MinLength(ValidationHelper.Constraint.PasswordMinLength, ErrorMessage = ValidationHelper.ErrorMessage.PasswordIsTooShort)]
     [RegularExpression(ValidationHelper.RegularExpression.Password, ErrorMessage = ValidationHelper.ErrorMessage.PasswordDoesNotMeetRequirements)]
     private string _password = string.Empty;
     

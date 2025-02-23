@@ -38,9 +38,6 @@ public partial class CreateOfferViewModel : BaseViewModel
     private Dictionary<string, List<string>>? _places;
     
     public EventHandler? RequestWindowClose;
-
-    private const int TitleMinLength = 10;
-    private const int DescriptionMinLength = 10;
     
     [ObservableProperty]
     private ObservableCollection<TypeDto> _offerTypes = [];
@@ -58,13 +55,13 @@ public partial class CreateOfferViewModel : BaseViewModel
     
     [ObservableProperty]
     [Required(ErrorMessage = ValidationHelper.ErrorMessage.FieldIsRequired)]
-    [MinLength(TitleMinLength, ErrorMessage = ValidationHelper.ErrorMessage.FieldIsTooShort)]
+    [MinLength(ValidationHelper.Constraint.OfferTitleMinLength, ErrorMessage = ValidationHelper.ErrorMessage.FieldIsTooShort)]
     [RegularExpression(ValidationHelper.RegularExpression.OfferTitle, ErrorMessage = ValidationHelper.ErrorMessage.FieldContainsIllegalCharacters)]
     private string _offerTitle = string.Empty;
     
     [ObservableProperty]
     [Required(ErrorMessage = ValidationHelper.ErrorMessage.FieldIsRequired)]
-    [MinLength(DescriptionMinLength, ErrorMessage = ValidationHelper.ErrorMessage.FieldIsTooShort)]
+    [MinLength(ValidationHelper.Constraint.OfferDescriptionMinLength, ErrorMessage = ValidationHelper.ErrorMessage.FieldIsTooShort)]
     [RegularExpression(ValidationHelper.RegularExpression.OfferDescription, ErrorMessage = ValidationHelper.ErrorMessage.FieldContainsIllegalCharacters)]
     private string _offerDescription = string.Empty;
     

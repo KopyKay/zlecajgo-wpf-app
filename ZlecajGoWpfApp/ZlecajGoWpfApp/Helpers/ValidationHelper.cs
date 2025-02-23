@@ -40,6 +40,17 @@ public static partial class ValidationHelper
         public const string StreetNumber = @"^[a-zA-Z0-9\/]+$";
     }
 
+    public static class Constraint
+    {
+        public const int PasswordMinLength = 6;
+        public const int OfferTitleMinLength = 10;
+        public const int OfferDescriptionMinLength = 10;
+        public const int FirstNameMinLength = 3;
+        public const int LastNameMinLength = 3;
+        public const int UserNameMinLength = 3;
+        public const int UserMinAge = 18;
+    }
+
     [AttributeUsage(AttributeTargets.Property | AttributeTargets.Field | AttributeTargets.Parameter)]
     public class ComparePasswordsAttribute(string comparisonProperty) : ValidationAttribute
     {
