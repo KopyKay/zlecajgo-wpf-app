@@ -1,0 +1,12 @@
+﻿<ResourceDictionary
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <Style
+        x:Key="ProgressBarBorderDefaultStyle"
+        TargetType="Border">
+        <Setter Property="Background" Value="{StaticResource MaterialDesignBackground}"/>
+        <Setter Property="Visibility" Value="{Binding IsBusy, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+    </Style>
+
+</ResourceDictionary>

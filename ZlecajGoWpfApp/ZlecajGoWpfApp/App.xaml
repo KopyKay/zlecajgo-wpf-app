@@ -15,6 +15,8 @@
 
                 <ResourceDictionary Source="/Styles/Colors.xaml"/>
                 <ResourceDictionary Source="/Styles/ButtonStyles.xaml"/>
+                <ResourceDictionary Source="/Styles/ProgressBarStyles.xaml"/>
+                <ResourceDictionary Source="/Styles/BorderStyles.xaml"/>
             </ResourceDictionary.MergedDictionaries>
 
             <system:Double x:Key="SmallFontSize">14</system:Double>

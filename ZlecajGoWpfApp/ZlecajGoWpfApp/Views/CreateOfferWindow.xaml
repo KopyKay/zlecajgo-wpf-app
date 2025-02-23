@@ -191,15 +191,8 @@
                 Grid.Column="0"
                 Grid.ColumnSpan="3"
                 Margin="-20,0"
-                Background="{StaticResource MaterialDesignPaper}"
-                Visibility="{Binding IsBusy, Converter={StaticResource BooleanToVisibilityConverter}}">
-                <ProgressBar
-                    Width="64"
-                    Height="64"
-                    HorizontalAlignment="Center"
-                    VerticalAlignment="Center"
-                    IsIndeterminate="True"
-                    Style="{StaticResource MaterialDesignCircularProgressBar}"/>
+                Style="{StaticResource ProgressBarBorderDefaultStyle}">
+                <ProgressBar Style="{StaticResource ProgressBarDefaultStyle}"/>
             </Border>
         </Grid>
     </materialDesign:Card>

@@ -69,22 +69,6 @@
             BasedOn="{StaticResource MaterialDesignPasswordBox}">
             <Setter Property="FontSize" Value="{StaticResource RegularFontSize}"/>
         </Style>
-        <Style
-            x:Key="ProgressBarBorderStyle"
-            TargetType="Border">
-            <Setter Property="Background" Value="{StaticResource MaterialDesignBackground}"/>
-            <Setter Property="Visibility" Value="{Binding IsBusy, Converter={StaticResource BooleanToVisibilityConverter}}"/>
-        </Style>
-        <Style
-            x:Key="ProgressBarStyle"
-            BasedOn="{StaticResource MaterialDesignCircularProgressBar}"
-            TargetType="ProgressBar">
-            <Setter Property="Width" Value="128"/>
-            <Setter Property="Height" Value="128"/>
-            <Setter Property="HorizontalAlignment" Value="Center"/>
-            <Setter Property="VerticalAlignment" Value="Center"/>
-            <Setter Property="IsIndeterminate" Value="True"/>
-        </Style>
     </Page.Resources>
 
     <Grid>
@@ -363,8 +347,8 @@
         <Border
             Grid.Row="0"
             Grid.RowSpan="3"
-            Style="{StaticResource ProgressBarBorderStyle}">
-            <ProgressBar Style="{StaticResource ProgressBarStyle}"/>
+            Style="{StaticResource ProgressBarBorderDefaultStyle}">
+            <ProgressBar Style="{StaticResource ProgressBarDefaultStyle}"/>
         </Border>
     </Grid>
 </Page>

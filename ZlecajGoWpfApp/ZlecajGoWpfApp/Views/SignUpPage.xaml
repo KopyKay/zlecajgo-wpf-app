@@ -118,8 +118,7 @@
         <ProgressBar
             Grid.Row="8"
             Grid.Column="2"
-            IsIndeterminate="True"
-            Style="{StaticResource MaterialDesignCircularProgressBar}"
+            Style="{StaticResource SmallProgressBarStyle}"
             Visibility="{Binding IsBusy, Converter={StaticResource BooleanToVisibilityConverter}}"/>
         <StackPanel
             Grid.Row="9"
