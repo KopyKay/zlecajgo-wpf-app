@@ -44,19 +44,19 @@ public partial class UserAccountMenuViewModel
     private string? _newEmail;
     
     [ObservableProperty]
-    [MinLength(3, ErrorMessage = ValidationHelper.FieldTooShortMessage)]
-    [RegularExpression(ValidationHelper.UserNameRegex, ErrorMessage = ValidationHelper.FieldContainsIllegalCharactersMessage)]
+    [MinLength(3, ErrorMessage = ValidationHelper.ErrorMessage.FieldIsTooShort)]
+    [RegularExpression(ValidationHelper.RegularExpression.UserName, ErrorMessage = ValidationHelper.ErrorMessage.FieldContainsIllegalCharacters)]
     private string? _newUserName;
     partial void OnNewUserNameChanged(string? value) => SaveChangesCommand.NotifyCanExecuteChanged();
 
     [ObservableProperty]
-    [RegularExpression(ValidationHelper.PolishPhoneNumberRegex, ErrorMessage = ValidationHelper.IncorrectPhoneNumberMessage)]
+    [RegularExpression(ValidationHelper.RegularExpression.PolishPhoneNumber, ErrorMessage = ValidationHelper.ErrorMessage.IncorrectPhoneNumber)]
     private string? _newPhoneNumber;
     partial void OnNewPhoneNumberChanged(string? value) => SaveChangesCommand.NotifyCanExecuteChanged();
     
     [ObservableProperty]
-    [MinLength(PasswordMinLength, ErrorMessage = ValidationHelper.PasswordIsTooShortMessage)]
-    [RegularExpression(ValidationHelper.PasswordRegex, ErrorMessage = ValidationHelper.PasswordDoesNotMeetRequirementsMessage)]
+    [MinLength(PasswordMinLength, ErrorMessage = ValidationHelper.ErrorMessage.PasswordIsTooShort)]
+    [RegularExpression(ValidationHelper.RegularExpression.Password, ErrorMessage = ValidationHelper.ErrorMessage.PasswordDoesNotMeetRequirements)]
     private string? _newPassword;
     partial void OnNewPasswordChanged(string? value) => SaveChangesCommand.NotifyCanExecuteChanged();
 

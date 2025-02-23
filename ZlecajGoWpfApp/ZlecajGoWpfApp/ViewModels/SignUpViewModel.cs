@@ -21,18 +21,18 @@ public partial class SignUpViewModel : BaseViewModel
     private const int PasswordMinLength = 6;
     
     [ObservableProperty]
-    [Required(ErrorMessage = ValidationHelper.FieldIsRequiredMessage)]
-    [EmailAddress(ErrorMessage = ValidationHelper.IncorrectEmailMessage)]
+    [Required(ErrorMessage = ValidationHelper.ErrorMessage.FieldIsRequired)]
+    [EmailAddress(ErrorMessage = ValidationHelper.ErrorMessage.IncorrectEmail)]
     private string _email = string.Empty;
     
     [ObservableProperty]
-    [Required(ErrorMessage = ValidationHelper.FieldIsRequiredMessage)]
-    [MinLength(PasswordMinLength, ErrorMessage = ValidationHelper.PasswordIsTooShortMessage)]
-    [RegularExpression(ValidationHelper.PasswordRegex, ErrorMessage = ValidationHelper.PasswordDoesNotMeetRequirementsMessage)]
+    [Required(ErrorMessage = ValidationHelper.ErrorMessage.FieldIsRequired)]
+    [MinLength(PasswordMinLength, ErrorMessage = ValidationHelper.ErrorMessage.PasswordIsTooShort)]
+    [RegularExpression(ValidationHelper.RegularExpression.Password, ErrorMessage = ValidationHelper.ErrorMessage.PasswordDoesNotMeetRequirements)]
     private string _password = string.Empty;
     
     [ObservableProperty]
-    [Required(ErrorMessage = ValidationHelper.FieldIsRequiredMessage)]
+    [Required(ErrorMessage = ValidationHelper.ErrorMessage.FieldIsRequired)]
     [ValidationHelper.ComparePasswords(nameof(Password))]
     private string _confirmPassword = string.Empty;
     

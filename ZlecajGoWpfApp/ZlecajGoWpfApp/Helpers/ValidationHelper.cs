@@ -6,33 +6,39 @@ namespace ZlecajGoWpfApp.Helpers;
 
 public static partial class ValidationHelper
 {
-    public const string FieldIsRequiredMessage = "Pole jest wymagane!";
-    public const string FieldContainsIllegalCharactersMessage = "Pole zawiera niedozwolone znaki!";
-    public const string FieldTooShortMessage = "Pole wymaga więcej znaków!";
-    public const string FieldIncorrectFormatMessage = "Pole ma niepoprawny format!";
-    
-    public const string IncorrectEmailMessage = "Niepoprawny adres email!";
-    public const string PasswordIsTooShortMessage = "Hasło jest za krótkie!";
-    public const string PasswordDoesNotMeetRequirementsMessage = "Hasło nie spełnia wymagań!";
-    public const string PasswordsDoNotMatchMessage = "Hasła nie są takie same!";
-    public const string IncorrectPhoneNumberMessage = "Niepoprawny numer telefonu!";
-
-    public const string PasswordRegex = @"^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*\W).{6,}$";
-    public const string FirstNameRegex = @"^\p{L}+$";
-    public const string LastNameRegex = @"^\p{L}+$";
-    public const string UserNameRegex = "^[A-Za-z0-9_]+$";
-    public const string PhoneNumberRegex = @"^\+48\s?[4-9]\d{8}$";
-    public const string TitleRegex = @"^[a-zA-ZĄĆĘŁŃÓŚŹŻąćęłńóśźż0-9\s\p{P}]+$";
-    public const string DescriptionRegex = @"^[a-zA-ZĄĆĘŁŃÓŚŹŻąćęłńóśźż0-9\s\p{P}\p{S}]+$";
-    public const string PostalCodeRegex = @"^\d{2}-\d{3}$";
-    public const string StreetNameRegex = @"^[a-zA-ZĄĆĘŁŃÓŚŹŻąćęłńóśźż0-9\s\-\']+$";
-    public const string StreetNumberRegex = @"^[a-zA-Z0-9\/]+$";
-    
     [GeneratedRegex(@"^\d{0,2}(-\d{0,3})?$")]
     public static partial Regex ValidPostalCodePreviewInputRegex();
     
     [GeneratedRegex(@"^(?!0)\d{1,7}(\,\d{0,2})?$")]
     public static partial Regex ValidPricePreviewInputRegex();
+    
+    public static class ErrorMessage
+    {
+        public const string FieldIsRequired = "Pole jest wymagane!";
+        public const string FieldContainsIllegalCharacters = "Pole zawiera niedozwolone znaki!";
+        public const string FieldIsTooShort = "Pole wymaga więcej znaków!";
+        public const string FieldIncorrectFormat = "Pole ma niepoprawny format!";
+    
+        public const string IncorrectEmail = "Niepoprawny adres email!";
+        public const string PasswordIsTooShort = "Hasło jest za krótkie!";
+        public const string PasswordDoesNotMeetRequirements = "Hasło nie spełnia wymagań!";
+        public const string PasswordsDoNotMatch = "Hasła nie są takie same!";
+        public const string IncorrectPhoneNumber = "Niepoprawny numer telefonu!";
+    }
+
+    public static class RegularExpression
+    {
+        public const string Password = @"^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*\W).{6,}$";
+        public const string FirstName = @"^\p{L}+$";
+        public const string LastName = @"^\p{L}+$";
+        public const string UserName = "^[A-Za-z0-9_]+$";
+        public const string PolishPhoneNumber = @"^\+48\s?[4-9]\d{8}$";
+        public const string OfferTitle = @"^[a-zA-ZĄĆĘŁŃÓŚŹŻąćęłńóśźż0-9\s\p{P}]+$";
+        public const string OfferDescription = @"^[a-zA-ZĄĆĘŁŃÓŚŹŻąćęłńóśźż0-9\s\p{P}\p{S}]+$";
+        public const string PostalCode = @"^\d{2}-\d{3}$";
+        public const string StreetName = @"^[a-zA-ZĄĆĘŁŃÓŚŹŻąćęłńóśźż0-9\s\-\']+$";
+        public const string StreetNumber = @"^[a-zA-Z0-9\/]+$";
+    }
 
     [AttributeUsage(AttributeTargets.Property | AttributeTargets.Field | AttributeTargets.Parameter)]
     public class ComparePasswordsAttribute(string comparisonProperty) : ValidationAttribute
@@ -51,7 +57,7 @@ public static partial class ValidationHelper
 
             if (currentValue != comparisonValue)
             {
-                return new ValidationResult(PasswordsDoNotMatchMessage);
+                return new ValidationResult(ValidationHelper.ErrorMessage.PasswordsDoNotMatch);
             }
 
             return ValidationResult.Success;

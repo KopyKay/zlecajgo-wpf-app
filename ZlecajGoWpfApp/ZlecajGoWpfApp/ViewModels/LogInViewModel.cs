@@ -19,12 +19,12 @@ public partial class LogInViewModel : BaseViewModel
     }
     
     [ObservableProperty]
-    [Required(ErrorMessage = ValidationHelper.FieldIsRequiredMessage)]
-    [EmailAddress(ErrorMessage = ValidationHelper.IncorrectEmailMessage)]
+    [Required(ErrorMessage = ValidationHelper.ErrorMessage.FieldIsRequired)]
+    [EmailAddress(ErrorMessage = ValidationHelper.ErrorMessage.IncorrectEmail)]
     private string _email = string.Empty;
     
     [ObservableProperty]
-    [Required(ErrorMessage = ValidationHelper.FieldIsRequiredMessage)]
+    [Required(ErrorMessage = ValidationHelper.ErrorMessage.FieldIsRequired)]
     private string _password = string.Empty;
     
     [RelayCommand]

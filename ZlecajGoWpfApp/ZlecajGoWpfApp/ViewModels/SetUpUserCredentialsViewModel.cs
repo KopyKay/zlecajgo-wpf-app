@@ -24,30 +24,30 @@ public partial class SetUpUserCredentialsViewModel : BaseViewModel
     private const int UserMinAge = 18;
     
     [ObservableProperty]
-    [Required(ErrorMessage = ValidationHelper.FieldIsRequiredMessage)]
-    [MinLength(FirstNameMinLength, ErrorMessage = ValidationHelper.FieldTooShortMessage)]
-    [RegularExpression(ValidationHelper.FirstNameRegex, ErrorMessage = ValidationHelper.FieldContainsIllegalCharactersMessage)]
+    [Required(ErrorMessage = ValidationHelper.ErrorMessage.FieldIsRequired)]
+    [MinLength(FirstNameMinLength, ErrorMessage = ValidationHelper.ErrorMessage.FieldIsTooShort)]
+    [RegularExpression(ValidationHelper.RegularExpression.FirstName, ErrorMessage = ValidationHelper.ErrorMessage.FieldContainsIllegalCharacters)]
     private string _firstName = string.Empty;
     
     [ObservableProperty]
-    [Required(ErrorMessage = ValidationHelper.FieldIsRequiredMessage)]
-    [MinLength(LastNameMinLength, ErrorMessage = ValidationHelper.FieldTooShortMessage)]
-    [RegularExpression(ValidationHelper.LastNameRegex, ErrorMessage = ValidationHelper.FieldContainsIllegalCharactersMessage)]
+    [Required(ErrorMessage = ValidationHelper.ErrorMessage.FieldIsRequired)]
+    [MinLength(LastNameMinLength, ErrorMessage = ValidationHelper.ErrorMessage.FieldIsTooShort)]
+    [RegularExpression(ValidationHelper.RegularExpression.LastName, ErrorMessage = ValidationHelper.ErrorMessage.FieldContainsIllegalCharacters)]
     private string _lastName = string.Empty;
     
     [ObservableProperty]
-    [Required(ErrorMessage = ValidationHelper.FieldIsRequiredMessage)]
-    [RegularExpression(ValidationHelper.UserNameRegex, ErrorMessage = ValidationHelper.FieldContainsIllegalCharactersMessage)]
+    [Required(ErrorMessage = ValidationHelper.ErrorMessage.FieldIsRequired)]
+    [RegularExpression(ValidationHelper.RegularExpression.UserName, ErrorMessage = ValidationHelper.ErrorMessage.FieldContainsIllegalCharacters)]
     private string _userName = string.Empty;
 
     [ObservableProperty]
-    [Required(ErrorMessage = ValidationHelper.FieldIsRequiredMessage)]
+    [Required(ErrorMessage = ValidationHelper.ErrorMessage.FieldIsRequired)]
     [ValidationHelper.MinimumAge(UserMinAge)]
     private string _birthDate = string.Empty;
     
     [ObservableProperty]
-    [Required(ErrorMessage = ValidationHelper.FieldIsRequiredMessage)]
-    [RegularExpression(ValidationHelper.PhoneNumberRegex, ErrorMessage = ValidationHelper.IncorrectPhoneNumberMessage)]
+    [Required(ErrorMessage = ValidationHelper.ErrorMessage.FieldIsRequired)]
+    [RegularExpression(ValidationHelper.RegularExpression.PolishPhoneNumber, ErrorMessage = ValidationHelper.ErrorMessage.IncorrectPhoneNumber)]
     private string _phoneNumber = string.Empty;
 
     [RelayCommand]

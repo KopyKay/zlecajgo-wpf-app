@@ -46,61 +46,61 @@ public partial class CreateOfferViewModel : BaseViewModel
     private ObservableCollection<TypeDto> _offerTypes = [];
     
     [ObservableProperty]
-    [Required(ErrorMessage = ValidationHelper.FieldIsRequiredMessage)]
+    [Required(ErrorMessage = ValidationHelper.ErrorMessage.FieldIsRequired)]
     private TypeDto? _selectedOfferType;
     
     [ObservableProperty]
     private ObservableCollection<CategoryDto> _offerCategories = [];
     
     [ObservableProperty]
-    [Required(ErrorMessage = ValidationHelper.FieldIsRequiredMessage)]
+    [Required(ErrorMessage = ValidationHelper.ErrorMessage.FieldIsRequired)]
     private CategoryDto? _selectedOfferCategory;
     
     [ObservableProperty]
-    [Required(ErrorMessage = ValidationHelper.FieldIsRequiredMessage)]
-    [MinLength(TitleMinLength, ErrorMessage = ValidationHelper.FieldTooShortMessage)]
-    [RegularExpression(ValidationHelper.TitleRegex, ErrorMessage = ValidationHelper.FieldContainsIllegalCharactersMessage)]
+    [Required(ErrorMessage = ValidationHelper.ErrorMessage.FieldIsRequired)]
+    [MinLength(TitleMinLength, ErrorMessage = ValidationHelper.ErrorMessage.FieldIsTooShort)]
+    [RegularExpression(ValidationHelper.RegularExpression.OfferTitle, ErrorMessage = ValidationHelper.ErrorMessage.FieldContainsIllegalCharacters)]
     private string _offerTitle = string.Empty;
     
     [ObservableProperty]
-    [Required(ErrorMessage = ValidationHelper.FieldIsRequiredMessage)]
-    [MinLength(DescriptionMinLength, ErrorMessage = ValidationHelper.FieldTooShortMessage)]
-    [RegularExpression(ValidationHelper.DescriptionRegex, ErrorMessage = ValidationHelper.FieldContainsIllegalCharactersMessage)]
+    [Required(ErrorMessage = ValidationHelper.ErrorMessage.FieldIsRequired)]
+    [MinLength(DescriptionMinLength, ErrorMessage = ValidationHelper.ErrorMessage.FieldIsTooShort)]
+    [RegularExpression(ValidationHelper.RegularExpression.OfferDescription, ErrorMessage = ValidationHelper.ErrorMessage.FieldContainsIllegalCharacters)]
     private string _offerDescription = string.Empty;
     
     [ObservableProperty]
-    [Required(ErrorMessage = ValidationHelper.FieldIsRequiredMessage)]
-    [RegularExpression(ValidationHelper.PostalCodeRegex, ErrorMessage = ValidationHelper.FieldIncorrectFormatMessage)]
+    [Required(ErrorMessage = ValidationHelper.ErrorMessage.FieldIsRequired)]
+    [RegularExpression(ValidationHelper.RegularExpression.PostalCode, ErrorMessage = ValidationHelper.ErrorMessage.FieldIncorrectFormat)]
     private string _postalCode = string.Empty;
     
     [ObservableProperty]
     private ICollectionView? _placesView;
 
     [ObservableProperty]
-    [Required(ErrorMessage = ValidationHelper.FieldIsRequiredMessage)]
+    [Required(ErrorMessage = ValidationHelper.ErrorMessage.FieldIsRequired)]
     private string? _selectedPlace;
     
     [ObservableProperty]
     private bool _placesFound;
     
     [ObservableProperty]
-    [RegularExpression(ValidationHelper.StreetNameRegex, ErrorMessage = ValidationHelper.FieldContainsIllegalCharactersMessage)]
+    [RegularExpression(ValidationHelper.RegularExpression.StreetName, ErrorMessage = ValidationHelper.ErrorMessage.FieldContainsIllegalCharacters)]
     private string _streetName = string.Empty;
     
     [ObservableProperty]
-    [Required(ErrorMessage = ValidationHelper.FieldIsRequiredMessage)]
-    [RegularExpression(ValidationHelper.StreetNumberRegex, ErrorMessage = ValidationHelper.FieldContainsIllegalCharactersMessage)]
+    [Required(ErrorMessage = ValidationHelper.ErrorMessage.FieldIsRequired)]
+    [RegularExpression(ValidationHelper.RegularExpression.StreetNumber, ErrorMessage = ValidationHelper.ErrorMessage.FieldContainsIllegalCharacters)]
     private string _streetNumber = string.Empty;
     
     [ObservableProperty]
     private int[] _durationInDays = [1, 2, 3, 4, 5, 6, 7];
 
     [ObservableProperty]
-    [Required(ErrorMessage = ValidationHelper.FieldIsRequiredMessage)]
+    [Required(ErrorMessage = ValidationHelper.ErrorMessage.FieldIsRequired)]
     private int? _selectedDurationInDays;
     
     [ObservableProperty]
-    [Required(ErrorMessage = ValidationHelper.FieldIsRequiredMessage)]
+    [Required(ErrorMessage = ValidationHelper.ErrorMessage.FieldIsRequired)]
     private string _offerPrice = string.Empty;
 
     partial void OnSelectedOfferTypeChanged(TypeDto? value) => AddOfferCommand.NotifyCanExecuteChanged();
