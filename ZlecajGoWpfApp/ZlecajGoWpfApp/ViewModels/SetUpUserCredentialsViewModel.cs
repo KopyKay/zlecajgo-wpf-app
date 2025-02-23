@@ -24,24 +24,28 @@ public partial class SetUpUserCredentialsViewModel : BaseViewModel
     [MinLength(ValidationHelper.Constraint.FirstNameMinLength, ErrorMessage = ValidationHelper.ErrorMessage.FieldIsTooShort)]
     [RegularExpression(ValidationHelper.RegularExpression.FirstName, ErrorMessage = ValidationHelper.ErrorMessage.FieldContainsIllegalCharacters)]
     private string _firstName = string.Empty;
-    
+    partial void OnFirstNameChanged(string value) => ValidateProperty(value, nameof(FirstName));
+
     [ObservableProperty]
     [Required(ErrorMessage = ValidationHelper.ErrorMessage.FieldIsRequired)]
     [MinLength(ValidationHelper.Constraint.LastNameMinLength, ErrorMessage = ValidationHelper.ErrorMessage.FieldIsTooShort)]
     [RegularExpression(ValidationHelper.RegularExpression.LastName, ErrorMessage = ValidationHelper.ErrorMessage.FieldContainsIllegalCharacters)]
     private string _lastName = string.Empty;
-    
+    partial void OnLastNameChanged(string value) => ValidateProperty(value, nameof(LastName));
+
     [ObservableProperty]
     [Required(ErrorMessage = ValidationHelper.ErrorMessage.FieldIsRequired)]
     [MinLength(ValidationHelper.Constraint.UserNameMinLength, ErrorMessage = ValidationHelper.ErrorMessage.FieldIsTooShort)]
     [RegularExpression(ValidationHelper.RegularExpression.UserName, ErrorMessage = ValidationHelper.ErrorMessage.FieldContainsIllegalCharacters)]
     private string _userName = string.Empty;
+    partial void OnUserNameChanged(string value) => ValidateProperty(value, nameof(UserName));
 
     [ObservableProperty]
     [Required(ErrorMessage = ValidationHelper.ErrorMessage.FieldIsRequired)]
     [ValidationHelper.MinimumAge(ValidationHelper.Constraint.UserMinAge)]
     private string _birthDate = string.Empty;
-    
+    partial void OnBirthDateChanged(string value) => ValidateProperty(value, nameof(BirthDate));
+
     [ObservableProperty]
     [Required(ErrorMessage = ValidationHelper.ErrorMessage.FieldIsRequired)]
     [RegularExpression(ValidationHelper.RegularExpression.PolishPhoneNumber, ErrorMessage = ValidationHelper.ErrorMessage.IncorrectPhoneNumber)]
@@ -65,11 +69,6 @@ public partial class SetUpUserCredentialsViewModel : BaseViewModel
         }
     }
     
-    partial void OnFirstNameChanged(string value) => ValidateProperty(value, nameof(FirstName));
-    partial void OnLastNameChanged(string value) => ValidateProperty(value, nameof(LastName));
-    partial void OnUserNameChanged(string value) => ValidateProperty(value, nameof(UserName));
-    partial void OnBirthDateChanged(string value) => ValidateProperty(value, nameof(BirthDate));
-
     private async Task TryUpdateUserCredentialsAsync()
     {
         ValidateAllProperties();

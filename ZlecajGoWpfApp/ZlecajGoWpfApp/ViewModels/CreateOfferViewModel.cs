@@ -18,7 +18,6 @@ using ZlecajGoWpfApp.Services.Snackbar;
 
 namespace ZlecajGoWpfApp.ViewModels;
 
-// This class lifecycle is transient, that's why it implements IDisposable to unsubscribe events from PostalAddressService which is a singleton
 public partial class CreateOfferViewModel : BaseViewModel
 {
     public CreateOfferViewModel(INavigationService navigationService, ISnackbarService snackbarService, IApiClient apiClient,
@@ -45,6 +44,7 @@ public partial class CreateOfferViewModel : BaseViewModel
     [ObservableProperty]
     [Required(ErrorMessage = ValidationHelper.ErrorMessage.FieldIsRequired)]
     private TypeDto? _selectedOfferType;
+    partial void OnSelectedOfferTypeChanged(TypeDto? value) => AddOfferCommand.NotifyCanExecuteChanged();
     
     [ObservableProperty]
     private ObservableCollection<CategoryDto> _offerCategories = [];
@@ -52,66 +52,34 @@ public partial class CreateOfferViewModel : BaseViewModel
     [ObservableProperty]
     [Required(ErrorMessage = ValidationHelper.ErrorMessage.FieldIsRequired)]
     private CategoryDto? _selectedOfferCategory;
+    partial void OnSelectedOfferCategoryChanged(CategoryDto? value) => AddOfferCommand.NotifyCanExecuteChanged();
     
     [ObservableProperty]
     [Required(ErrorMessage = ValidationHelper.ErrorMessage.FieldIsRequired)]
     [MinLength(ValidationHelper.Constraint.OfferTitleMinLength, ErrorMessage = ValidationHelper.ErrorMessage.FieldIsTooShort)]
     [RegularExpression(ValidationHelper.RegularExpression.OfferTitle, ErrorMessage = ValidationHelper.ErrorMessage.FieldContainsIllegalCharacters)]
     private string _offerTitle = string.Empty;
+    partial void OnOfferTitleChanged(string value)
+    {
+        ValidateProperty(value, nameof(OfferTitle));
+        AddOfferCommand.NotifyCanExecuteChanged();
+    }
     
     [ObservableProperty]
     [Required(ErrorMessage = ValidationHelper.ErrorMessage.FieldIsRequired)]
     [MinLength(ValidationHelper.Constraint.OfferDescriptionMinLength, ErrorMessage = ValidationHelper.ErrorMessage.FieldIsTooShort)]
     [RegularExpression(ValidationHelper.RegularExpression.OfferDescription, ErrorMessage = ValidationHelper.ErrorMessage.FieldContainsIllegalCharacters)]
     private string _offerDescription = string.Empty;
-    
-    [ObservableProperty]
-    [Required(ErrorMessage = ValidationHelper.ErrorMessage.FieldIsRequired)]
-    [RegularExpression(ValidationHelper.RegularExpression.PostalCode, ErrorMessage = ValidationHelper.ErrorMessage.FieldIncorrectFormat)]
-    private string _postalCode = string.Empty;
-    
-    [ObservableProperty]
-    private ICollectionView? _placesView;
-
-    [ObservableProperty]
-    [Required(ErrorMessage = ValidationHelper.ErrorMessage.FieldIsRequired)]
-    private string? _selectedPlace;
-    
-    [ObservableProperty]
-    private bool _placesFound;
-    
-    [ObservableProperty]
-    [RegularExpression(ValidationHelper.RegularExpression.StreetName, ErrorMessage = ValidationHelper.ErrorMessage.FieldContainsIllegalCharacters)]
-    private string _streetName = string.Empty;
-    
-    [ObservableProperty]
-    [Required(ErrorMessage = ValidationHelper.ErrorMessage.FieldIsRequired)]
-    [RegularExpression(ValidationHelper.RegularExpression.StreetNumber, ErrorMessage = ValidationHelper.ErrorMessage.FieldContainsIllegalCharacters)]
-    private string _streetNumber = string.Empty;
-    
-    [ObservableProperty]
-    private int[] _durationInDays = [1, 2, 3, 4, 5, 6, 7];
-
-    [ObservableProperty]
-    [Required(ErrorMessage = ValidationHelper.ErrorMessage.FieldIsRequired)]
-    private int? _selectedDurationInDays;
-    
-    [ObservableProperty]
-    [Required(ErrorMessage = ValidationHelper.ErrorMessage.FieldIsRequired)]
-    private string _offerPrice = string.Empty;
-
-    partial void OnSelectedOfferTypeChanged(TypeDto? value) => AddOfferCommand.NotifyCanExecuteChanged();
-    partial void OnSelectedOfferCategoryChanged(CategoryDto? value) => AddOfferCommand.NotifyCanExecuteChanged();
-    partial void OnOfferTitleChanged(string value)
-    {
-        ValidateProperty(value, nameof(OfferTitle));
-        AddOfferCommand.NotifyCanExecuteChanged();
-    }
     partial void OnOfferDescriptionChanged(string value)
     {
         ValidateProperty(value, nameof(OfferDescription));
         AddOfferCommand.NotifyCanExecuteChanged();
     }
+
+    [ObservableProperty]
+    [Required(ErrorMessage = ValidationHelper.ErrorMessage.FieldIsRequired)]
+    [RegularExpression(ValidationHelper.RegularExpression.PostalCode, ErrorMessage = ValidationHelper.ErrorMessage.FieldIncorrectFormat)]
+    private string _postalCode = string.Empty;
     partial void OnPostalCodeChanged(string value)
     {
         if (_places is null) return;
@@ -138,14 +106,44 @@ public partial class CreateOfferViewModel : BaseViewModel
         
         AddOfferCommand.NotifyCanExecuteChanged();
     }
+
+    [ObservableProperty]
+    private ICollectionView? _placesView;
+
+    [ObservableProperty]
+    [Required(ErrorMessage = ValidationHelper.ErrorMessage.FieldIsRequired)]
+    private string? _selectedPlace;
     partial void OnSelectedPlaceChanged(string? value) => AddOfferCommand.NotifyCanExecuteChanged();
+
+    [ObservableProperty]
+    private bool _placesFound;
+    
+    [ObservableProperty]
+    [RegularExpression(ValidationHelper.RegularExpression.StreetName, ErrorMessage = ValidationHelper.ErrorMessage.FieldContainsIllegalCharacters)]
+    private string _streetName = string.Empty;
     partial void OnStreetNameChanged(string value) => ValidateProperty(value, nameof(StreetName));
+
+    [ObservableProperty]
+    [Required(ErrorMessage = ValidationHelper.ErrorMessage.FieldIsRequired)]
+    [RegularExpression(ValidationHelper.RegularExpression.StreetNumber, ErrorMessage = ValidationHelper.ErrorMessage.FieldContainsIllegalCharacters)]
+    private string _streetNumber = string.Empty;
     partial void OnStreetNumberChanged(string value)
     {
         ValidateProperty(value, nameof(StreetNumber));
         AddOfferCommand.NotifyCanExecuteChanged();
     }
+
+    [ObservableProperty]
+    private int[] _durationInDays = [1, 2, 3, 4, 5, 6, 7];
+
+    [ObservableProperty]
+    [Required(ErrorMessage = ValidationHelper.ErrorMessage.FieldIsRequired)]
+    private int? _selectedDurationInDays;
     partial void OnSelectedDurationInDaysChanged(int? value) => AddOfferCommand.NotifyCanExecuteChanged();
+
+    [ObservableProperty]
+    [Required(ErrorMessage = ValidationHelper.ErrorMessage.FieldIsRequired)]
+    private string _offerPrice = string.Empty;
     partial void OnOfferPriceChanged(string value) => AddOfferCommand.NotifyCanExecuteChanged();
     
     private bool CanAddOffer()

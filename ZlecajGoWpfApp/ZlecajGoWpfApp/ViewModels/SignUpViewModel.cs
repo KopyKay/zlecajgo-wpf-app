@@ -28,12 +28,14 @@ public partial class SignUpViewModel : BaseViewModel
     [MinLength(ValidationHelper.Constraint.PasswordMinLength, ErrorMessage = ValidationHelper.ErrorMessage.PasswordIsTooShort)]
     [RegularExpression(ValidationHelper.RegularExpression.Password, ErrorMessage = ValidationHelper.ErrorMessage.PasswordDoesNotMeetRequirements)]
     private string _password = string.Empty;
-    
+    partial void OnPasswordChanged(string value) => ValidatePassword();
+
     [ObservableProperty]
     [Required(ErrorMessage = ValidationHelper.ErrorMessage.FieldIsRequired)]
     [ValidationHelper.ComparePasswords(nameof(Password))]
     private string _confirmPassword = string.Empty;
-    
+    partial void OnConfirmPasswordChanged(string value) => ValidatePassword();
+
     [ObservableProperty]
     private bool _hasLowerCase;
     
@@ -91,16 +93,6 @@ public partial class SignUpViewModel : BaseViewModel
         NavigationService.NavigateTo<SetUpUserCredentialsPage>();
     }
     
-    partial void OnPasswordChanged(string value)
-    {
-        ValidatePassword();
-    }
-
-    partial void OnConfirmPasswordChanged(string value)
-    {
-        ValidatePassword();
-    }
-
     private void ValidatePassword()
     {
         HasLowerCase = Password.Any(char.IsLower);
