@@ -74,7 +74,7 @@ public partial class OffersViewModel : BaseViewModel
     private string? _selectedCity;
     
     [RelayCommand]
-    private async Task FilterOffers()
+    private async Task FilterOffersAsync()
     {
         IsBusy = true;
         
@@ -96,7 +96,7 @@ public partial class OffersViewModel : BaseViewModel
     }
     
     [RelayCommand]
-    private async Task ResetFilterOptions()
+    private async Task ResetFilterOptionsAsync()
     {
         IsBusy = true;
         
@@ -156,15 +156,19 @@ public partial class OffersViewModel : BaseViewModel
             return;
         }
         
-        var userOffers = Offers.Where(o => o.ProviderId == _currentUser.Id).ToList();
-
-        if (userOffers.Count == 0)
-        {
-            accountMenuWindow.ShowDialog();
-            return;
-        }
-        
-        userAccountMenuViewModel.UserOffers = new ObservableCollection<OfferDto>(userOffers);
+        userAccountMenuViewModel.Types = Types;
+        userAccountMenuViewModel.Categories = Categories;
+        userAccountMenuViewModel.Statuses = new ObservableCollection<StatusDto>(
+            Statuses.Where(s => s.Id is 
+                (int)OfferStatus.Pending or 
+                (int)OfferStatus.Taken or 
+                (int)OfferStatus.Completed
+            )
+        );
+        userAccountMenuViewModel.UserOffers = new ObservableCollection<OfferDto>(
+            Offers.Where(o => o.ProviderId == _currentUser.Id
+            )
+        );
         
         accountMenuWindow.ShowDialog();
     }

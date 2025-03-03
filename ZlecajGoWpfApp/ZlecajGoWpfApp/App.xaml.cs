@@ -26,7 +26,7 @@ public partial class App : Application
                 services.AddTransient<CreateOfferWindow>();
                 services.AddTransient<OfferDetailsWindow>();
                 services.AddTransient<UserAccountMenuContextWindow>();
-                services.AddTransient<UserAccountMenuNavigationPage>();
+                services.AddSingleton<UserAccountMenuNavigationPage>();
                 services.AddTransient<UserProvidedOffersPage>();
                 services.AddTransient<UserDetailsPage>();
                 

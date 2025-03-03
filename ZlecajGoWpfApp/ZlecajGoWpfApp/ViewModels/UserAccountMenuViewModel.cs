@@ -1,8 +1,11 @@
 ﻿using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
+using System.Globalization;
 using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Data;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using ZlecajGoApi;
@@ -27,17 +30,23 @@ public partial class UserAccountMenuViewModel
     internal static Window? UserAccountMenuContextWindow;
     internal static Frame? UserAccountMenuContextWindowFrame;
     
+    [RelayCommand]
+    private void NavigateToUserMenuNavigation() 
+        => NavigationService.NavigateTo<UserAccountMenuNavigationPage>(UserAccountMenuContextWindow, UserAccountMenuContextWindowFrame!.Name);
+    
+#region UserDetailsCode
     [ObservableProperty]
     private UserDto _currentUser = UserSession.Instance.CurrentUser;
-    
-    [ObservableProperty]
-    private ObservableCollection<OfferDto>? _userOffers;
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(EditModeDisabled))]
     private bool _editModeEnabled;
     public bool EditModeDisabled => !EditModeEnabled;
 
+    [RelayCommand]
+    private void NavigateToUserDetails() 
+        => NavigationService.NavigateTo<UserDetailsPage>(UserAccountMenuContextWindow, UserAccountMenuContextWindowFrame!.Name);
+    
     [ObservableProperty]
     private string? _newEmail;
     
@@ -95,7 +104,7 @@ public partial class UserAccountMenuViewModel
     }
     
     [RelayCommand(CanExecute = nameof(CanSaveChanges))]
-    private async Task SaveChanges()
+    private async Task SaveChangesAsync()
     {
         ValidateNotEmptyFields();
 
@@ -167,18 +176,6 @@ public partial class UserAccountMenuViewModel
             NavigationService.NavigateTo<LogInPage>();
         }
     }
-    
-    [RelayCommand]
-    private void NavigateToUserMenuNavigation() 
-        => NavigationService.NavigateTo<UserAccountMenuNavigationPage>(UserAccountMenuContextWindow, UserAccountMenuContextWindowFrame!.Name);
-
-    [RelayCommand]
-    private void NavigateToUserOffers() 
-        => NavigationService.NavigateTo<UserProvidedOffersPage>(UserAccountMenuContextWindow, UserAccountMenuContextWindowFrame!.Name);
-
-    [RelayCommand]
-    private void NavigateToUserDetails() 
-        => NavigationService.NavigateTo<UserDetailsPage>(UserAccountMenuContextWindow, UserAccountMenuContextWindowFrame!.Name);
 
     [RelayCommand]
     private void CloseWindow() => UserAccountMenuContextWindow!.Close();
@@ -201,4 +198,71 @@ public partial class UserAccountMenuViewModel
     }
     
     private void RefreshUser() => CurrentUser = UserSession.Instance.CurrentUser;
+#endregion
+
+#region UserProvidedOffersCode
+    [ObservableProperty]
+    private static ObservableCollection<OfferDto> _userOffers = [];
+    
+    [ObservableProperty]
+    private static ObservableCollection<TypeDto> _types = [];
+    
+    [ObservableProperty]
+    private static ObservableCollection<CategoryDto> _categories = [];
+    
+    [ObservableProperty]
+    private static ObservableCollection<StatusDto> _statuses = [];
+    
+    [ObservableProperty]
+    private ICollectionView _userOffersView = CollectionViewSource.GetDefaultView(_userOffers);
+
+    [ObservableProperty]
+    private TypeDto? _selectedType;
+    
+    [ObservableProperty]
+    private CategoryDto? _selectedCategory;
+    
+    [ObservableProperty]
+    private StatusDto? _selectedStatus;
+    
+    [ObservableProperty]
+    private string? _fromDate;
+    
+    [ObservableProperty]
+    private string? _toDate;
+    
+    [RelayCommand]
+    private void NavigateToUserOffers() 
+        => NavigationService.NavigateTo<UserProvidedOffersPage>(UserAccountMenuContextWindow, UserAccountMenuContextWindowFrame!.Name);
+
+    [RelayCommand]
+    private void FilterOffers()
+    {
+        UserOffersView.Filter = o =>
+        {
+            var offer = (OfferDto)o;
+            var isTypeMatch = SelectedType is null || SelectedType.Name == offer.TypeName;
+            var isCategoryMatch = SelectedCategory is null || SelectedCategory.Name == offer.CategoryName;
+            var isStatusMatch = SelectedStatus is null || SelectedStatus.Name == offer.StatusName;
+
+            DateTime? fromDate = FromDate is null ? null : DateTime.Parse(FromDate, CultureInfo.InvariantCulture);
+            DateTime? toDate = ToDate is null ? null : DateTime.Parse(ToDate, CultureInfo.InvariantCulture);
+            var isDateMatch = (!fromDate.HasValue || offer.PostDateTime.Date >= fromDate.Value.Date) &&
+                              (!toDate.HasValue || offer.PostDateTime.Date <= toDate.Value.Date);
+            
+            return isTypeMatch && isCategoryMatch && isStatusMatch && isDateMatch;
+        };
+    }
+
+    [RelayCommand]
+    private void ResetFilterOptions()
+    {
+        SelectedType = null;
+        SelectedCategory = null;
+        SelectedStatus = null;
+        FromDate = null;
+        ToDate = null;
+        UserOffersView.Filter = null;
+    }
+#endregion
 }

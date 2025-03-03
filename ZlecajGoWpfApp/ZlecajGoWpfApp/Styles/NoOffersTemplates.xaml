@@ -1,0 +1,28 @@
+﻿<ResourceDictionary
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes">
+
+    <DataTemplate x:Key="NoOffersTemplate">
+        <StackPanel
+            HorizontalAlignment="Center"
+            VerticalAlignment="Center"
+            Orientation="Vertical">
+            <TextBlock
+                FontSize="{StaticResource BigFontSize}"
+                FontWeight="Bold"
+                TextAlignment="Center"
+                Text="Nie znaleziono ofert"
+                Foreground="{StaticResource AccentColorsGradientBrush}"/>
+            <materialDesign:PackIcon
+                Width="128"
+                Height="128"
+                Margin="0,10,0,0"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center"
+                Kind="{Binding RelativeSource={RelativeSource AncestorType=ContentControl}, Path=Tag}"
+                Foreground="{StaticResource AccentColorsGradientBrush}"/>
+        </StackPanel>
+    </DataTemplate>
+
+</ResourceDictionary>

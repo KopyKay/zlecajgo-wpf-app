@@ -8,6 +8,7 @@
     Title="ZlecajGO"
     MinWidth="980"
     MinHeight="670"
+    WindowState="Maximized"
     Activated="MainWindow_OnActivated"
     Background="{DynamicResource MaterialDesignPaper}"
     Deactivated="MainWindow_OnDeactivated"

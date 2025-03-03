@@ -4,12 +4,239 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:model="clr-namespace:ZlecajGoApi.Dtos;assembly=ZlecajGoApi"
     xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
     xmlns:viewModel="clr-namespace:ZlecajGoWpfApp.ViewModels"
-    Width="800"
-    Height="450"
+    Width="400"
+    Height="600"
     d:DataContext="{d:DesignInstance Type=viewModel:UserAccountMenuViewModel,
                                      IsDesignTimeCreatable=True}"
+    IsEnabled="{Binding IsNotBusy}"
     mc:Ignorable="d">
-    <Grid/>
+
+    <Page.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="/Styles/NoOffersTemplates.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Page.Resources>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+
+        <!--  Filter toggle button  -->
+        <materialDesign:PopupBox
+            Grid.Row="0"
+            Grid.Column="0"
+            Grid.ColumnSpan="2"
+            Margin="0,20,20,0"
+            HorizontalAlignment="Right"
+            VerticalAlignment="Top"
+            Panel.ZIndex="1"
+            materialDesign:RippleAssist.IsDisabled="True"
+            PopupMode="Click"
+            StaysOpen="True">
+            <materialDesign:PopupBox.Effect>
+                <DropShadowEffect
+                    BlurRadius="10"
+                    ShadowDepth="0"/>
+            </materialDesign:PopupBox.Effect>
+            <materialDesign:PopupBox.ToggleContent>
+                <Grid>
+                    <Ellipse
+                        Width="50"
+                        Height="50"
+                        Fill="{StaticResource AccentColorBrush1}"/>
+                    <materialDesign:PackIcon
+                        Width="36"
+                        Height="36"
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Center"
+                        Foreground="White"
+                        Kind="Filter"/>
+                </Grid>
+            </materialDesign:PopupBox.ToggleContent>
+            <UniformGrid
+                Width="150"
+                Height="350"
+                Margin="10,-10"
+                Rows="7">
+                <TextBlock
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center"
+                    FontSize="{StaticResource RegularFontSize}"
+                    Text="Filtruj oferty:"/>
+                <ComboBox
+                    materialDesign:HintAssist.Hint="Typ"
+                    FontSize="{StaticResource RegularFontSize}"
+                    DisplayMemberPath="Name"
+                    IsReadOnly="True"
+                    ItemsSource="{Binding Types}"
+                    SelectedItem="{Binding SelectedType}"/>
+                <ComboBox
+                    materialDesign:HintAssist.Hint="Kategoria"
+                    FontSize="{StaticResource RegularFontSize}"
+                    DisplayMemberPath="Name"
+                    IsReadOnly="True"
+                    ItemsSource="{Binding Categories}"
+                    SelectedItem="{Binding SelectedCategory}"/>
+                <ComboBox
+                    materialDesign:HintAssist.Hint="Status"
+                    FontSize="{StaticResource RegularFontSize}"
+                    DisplayMemberPath="Name"
+                    IsReadOnly="True"
+                    ItemsSource="{Binding Statuses}"
+                    SelectedItem="{Binding SelectedStatus}"/>
+                <DatePicker
+                    materialDesign:HintAssist.Hint="Od daty"
+                    FontSize="{StaticResource RegularFontSize}"
+                    SelectedDate="{Binding FromDate}"
+                    Focusable="False"/>
+                <DatePicker
+                    materialDesign:HintAssist.Hint="Do daty"
+                    FontSize="{StaticResource RegularFontSize}"
+                    SelectedDate="{Binding ToDate}"
+                    Focusable="False"/>
+                <UniformGrid Columns="2">
+                    <Button
+                        Margin="0,0,5,0"
+                        Command="{Binding FilterOffersCommand}"
+                        Style="{StaticResource MaterialDesignRaisedButton}">
+                        <Button.Content>
+                            <materialDesign:PackIcon
+                                Width="20"
+                                Height="20"
+                                Kind="Check"/>
+                        </Button.Content>
+                    </Button>
+                    <Button
+                        Margin="5,0,0,0"
+                        Command="{Binding ResetFilterOptionsCommand}"
+                        Style="{StaticResource MaterialDesignRaisedButton}">
+                        <Button.Content>
+                            <materialDesign:PackIcon
+                                Width="20"
+                                Height="20"
+                                Kind="Broom"/>
+                        </Button.Content>
+                    </Button>
+                </UniformGrid>
+            </UniformGrid>
+        </materialDesign:PopupBox>
+
+        <!--  No offers message  -->
+        <ContentControl
+            Grid.Row="0"
+            Grid.Column="0"
+            Grid.ColumnSpan="2"
+            ContentTemplate="{StaticResource NoOffersTemplate}"
+            DataContext="{Binding .}"
+            Visibility="{Binding UserOffersView.IsEmpty, Converter={StaticResource BooleanToVisibilityConverter}}"
+            Tag="PlaylistRemove"/>
+
+        <!--  Offers list  -->
+        <ListView
+            Grid.Row="0"
+            Grid.Column="0"
+            Grid.ColumnSpan="2"
+            HorizontalContentAlignment="Stretch"
+            ItemsSource="{Binding UserOffersView}"
+            ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+            ScrollViewer.VerticalScrollBarVisibility="Disabled"
+            VirtualizingPanel.ScrollUnit="Pixel">
+            <ListView.ItemTemplate>
+                <DataTemplate DataType="model:OfferDto">
+                    <materialDesign:Card
+                        Height="250"
+                        Padding="10"
+                        Background="{StaticResource AccentColorsGradientBrush}">
+
+                        <!--  TODO: Add input bindings Card.InputBinding like in OffersPage.xaml  -->
+
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="*"/>
+                                <RowDefinition Height="*"/>
+                                <RowDefinition Height="*"/>
+                                <RowDefinition Height="*"/>
+                                <RowDefinition Height="*"/>
+                            </Grid.RowDefinitions>
+                            <TextBlock
+                                Grid.Row="0"
+                                FontSize="{StaticResource BigFontSize}"
+                                FontWeight="Bold"
+                                Foreground="White"
+                                TextAlignment="Center"
+                                TextTrimming="CharacterEllipsis"
+                                Text="{Binding TypeName}"/>
+                            <TextBlock
+                                Grid.Row="1"
+                                FontSize="{StaticResource MediumFontSize}"
+                                Foreground="White"
+                                TextAlignment="Center"
+                                TextTrimming="CharacterEllipsis"
+                                Text="{Binding PostDateTime, StringFormat='Opublikowano: {0:dd.MM.yyyy}', ConverterCulture='pl-PL'}"/>
+                            <TextBlock
+                                Grid.Row="2"
+                                FontSize="{StaticResource RegularFontSize}"
+                                Foreground="White"
+                                TextTrimming="CharacterEllipsis"
+                                Text="{Binding Title}"/>
+                            <TextBlock
+                                Grid.Row="3"
+                                FontSize="{StaticResource RegularFontSize}"
+                                Foreground="White"
+                                TextWrapping="Wrap"
+                                Text="Wykonawca: brak"/>
+                            <materialDesign:Card Grid.Row="4">
+                                <TextBlock
+                                    VerticalAlignment="Center"
+                                    FontSize="{StaticResource MediumFontSize}"
+                                    FontWeight="Bold"
+                                    Foreground="{StaticResource AccentColorBrush2}"
+                                    TextWrapping="Wrap"
+                                    TextAlignment="Center"
+                                    Text="{Binding StatusName}"/>
+                            </materialDesign:Card>
+                        </Grid>
+                    </materialDesign:Card>
+                </DataTemplate>
+            </ListView.ItemTemplate>
+        </ListView>
+        <Border
+            Grid.Row="0"
+            Grid.Column="0"
+            Grid.ColumnSpan="2"
+            Style="{StaticResource ProgressBarBorderDefaultStyle}">
+            <ProgressBar Style="{StaticResource ProgressBarDefaultStyle}"/>
+        </Border>
+
+        <!--  Go back button  -->
+        <Border
+            Grid.Row="1"
+            Grid.Column="0"
+            Grid.ColumnSpan="2"
+            Height="50"
+            Margin="-10,0,-10,-10"
+            Background="{StaticResource MaterialDesignCardBackground}">
+            <Border.Effect>
+                <DropShadowEffect
+                    BlurRadius="25"
+                    Direction="90"
+                    ShadowDepth="0"/>
+            </Border.Effect>
+            <Button
+                Command="{Binding NavigateToUserMenuNavigationCommand}"
+                Content="Wróć"
+                Style="{StaticResource HoverTriggerButton}"/>
+        </Border>
+    </Grid>
 </Page>
