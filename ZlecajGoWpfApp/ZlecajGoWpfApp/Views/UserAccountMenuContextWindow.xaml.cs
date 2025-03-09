@@ -5,16 +5,16 @@ namespace ZlecajGoWpfApp.Views;
 
 public partial class UserAccountMenuContextWindow : Window
 {
-    public UserAccountMenuContextWindow(UserAccountMenuViewModel viewModel)
+    public UserAccountMenuContextWindow(UserAccountMenuNavigationViewModel viewModel)
     {
         InitializeComponent();
 
         SizeChanged += UserAccountMenuContextWindow_OnSizeChanged;
         
         DataContext = viewModel;
-        UserAccountMenuViewModel.UserAccountMenuContextWindow = this;
-        UserAccountMenuViewModel.UserAccountMenuContextWindowFrame = this.MainFrame;
-        viewModel.NavigateToUserMenuNavigationCommand.Execute(this);
+        UserAccountMenuNavigationViewModel.UserAccountMenuContextWindow = this;
+        UserAccountMenuNavigationViewModel.UserAccountMenuContextWindowFrame = this.MainFrame;
+        viewModel.NavigateToUserAccountMenuNavigationCommand.Execute(this);
     }
 
     private void UserAccountMenuContextWindow_OnSizeChanged(object? sender, EventArgs e)

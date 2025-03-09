@@ -6,7 +6,7 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
     xmlns:viewModel="clr-namespace:ZlecajGoWpfApp.ViewModels"
-    d:DataContext="{d:DesignInstance Type=viewModel:UserAccountMenuViewModel,
+    d:DataContext="{d:DesignInstance Type=viewModel:UserAccountMenuNavigationViewModel,
                                      IsDesignTimeCreatable=True}"
     IsEnabled="{Binding IsNotBusy}"
     SizeToContent="WidthAndHeight"

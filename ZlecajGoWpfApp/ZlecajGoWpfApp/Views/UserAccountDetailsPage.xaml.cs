@@ -6,13 +6,22 @@ using ZlecajGoWpfApp.ViewModels;
 
 namespace ZlecajGoWpfApp.Views;
 
-public partial class UserDetailsPage : Page
+public partial class UserAccountDetailsPage : Page
 {
-    public UserDetailsPage(UserAccountMenuViewModel viewModel)
+    public UserAccountDetailsPage(UserAccountDetailsViewModel viewModel)
     {
         InitializeComponent();
         
         DataContext = viewModel;
+
+        Loaded += OnLoaded;
+    }
+    
+    private void OnLoaded(object sender, RoutedEventArgs e)
+    {
+        var window = Window.GetWindow(this) as UserAccountMenuContextWindow;
+        UserAccountDetailsViewModel.ParentWindow = window;
+        UserAccountDetailsViewModel.ParentWindowFrame = window!.MainFrame;
     }
     
     private void TextBox_OnPasting(object sender, DataObjectPastingEventArgs e) 

@@ -1,3 +1,4 @@
+using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using ZlecajGoApi;
 using ZlecajGoWpfApp.Services.Navigation;
@@ -25,4 +26,21 @@ public abstract partial class BaseViewModel
     private string _title = string.Empty;
     
     public bool IsNotBusy => !IsBusy;
+    
+    protected virtual async Task FetchDataAsync<T>(ObservableCollection<T> collection, Func<Task<List<T>?>> fetchDataFunc)
+    {
+        var data = await fetchDataFunc();
+
+        if (data is null) return;
+        
+        if (collection.Count != 0)
+        {
+            collection.Clear();
+        }
+
+        foreach (var item in data)
+        {
+            collection.Add(item);
+        }
+    }
 }

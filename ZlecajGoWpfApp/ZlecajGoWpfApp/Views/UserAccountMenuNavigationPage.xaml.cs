@@ -5,7 +5,7 @@ namespace ZlecajGoWpfApp.Views;
 
 public partial class UserAccountMenuNavigationPage : Page
 {
-    public UserAccountMenuNavigationPage(UserAccountMenuViewModel viewModel)
+    public UserAccountMenuNavigationPage(UserAccountMenuNavigationViewModel viewModel)
     {
         InitializeComponent();
         

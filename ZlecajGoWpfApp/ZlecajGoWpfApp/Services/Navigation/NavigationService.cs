@@ -6,25 +6,25 @@ namespace ZlecajGoWpfApp.Services.Navigation;
 
 public class NavigationService(IServiceProvider serviceProvider, MainWindow mainWindow) : INavigationService
 {
-    public void NavigateTo<T>(Window? window = null, string? frameName = null) where T : Page
+    public void NavigateTo<T>(Window? window = null, Frame? frame = null) where T : Page
     {
         var page = serviceProvider.GetRequiredService<T>();
 
-        if (window is not null && frameName is null)
+        if (window is not null && frame is null)
         {
             window.Content = page;
             return;
         }
 
-        if (window is not null && frameName is not null)
+        if (window is not null && frame is not null)
         {
-            if (window.FindName(frameName) is Frame frame)
+            if (window.FindName(frame.Name) is Frame frameObj)
             {
-                frame.Content = page;
+                frameObj.Content = page;
             }
             else
             {
-                throw new InvalidOperationException($"A Frame with the name '{frameName}' was not found in the specified window.");
+                throw new InvalidOperationException($"A Frame with the name '{frame}' was not found in the specified window.");
             }
             return;
         }

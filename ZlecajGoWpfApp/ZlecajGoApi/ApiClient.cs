@@ -126,6 +126,9 @@ public class ApiClient : IApiClient
     public async Task<List<OfferDto>?> GetOffersAsync() 
         => await GetDataAsync<OfferDto>(OffersEndpoint);
 
+    public async Task<List<OfferDto>?> GetUserOffersAsync()
+        => await GetDataAsync<OfferDto>($"{OffersEndpoint}/currentUserOffers");
+    
     public async Task<List<CategoryDto>> GetCategoriesAsync() 
         => (await GetDataAsync<CategoryDto>(CategoriesEndpoint))!;
 

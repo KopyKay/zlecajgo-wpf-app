@@ -1,5 +1,5 @@
 ﻿<Page
-    x:Class="ZlecajGoWpfApp.Views.UserDetailsPage"
+    x:Class="ZlecajGoWpfApp.Views.UserAccountDetailsPage"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
@@ -8,7 +8,7 @@
     xmlns:viewModel="clr-namespace:ZlecajGoWpfApp.ViewModels"
     Width="800"
     Height="500"
-    d:DataContext="{d:DesignInstance Type=viewModel:UserAccountMenuViewModel,
+    d:DataContext="{d:DesignInstance Type=viewModel:UserAccountDetailsViewModel,
                                      IsDesignTimeCreatable=True}"
     IsEnabled="{Binding IsNotBusy}"
     mc:Ignorable="d">
@@ -94,7 +94,7 @@
                 Grid.Row="0"
                 Grid.Column="0"
                 Visibility="{Binding EditModeDisabled, Converter={StaticResource BooleanToVisibilityConverter}}"
-                Command="{Binding NavigateToUserMenuNavigationCommand}"
+                Command="{Binding NavigateToUserAccountMenuNavigationCommand}"
                 Style="{StaticResource OptionButton}">
                 <Button.Content>
                     <StackPanel

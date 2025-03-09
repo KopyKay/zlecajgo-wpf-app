@@ -149,28 +149,7 @@ public partial class OffersViewModel : BaseViewModel
     private void OpenAccountMenuWindow()
     {
         var accountMenuWindow = _serviceProvider.GetService<UserAccountMenuContextWindow>();
-
-        if (accountMenuWindow?.DataContext is not UserAccountMenuViewModel userAccountMenuViewModel)
-        {
-            SnackbarService.EnqueueMessage("Nie udało się otworzyć okna konta użytkownika. Spróbuj ponownie później.");
-            return;
-        }
-        
-        userAccountMenuViewModel.Types = Types;
-        userAccountMenuViewModel.Categories = Categories;
-        userAccountMenuViewModel.Statuses = new ObservableCollection<StatusDto>(
-            Statuses.Where(s => s.Id is 
-                (int)OfferStatus.Pending or 
-                (int)OfferStatus.Taken or 
-                (int)OfferStatus.Completed
-            )
-        );
-        userAccountMenuViewModel.UserOffers = new ObservableCollection<OfferDto>(
-            Offers.Where(o => o.ProviderId == _currentUser.Id
-            )
-        );
-        
-        accountMenuWindow.ShowDialog();
+        accountMenuWindow!.ShowDialog();
     }
     
     [RelayCommand]
@@ -326,23 +305,6 @@ public partial class OffersViewModel : BaseViewModel
         foreach (var city in uniqueCities)
         {
             AvailableCities.Add(city);
-        }
-    }
-    
-    private async Task FetchDataAsync<T>(ObservableCollection<T> collection, Func<Task<List<T>?>> fetchDataFunc)
-    {
-        var data = await fetchDataFunc();
-
-        if (data is null) return;
-        
-        if (collection.Count != 0)
-        {
-            collection.Clear();
-        }
-
-        foreach (var item in data)
-        {
-            collection.Add(item);
         }
     }
 }

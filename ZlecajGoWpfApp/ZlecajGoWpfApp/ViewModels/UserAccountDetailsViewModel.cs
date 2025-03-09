@@ -1,11 +1,7 @@
-﻿using System.Collections.ObjectModel;
-using System.ComponentModel;
-using System.ComponentModel.DataAnnotations;
-using System.Globalization;
+﻿using System.ComponentModel.DataAnnotations;
 using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using ZlecajGoApi;
@@ -19,7 +15,7 @@ using ZlecajGoWpfApp.Views;
 
 namespace ZlecajGoWpfApp.ViewModels;
 
-public partial class UserAccountMenuViewModel
+public partial class UserAccountDetailsViewModel
 (
     INavigationService navigationService,
     ISnackbarService snackbarService,
@@ -27,14 +23,9 @@ public partial class UserAccountMenuViewModel
 )
 : BaseViewModel(navigationService, snackbarService, apiClient)
 {
-    internal static Window? UserAccountMenuContextWindow;
-    internal static Frame? UserAccountMenuContextWindowFrame;
+    internal static Window? ParentWindow;
+    internal static Frame? ParentWindowFrame;
     
-    [RelayCommand]
-    private void NavigateToUserMenuNavigation() 
-        => NavigationService.NavigateTo<UserAccountMenuNavigationPage>(UserAccountMenuContextWindow, UserAccountMenuContextWindowFrame!.Name);
-    
-#region UserDetailsCode
     [ObservableProperty]
     private UserDto _currentUser = UserSession.Instance.CurrentUser;
 
@@ -42,10 +33,6 @@ public partial class UserAccountMenuViewModel
     [NotifyPropertyChangedFor(nameof(EditModeDisabled))]
     private bool _editModeEnabled;
     public bool EditModeDisabled => !EditModeEnabled;
-
-    [RelayCommand]
-    private void NavigateToUserDetails() 
-        => NavigationService.NavigateTo<UserDetailsPage>(UserAccountMenuContextWindow, UserAccountMenuContextWindowFrame!.Name);
     
     [ObservableProperty]
     private string? _newEmail;
@@ -71,7 +58,11 @@ public partial class UserAccountMenuViewModel
     [ValidationHelper.ComparePasswords(nameof(NewPassword))]
     private string? _confirmNewPassword;
     partial void OnConfirmNewPasswordChanged(string? value) => SaveChangesCommand.NotifyCanExecuteChanged();
-
+    
+    [RelayCommand]
+    private void NavigateToUserAccountMenuNavigation() 
+        => NavigationService.NavigateTo<UserAccountMenuNavigationPage>(ParentWindow, ParentWindowFrame);
+    
     [RelayCommand]
     private void TurnOnEditMode()
     {
@@ -84,23 +75,6 @@ public partial class UserAccountMenuViewModel
         EditModeEnabled = false;
         ClearFields();
         ClearErrors();
-    }
-    
-    private void ClearFields()
-    {
-        NewEmail = null;
-        NewUserName = null;
-        NewPhoneNumber = null;
-        NewPassword = null;
-        ConfirmNewPassword = null;
-    }
-    
-    private bool CanSaveChanges()
-    {
-        var areAnyFieldsFilled = !string.IsNullOrWhiteSpace(NewUserName) || !string.IsNullOrWhiteSpace(NewPhoneNumber);
-        var arePasswordsFilled = !string.IsNullOrWhiteSpace(NewPassword) && !string.IsNullOrWhiteSpace(ConfirmNewPassword);
-
-        return areAnyFieldsFilled || arePasswordsFilled;
     }
     
     [RelayCommand(CanExecute = nameof(CanSaveChanges))]
@@ -171,14 +145,28 @@ public partial class UserAccountMenuViewModel
             CustomMessageBox.Show("Hasło zostało zmienione, zaloguj się ponownie.",
                 CustomMessageBoxType.Information, "Operacja zakończona pomyślnie");
                 
-            CloseWindow();
+            ParentWindow!.Close();
             ApiClient.LogOutUser();
             NavigationService.NavigateTo<LogInPage>();
         }
     }
+    
+    private bool CanSaveChanges()
+    {
+        var areAnyFieldsFilled = !string.IsNullOrWhiteSpace(NewUserName) || !string.IsNullOrWhiteSpace(NewPhoneNumber);
+        var arePasswordsFilled = !string.IsNullOrWhiteSpace(NewPassword) && !string.IsNullOrWhiteSpace(ConfirmNewPassword);
 
-    [RelayCommand]
-    private void CloseWindow() => UserAccountMenuContextWindow!.Close();
+        return areAnyFieldsFilled || arePasswordsFilled;
+    }
+    
+    private void ClearFields()
+    {
+        NewEmail = null;
+        NewUserName = null;
+        NewPhoneNumber = null;
+        NewPassword = null;
+        ConfirmNewPassword = null;
+    }
 
     private void ValidateIfNotEmpty(string? propertyValue, [CallerArgumentExpression("propertyValue")] string propertyName = "")
     {
@@ -198,71 +186,4 @@ public partial class UserAccountMenuViewModel
     }
     
     private void RefreshUser() => CurrentUser = UserSession.Instance.CurrentUser;
-#endregion
-
-#region UserProvidedOffersCode
-    [ObservableProperty]
-    private static ObservableCollection<OfferDto> _userOffers = [];
-    
-    [ObservableProperty]
-    private static ObservableCollection<TypeDto> _types = [];
-    
-    [ObservableProperty]
-    private static ObservableCollection<CategoryDto> _categories = [];
-    
-    [ObservableProperty]
-    private static ObservableCollection<StatusDto> _statuses = [];
-    
-    [ObservableProperty]
-    private ICollectionView _userOffersView = CollectionViewSource.GetDefaultView(_userOffers);
-
-    [ObservableProperty]
-    private TypeDto? _selectedType;
-    
-    [ObservableProperty]
-    private CategoryDto? _selectedCategory;
-    
-    [ObservableProperty]
-    private StatusDto? _selectedStatus;
-    
-    [ObservableProperty]
-    private string? _fromDate;
-    
-    [ObservableProperty]
-    private string? _toDate;
-    
-    [RelayCommand]
-    private void NavigateToUserOffers() 
-        => NavigationService.NavigateTo<UserProvidedOffersPage>(UserAccountMenuContextWindow, UserAccountMenuContextWindowFrame!.Name);
-
-    [RelayCommand]
-    private void FilterOffers()
-    {
-        UserOffersView.Filter = o =>
-        {
-            var offer = (OfferDto)o;
-            var isTypeMatch = SelectedType is null || SelectedType.Name == offer.TypeName;
-            var isCategoryMatch = SelectedCategory is null || SelectedCategory.Name == offer.CategoryName;
-            var isStatusMatch = SelectedStatus is null || SelectedStatus.Name == offer.StatusName;
-
-            DateTime? fromDate = FromDate is null ? null : DateTime.Parse(FromDate, CultureInfo.InvariantCulture);
-            DateTime? toDate = ToDate is null ? null : DateTime.Parse(ToDate, CultureInfo.InvariantCulture);
-            var isDateMatch = (!fromDate.HasValue || offer.PostDateTime.Date >= fromDate.Value.Date) &&
-                              (!toDate.HasValue || offer.PostDateTime.Date <= toDate.Value.Date);
-            
-            return isTypeMatch && isCategoryMatch && isStatusMatch && isDateMatch;
-        };
-    }
-
-    [RelayCommand]
-    private void ResetFilterOptions()
-    {
-        SelectedType = null;
-        SelectedCategory = null;
-        SelectedStatus = null;
-        FromDate = null;
-        ToDate = null;
-        UserOffersView.Filter = null;
-    }
-#endregion
 }

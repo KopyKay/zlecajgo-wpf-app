@@ -27,8 +27,8 @@ public partial class App : Application
                 services.AddTransient<OfferDetailsWindow>();
                 services.AddTransient<UserAccountMenuContextWindow>();
                 services.AddSingleton<UserAccountMenuNavigationPage>();
-                services.AddTransient<UserProvidedOffersPage>();
-                services.AddTransient<UserDetailsPage>();
+                services.AddTransient<UserAccountOffersPage>();
+                services.AddTransient<UserAccountDetailsPage>();
                 
                 services.AddTransient<LogInViewModel>();
                 services.AddTransient<SignUpViewModel>();
@@ -36,7 +36,9 @@ public partial class App : Application
                 services.AddTransient<OffersViewModel>();
                 services.AddTransient<CreateOfferViewModel>();
                 services.AddTransient<OfferDetailsViewModel>();
-                services.AddTransient<UserAccountMenuViewModel>();
+                services.AddSingleton<UserAccountMenuNavigationViewModel>();
+                services.AddTransient<UserAccountOffersViewModel>();
+                services.AddTransient<UserAccountDetailsViewModel>();
                 
                 services.AddSingleton<INavigationService, NavigationService>();
                 services.AddSingleton<ISnackbarService, SnackbarService>();
