@@ -17,4 +17,6 @@ public interface IApiClient
     Task<List<TypeDto>> GetTypesAsync();
     Task<List<UserDto>> GetUsersAsync();
     Task CreateOfferAsync(OfferDto dto);
+    Task UpdateOfferAsync(OfferDto dto);
+    Task DeleteOfferAsync(OfferDto dto);
 }

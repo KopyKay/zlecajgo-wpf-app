@@ -154,6 +154,29 @@ public class ApiClient : IApiClient
         
         // TODO: Send hidden notification to users via api to refresh their offers
     }
+
+    public async Task UpdateOfferAsync(OfferDto dto)
+    {
+        var currentUser = UserSession.Instance.CurrentUser;
+
+        var resource = $"{OffersEndpoint}/{dto.Id}";
+        var request = new RestRequest(resource, Method.Patch)
+            .AddAuthorizationHeader(currentUser.AccessToken)
+            .AddJsonBody(dto);
+        
+        await ExecuteRequestAsync<object>(request);
+    }
+
+    public async Task DeleteOfferAsync(OfferDto dto)
+    {
+        var currentUser = UserSession.Instance.CurrentUser;
+        
+        var resource = $"{OffersEndpoint}/{dto.Id}";
+        var request = new RestRequest(resource, Method.Delete)
+            .AddAuthorizationHeader(currentUser.AccessToken);
+
+        await ExecuteRequestAsync<object>(request);
+    }
     
     private async Task RefreshUserAsync(UserDto userDto)
     {

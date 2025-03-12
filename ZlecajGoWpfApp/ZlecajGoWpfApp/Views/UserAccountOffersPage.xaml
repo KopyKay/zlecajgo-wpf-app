@@ -6,6 +6,7 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:model="clr-namespace:ZlecajGoApi.Dtos;assembly=ZlecajGoApi"
     xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+    xmlns:enums="clr-namespace:ZlecajGoWpfApp.Enums"
     xmlns:viewModel="clr-namespace:ZlecajGoWpfApp.ViewModels"
     Width="400"
     Height="600"
@@ -19,6 +20,24 @@
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="/Styles/NoOffersTemplates.xaml"/>
             </ResourceDictionary.MergedDictionaries>
+
+            <Style
+                x:Key="OfferContextMenuItemStyle"
+                TargetType="MenuItem"
+                BasedOn="{StaticResource MaterialDesignMenuItem}">
+                <Style.Triggers>
+                    <DataTrigger
+                        Binding="{Binding StatusId, Converter={StaticResource OfferStatusToEnumConverter}}"
+                        Value="{x:Static enums:OfferStatus.Taken}">
+                        <Setter Property="IsEnabled" Value="False"/>
+                    </DataTrigger>
+                    <DataTrigger
+                        Binding="{Binding StatusId, Converter={StaticResource OfferStatusToEnumConverter}}"
+                        Value="{x:Static enums:OfferStatus.Completed}">
+                        <Setter Property="IsEnabled" Value="False"/>
+                    </DataTrigger>
+                </Style.Triggers>
+            </Style>
         </ResourceDictionary>
     </Page.Resources>
 
@@ -158,9 +177,25 @@
                         Height="250"
                         Padding="10"
                         Background="{StaticResource AccentColorsGradientBrush}">
-
-                        <!--  TODO: Add input bindings Card.InputBinding like in OffersPage.xaml  -->
-
+                        <materialDesign:Card.InputBindings>
+                            <MouseBinding
+                                Command="{Binding DataContext.ShowOfferExpireDateCommand, RelativeSource={RelativeSource AncestorType=ListView}}"
+                                CommandParameter="{Binding .}"
+                                MouseAction="LeftClick"/>
+                        </materialDesign:Card.InputBindings>
+                        <materialDesign:Card.ContextMenu>
+                            <ContextMenu>
+                                <MenuItem
+                                    Header="Edytuj"
+                                    Click="EditOffer_Click"
+                                    Style="{StaticResource OfferContextMenuItemStyle}"/>
+                                <MenuItem
+                                    Header="Usuń"
+                                    Click="DeleteOffer_Click"
+                                    Style="{StaticResource OfferContextMenuItemStyle}"/>
+                            </ContextMenu>
+                        </materialDesign:Card.ContextMenu>
+                        <materialDesign:Card.ToolTip>Kliknij prawym przyciskiem myszy aby edytować</materialDesign:Card.ToolTip>
                         <Grid>
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="*"/>

@@ -27,6 +27,7 @@
 
             <converters:BooleanToColorConverter x:Key="BooleanToColorConverter"/>
             <converters:DurationInDaysConverter x:Key="DurationInDaysConverter"/>
+            <converters:OfferStatusToEnumConverter x:Key="OfferStatusToEnumConverter"/>
         </ResourceDictionary>
     </Application.Resources>
 

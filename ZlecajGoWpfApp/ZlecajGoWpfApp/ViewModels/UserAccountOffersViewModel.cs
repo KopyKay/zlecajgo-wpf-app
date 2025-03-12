@@ -8,6 +8,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using ZlecajGoApi;
 using ZlecajGoApi.Dtos;
+using ZlecajGoWpfApp.CustomControls;
 using ZlecajGoWpfApp.Enums;
 using ZlecajGoWpfApp.Services.Navigation;
 using ZlecajGoWpfApp.Services.Snackbar;
@@ -90,6 +91,90 @@ public partial class UserAccountOffersViewModel
         UserOffersView.Filter = null;
     }
 
+    [RelayCommand]
+    private async Task EditOffer(OfferDto offerDto)
+    {
+        EditOfferDialog? editOfferDialog = null;
+
+        try
+        {
+            IsBusy = true;
+            
+            editOfferDialog = new EditOfferDialog(offerDto);
+            var dialogResult = editOfferDialog.ShowDialog();
+
+            if (dialogResult is false) return;
+            
+            var selectedDuration = editOfferDialog.SelectedDuration;
+            var newOfferPrice = editOfferDialog.NewOfferPrice;
+            var offerPostDateTime = offerDto.PostDateTime;
+            
+            var offerExpiryDateTime = selectedDuration != 0 ? offerPostDateTime.AddDays(selectedDuration) : offerDto.ExpiryDateTime;
+            var offerPrice = !string.IsNullOrWhiteSpace(newOfferPrice) ? decimal.Parse(newOfferPrice) : offerDto.Price;
+
+            if (offerExpiryDateTime == offerDto.ExpiryDateTime && offerPrice == offerDto.Price)
+            {
+                CustomMessageBox.Show("Nie dokonano żadnych zmian.", CustomMessageBoxType.Information, "Informacja");
+                return;
+            }
+            
+            offerDto.ExpiryDateTime = offerExpiryDateTime;
+            offerDto.Price = offerPrice;
+            
+            await ApiClient.UpdateOfferAsync(offerDto);
+            
+            CustomMessageBox.Show("Pomyślnie zaktualizowano ofertę!", CustomMessageBoxType.Confirmation, "Sukces");
+        }
+        catch (Exception)
+        {
+            CustomMessageBox.Show("Wystąpił błąd podczas edytowania!", CustomMessageBoxType.Error, "Błąd");
+        }
+        finally
+        {
+            editOfferDialog = null;
+            IsBusy = false;
+        }
+    }
+    
+    [RelayCommand]
+    private async Task DeleteOffer(OfferDto offerDto)
+    {
+        try
+        {
+            IsBusy = true;
+            
+            await ApiClient.DeleteOfferAsync(offerDto);
+            UserOffers.Remove(offerDto);
+            
+            CustomMessageBox.Show("Pomyślnie usunięto ofertę!", CustomMessageBoxType.Confirmation, "Sukces");
+        }
+        catch (Exception)
+        {
+            CustomMessageBox.Show("Wystąpił błąd podczas usuwania!", CustomMessageBoxType.Error, "Błąd");
+        }
+        finally
+        {
+            IsBusy = false;
+        }
+    }
+
+    [RelayCommand]
+    private static void ShowOfferExpireDate(OfferDto offerDto)
+    {
+        var remainingTime = offerDto.ExpiryDateTime - DateTime.Now;
+        var remainingDays = (int)Math.Floor(remainingTime.TotalDays);
+        var formattedExpiryDate = offerDto.ExpiryDateTime.ToString("dd MMMM yyyy");
+
+        var message = remainingDays switch
+        {
+            <= 0 => $"Oferta wygaśnie dziś, {formattedExpiryDate}.",
+            1 => $"Oferta jest ważna do jutra, {formattedExpiryDate}.",
+            _ => $"Oferta jest ważna do {formattedExpiryDate}.\nPozostało {remainingDays} dni."
+        };
+
+        CustomMessageBox.Show(message, CustomMessageBoxType.Information, "Data wygaśnięcia oferty");
+    }
+    
     public async Task GetUserOffersAsync()
     {
         try
