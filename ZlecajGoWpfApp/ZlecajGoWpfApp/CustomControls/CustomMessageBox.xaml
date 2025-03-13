@@ -23,7 +23,7 @@
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
         <materialDesign:PackIcon
-            x:Name="Icon"
+            x:Name="MbIcon"
             Grid.Row="0"
             Grid.Column="0"
             Width="48"

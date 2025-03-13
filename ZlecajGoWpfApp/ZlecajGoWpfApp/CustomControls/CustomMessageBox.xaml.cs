@@ -26,7 +26,7 @@ public partial class CustomMessageBox : BaseDialog
             {
                 Text = message
             },
-            Icon =
+            MbIcon = 
             {
                 Kind = type switch
                 {

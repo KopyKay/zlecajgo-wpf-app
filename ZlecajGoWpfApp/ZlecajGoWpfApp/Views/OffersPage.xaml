@@ -209,6 +209,7 @@
                                         CommandParameter="{Binding .}"
                                         MouseAction="LeftClick"/>
                                 </materialDesign:Card.InputBindings>
+                                <materialDesign:Card.ToolTip>Kliknij lewym przyciskiem myszy aby zobaczyć szczegóły ogłoszenia</materialDesign:Card.ToolTip>
                                 <Grid>
                                     <Grid.RowDefinitions>
                                         <RowDefinition Height="Auto"/>
