@@ -4,7 +4,7 @@ using System.Windows.Interop;
 
 namespace ZlecajGoWpfApp.CustomControls;
 
-public class BaseDialog : Window
+public abstract class BaseDialog : Window
 {
     [DllImport("user32.dll")]
     private static extern int GetWindowLong(IntPtr hWnd, int nIndex);
