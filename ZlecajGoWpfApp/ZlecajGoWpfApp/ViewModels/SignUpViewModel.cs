@@ -88,7 +88,7 @@ public partial class SignUpViewModel : BaseViewModel
             ConfirmPassword = ConfirmPassword
         };
         
-        await ApiClient.SignUpUserAsync(dto);
+        await ApiClient.RegisterAsync(dto);
 
         NavigationService.NavigateTo<SetUpUserCredentialsPage>();
     }

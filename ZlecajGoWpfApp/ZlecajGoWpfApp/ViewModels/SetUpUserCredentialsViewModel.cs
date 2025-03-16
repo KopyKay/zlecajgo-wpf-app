@@ -88,7 +88,7 @@ public partial class SetUpUserCredentialsViewModel : BaseViewModel
             PhoneNumber = phoneNumber
         };
         
-        await ApiClient.UpdateUserCredentialsAsync(dto);
+        await ApiClient.UpdateUserAsync(dto);
         
         SnackbarService.EnqueueMessage("Dane użytkownika zostały zaktualizowane!");
         

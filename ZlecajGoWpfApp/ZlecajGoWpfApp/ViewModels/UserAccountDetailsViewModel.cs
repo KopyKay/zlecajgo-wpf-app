@@ -104,7 +104,7 @@ public partial class UserAccountDetailsViewModel
                     PhoneNumber = string.IsNullOrWhiteSpace(NewPhoneNumber) ? null : NewPhoneNumber
                 };
                 
-                await ApiClient.UpdateUserCredentialsAsync(updateUserCredentialsDto);
+                await ApiClient.UpdateUserAsync(updateUserCredentialsDto);
             }
             
             if (!string.IsNullOrWhiteSpace(NewPassword) && !string.IsNullOrWhiteSpace(ConfirmNewPassword))
@@ -116,7 +116,7 @@ public partial class UserAccountDetailsViewModel
                     CurrentPassword = confirmPasswordDialog.EnteredPassword
                 };
                 
-                await ApiClient.ChangeUserPassword(changeUserPasswordDto);
+                await ApiClient.ChangeUserPasswordAsync(changeUserPasswordDto);
                 
                 passwordChanged = true;
             }

@@ -181,7 +181,7 @@ public partial class UserAccountOffersViewModel
         {
             IsBusy = true;
 
-            await FetchDataAsync(UserOffers, ApiClient.GetUserOffersAsync);
+            await FetchDataAsync(UserOffers, ApiClient.GetCurrentUserOffersAsync);
             await FetchDataAsync(Types, ApiClient.GetTypesAsync!);
             await FetchDataAsync(Categories, ApiClient.GetCategoriesAsync!);
             await FetchDataAsync(Statuses, ApiClient.GetStatusesAsync!);

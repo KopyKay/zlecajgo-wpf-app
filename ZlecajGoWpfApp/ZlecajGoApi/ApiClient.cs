@@ -13,6 +13,14 @@ public class ApiClient : IApiClient
     private const string BaseUrl = "https://localhost:7130/api/";
     private readonly RestClient _client = new(BaseUrl);
 
+    private static UserDto SessionUser
+    {
+        get => UserSession.Instance.CurrentUser;
+        set => UserSession.Instance.SetUser(value);
+    }
+    
+    private static string AccessToken => SessionUser.AccessToken;
+
     private readonly (string Name, Func<string, string> Value) _authHeader = ("Authorization", bearerToken => $"Bearer {bearerToken}");
     
     private const string IdentityEndpoint = "identity";
@@ -73,7 +81,7 @@ public class ApiClient : IApiClient
         PropertyNameCaseInsensitive = true
     };
     
-    public async Task SignUpUserAsync(SignUpDto dto)
+    public async Task RegisterAsync(SignUpDto dto)
     {
         if (await IsEmailExistsAsync(dto.Email))
         {
@@ -83,7 +91,7 @@ public class ApiClient : IApiClient
         await ExecuteRequestAsync<object>
         (
             _registerRequest.ToRestRequest()
-                .AddJsonBody(dto)
+                            .AddJsonBody(dto)
         );
         
         var logInDto = new LogInDto
@@ -92,10 +100,10 @@ public class ApiClient : IApiClient
             Password = dto.Password
         };
         
-        await LogInUserAsync(logInDto);
+        await LoginAsync(logInDto);
     }
     
-    public async Task<bool> LogInUserAsync(LogInDto dto)
+    public async Task<bool> LoginAsync(LogInDto dto)
     {
         try
         {
@@ -109,22 +117,22 @@ public class ApiClient : IApiClient
         var jsonDocument = await ExecuteRequestAsync<JsonDocument>
         (
             _loginRequest.ToRestRequest()
-                .AddJsonBody(dto)
+                         .AddJsonBody(dto)
         );
         
         var accessToken = jsonDocument.RootElement.GetProperty("accessToken").GetString()!;
         var refreshToken = jsonDocument.RootElement.GetProperty("refreshToken").GetString()!;
         
-        var user = await GetCurrentUserAsync(accessToken);
-        user.AccessToken = accessToken;
-        user.RefreshToken = refreshToken;
+        var userDto = await GetCurrentUserAsync(accessToken);
+        userDto.AccessToken = accessToken;
+        userDto.RefreshToken = refreshToken;
         
-        SetCurrentUser(user);
+        SessionUser = userDto;
         
-        return user.IsProfileCompleted;
+        return userDto.IsProfileCompleted;
     }
 
-    public async Task UpdateUserCredentialsAsync(UpdateUserCredentialsDto dto)
+    public async Task UpdateUserAsync(UpdateUserCredentialsDto dto)
     {
         if (!string.IsNullOrWhiteSpace(dto.UserName))
         {
@@ -142,42 +150,35 @@ public class ApiClient : IApiClient
             }
         }
         
-        var currentUser = GetCurrentUser();
-        var accessToken = currentUser.AccessToken;
-        
         await ExecuteRequestAsync<object>
         (
             _updateUserRequest.ToRestRequest()
-                .AddHeader(_authHeader.Name, _authHeader.Value(accessToken))
-                .AddJsonBody(dto)
+                              .AddHeader(_authHeader.Name, _authHeader.Value(AccessToken))
+                              .AddJsonBody(dto)
         );
 
-        await RefreshUserAsync(currentUser);
+        await RefreshUserAsync(SessionUser);
     }
     
-    public async Task<bool> CheckUserPassword(string password)
+    public async Task<bool> ConfirmUserPasswordAsync(string password)
     {
-        var accessToken = GetAccessToken();
-
         var result = await ExecuteRequestAsync<bool>
         (
             _confirmUserPasswordRequest.ToRestRequest()
-                .AddHeader(_authHeader.Name, _authHeader.Value(accessToken))
-                .AddJsonBody(new { Password = password })
+                                       .AddHeader(_authHeader.Name, _authHeader.Value(AccessToken))
+                                       .AddJsonBody(new { Password = password })
         );
         
         return result;
     }
     
-    public async Task<bool> ChangeUserPassword(ChangeUserPasswordDto dto)
+    public async Task<bool> ChangeUserPasswordAsync(ChangeUserPasswordDto dto)
     {
-        var accessToken = GetAccessToken();
-
         var result = await ExecuteRequestAsync<bool>
         (
             _changeUserPasswordRequest.ToRestRequest()
-                .AddHeader(_authHeader.Name, _authHeader.Value(accessToken))
-                .AddJsonBody(dto)
+                                      .AddHeader(_authHeader.Name, _authHeader.Value(AccessToken))
+                                      .AddJsonBody(dto)
         );
         
         return result;
@@ -189,7 +190,7 @@ public class ApiClient : IApiClient
     public async Task<List<OfferDto>?> GetOffersAsync() 
         => await GetDataAsync<OfferDto>(_getOfferOrOffersRequest);
 
-    public async Task<List<OfferDto>?> GetUserOffersAsync()
+    public async Task<List<OfferDto>?> GetCurrentUserOffersAsync()
         => await GetDataAsync<OfferDto>(_getCurrentUserOffersRequest);
     
     public async Task<List<CategoryDto>> GetCategoriesAsync() 
@@ -206,13 +207,11 @@ public class ApiClient : IApiClient
 
     public async Task CreateOfferAsync(OfferDto dto)
     {
-        var accessToken = GetAccessToken();
-
         await ExecuteRequestAsync<object>
         (
             _createOfferRequest.ToRestRequest()
-                .AddHeader(_authHeader.Name, _authHeader.Value(accessToken))
-                .AddJsonBody(dto)
+                               .AddHeader(_authHeader.Name, _authHeader.Value(AccessToken))
+                               .AddJsonBody(dto)
         );
         
         // TODO: Send hidden notification to users via api to refresh their offers
@@ -220,26 +219,22 @@ public class ApiClient : IApiClient
 
     public async Task UpdateOfferAsync(OfferDto dto)
     {
-        var accessToken = GetAccessToken();
-
         await ExecuteRequestAsync<object>
         (
             _updateOfferRequest.ToRestRequest()
-                .AddHeader(_authHeader.Name, _authHeader.Value(accessToken))
-                .AddQueryParameter("offerId", dto.Id)
-                .AddJsonBody(dto)
+                               .AddHeader(_authHeader.Name, _authHeader.Value(AccessToken))
+                               .AddQueryParameter("offerId", dto.Id)
+                               .AddJsonBody(dto)
         );
     }
 
     public async Task DeleteOfferAsync(OfferDto dto)
     {
-        var accessToken = GetAccessToken();
-
         await ExecuteRequestAsync<object>
         (
             _deleteOfferRequest.ToRestRequest()
-                .AddHeader(_authHeader.Name, _authHeader.Value(accessToken))
-                .AddQueryParameter("offerId", dto.Id)
+                               .AddHeader(_authHeader.Name, _authHeader.Value(AccessToken))
+                               .AddQueryParameter("offerId", dto.Id)
         );
     }
     
@@ -248,7 +243,7 @@ public class ApiClient : IApiClient
         var jsonDocument = await ExecuteRequestAsync<JsonDocument>
         (
             _refreshRequest.ToRestRequest()
-                .AddJsonBody(new { refreshToken = userDto.RefreshToken })
+                           .AddJsonBody(new { refreshToken = userDto.RefreshToken })
         );
         
         var accessToken = jsonDocument.RootElement.GetProperty("accessToken").GetString()!;
@@ -258,7 +253,7 @@ public class ApiClient : IApiClient
         userDto.AccessToken = accessToken;
         userDto.RefreshToken = refreshToken;
         
-        SetCurrentUser(userDto);
+        SessionUser = userDto;
     }
     
     private async Task<UserDto> GetCurrentUserAsync(string accessToken)
@@ -266,7 +261,7 @@ public class ApiClient : IApiClient
         var currentUser = await ExecuteRequestAsync<UserDto>
         (
             _getCurrentUserRequest.ToRestRequest()
-                .AddHeader(_authHeader.Name, _authHeader.Value(accessToken))
+                                  .AddHeader(_authHeader.Name, _authHeader.Value(accessToken))
         );
         
         return currentUser;
@@ -274,13 +269,13 @@ public class ApiClient : IApiClient
 
     private async Task<string> FindUserNameAsync(string email)
     {
-        var result = await ExecuteRequestAsync<string>
+        var userName = await ExecuteRequestAsync<string>
         (
             _findUserNameRequest.ToRestRequest()
-                .AddQueryParameter(nameof(email), email)
+                                .AddQueryParameter(nameof(email), email)
         );
         
-        return result;
+        return userName;
     }
     
     private async Task<bool> IsEmailExistsAsync(string email)
@@ -288,7 +283,7 @@ public class ApiClient : IApiClient
         var result = await ExecuteRequestAsync<bool>
         (
             _isEmailExistsRequest.ToRestRequest()
-                .AddQueryParameter(nameof(email), email)
+                                 .AddQueryParameter(nameof(email), email)
         );
         
         return result;
@@ -299,7 +294,7 @@ public class ApiClient : IApiClient
         var result = await ExecuteRequestAsync<bool>
         (
             _isPhoneNumberExistsRequest.ToRestRequest()
-                .AddQueryParameter(nameof(phoneNumber), phoneNumber)
+                                       .AddQueryParameter(nameof(phoneNumber), phoneNumber)
         );
         
         return result;
@@ -310,7 +305,7 @@ public class ApiClient : IApiClient
         var result = await ExecuteRequestAsync<bool>
         (
             _isUserNameExistsRequest.ToRestRequest()
-                .AddQueryParameter(nameof(userName), userName)
+                                    .AddQueryParameter(nameof(userName), userName)
         );
         
         return result;
@@ -318,12 +313,10 @@ public class ApiClient : IApiClient
 
     private async Task<List<T>?> GetDataAsync<T>(PreparedRequest request)
     {
-        var accessToken = GetAccessToken();
-
         var data = await ExecuteRequestAsync<List<T>>
         (
             request.ToRestRequest()
-                .AddHeader(_authHeader.Name, _authHeader.Value(accessToken))
+                   .AddHeader(_authHeader.Name, _authHeader.Value(AccessToken))
         );
         
         return data;
@@ -338,7 +331,9 @@ public class ApiClient : IApiClient
         if (string.IsNullOrWhiteSpace(response.Content))
         {
             if (typeof(T) == typeof(object) || typeof(T) == typeof(void))
+            {
                 return default!;
+            }
 
             throw new EmptyContentException();
         }
@@ -360,8 +355,4 @@ public class ApiClient : IApiClient
         if (response.Content is null)
             throw new EmptyContentException();
     }
-    
-    private static UserDto GetCurrentUser() => UserSession.Instance.CurrentUser;
-    private static string GetAccessToken() => GetCurrentUser().AccessToken;
-    private static void SetCurrentUser(UserDto userDto) => UserSession.Instance.SetUser(userDto);
 }

@@ -60,7 +60,7 @@ public partial class LogInViewModel : BaseViewModel
             Password = Password
         };
         
-        var result = await ApiClient.LogInUserAsync(dto);
+        var result = await ApiClient.LoginAsync(dto);
 
         if (result is false)
         {

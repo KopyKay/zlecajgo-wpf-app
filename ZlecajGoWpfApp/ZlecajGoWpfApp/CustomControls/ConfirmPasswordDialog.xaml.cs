@@ -37,7 +37,7 @@ public partial class ConfirmPasswordDialog : BaseDialog
 
     private async void ConfirmButton_OnClick(object sender, RoutedEventArgs e)
     {
-        var isPasswordCorrect = await _apiClient.CheckUserPassword(Password);
+        var isPasswordCorrect = await _apiClient.ConfirmUserPasswordAsync(Password);
 
         if (!isPasswordCorrect)
         {

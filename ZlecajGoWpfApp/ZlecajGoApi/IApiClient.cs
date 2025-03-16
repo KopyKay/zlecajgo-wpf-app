@@ -4,14 +4,14 @@ namespace ZlecajGoApi;
 
 public interface IApiClient
 {
-    Task SignUpUserAsync(SignUpDto dto);
-    Task<bool> LogInUserAsync(LogInDto dto);
-    Task UpdateUserCredentialsAsync(UpdateUserCredentialsDto dto);
+    Task RegisterAsync(SignUpDto dto);
+    Task<bool> LoginAsync(LogInDto dto);
+    Task UpdateUserAsync(UpdateUserCredentialsDto dto);
     void LogOutUser();
-    Task<bool> CheckUserPassword(string password);
-    Task<bool> ChangeUserPassword(ChangeUserPasswordDto dto);
+    Task<bool> ConfirmUserPasswordAsync(string password);
+    Task<bool> ChangeUserPasswordAsync(ChangeUserPasswordDto dto);
     Task<List<OfferDto>?> GetOffersAsync();
-    Task<List<OfferDto>?> GetUserOffersAsync();
+    Task<List<OfferDto>?> GetCurrentUserOffersAsync();
     Task<List<CategoryDto>> GetCategoriesAsync();
     Task<List<StatusDto>> GetStatusesAsync();
     Task<List<TypeDto>> GetTypesAsync();
