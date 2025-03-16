@@ -127,7 +127,7 @@ public partial class UserAccountOffersViewModel
         }
         catch (Exception)
         {
-            CustomMessageBox.Show("Wystąpił błąd podczas edytowania!", CustomMessageBoxType.Error, "Błąd");
+            CustomMessageBox.Show(DefaultErrorMessage, CustomMessageBoxType.Error);
         }
         finally
         {
@@ -150,7 +150,7 @@ public partial class UserAccountOffersViewModel
         }
         catch (Exception)
         {
-            CustomMessageBox.Show("Wystąpił błąd podczas usuwania!", CustomMessageBoxType.Error, "Błąd");
+            CustomMessageBox.Show(DefaultErrorMessage, CustomMessageBoxType.Error);
         }
         finally
         {
@@ -202,7 +202,7 @@ public partial class UserAccountOffersViewModel
         catch (Exception)
         {
             ParentWindow!.Close();
-            SnackbarService.EnqueueMessage("Wystąpił błąd podczas pobierania zleceń/usług.");
+            SnackbarService.EnqueueMessage(DefaultErrorMessage);
         }
         finally
         {

@@ -27,6 +27,8 @@ public abstract partial class BaseViewModel
     
     public bool IsNotBusy => !IsBusy;
     
+    protected const string DefaultErrorMessage = "Wystąpił błąd po stronie serwera. Spróbuj ponownie później.";
+    
     protected virtual async Task FetchDataAsync<T>(ObservableCollection<T> collection, Func<Task<List<T>?>> fetchDataFunc)
     {
         var data = await fetchDataFunc();

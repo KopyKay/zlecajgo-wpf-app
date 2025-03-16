@@ -3,6 +3,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using ZlecajGoApi;
 using ZlecajGoApi.Dtos;
+using ZlecajGoApi.Exceptions;
 using ZlecajGoWpfApp.Helpers;
 using ZlecajGoWpfApp.Services.Navigation;
 using ZlecajGoWpfApp.Services.Snackbar;
@@ -57,14 +58,32 @@ public partial class SignUpViewModel : BaseViewModel
     [RelayCommand]
     private async Task SignUp()
     {
+        ValidateAllProperties();
+
+        if (HasErrors) return;
+        
         try
         {
             IsBusy = true;
-            await TrySignUpAsync();
+        
+            var dto = new SignUpDto
+            {
+                Email = Email, 
+                Password = Password, 
+                ConfirmPassword = ConfirmPassword
+            };
+        
+            await ApiClient.RegisterAsync(dto);
+
+            NavigationService.NavigateTo<SetUpUserCredentialsPage>();
         }
-        catch (Exception e)
+        catch (EmailAlreadyInUseException e)
         {
             SnackbarService.EnqueueMessage(e.Message);
+        }
+        catch (Exception)
+        {
+            SnackbarService.EnqueueMessage(DefaultErrorMessage);
         }
         finally
         {
@@ -74,24 +93,6 @@ public partial class SignUpViewModel : BaseViewModel
     
     [RelayCommand]
     private void GoToLogInPage() => NavigationService.NavigateTo<LogInPage>();
-    
-    private async Task TrySignUpAsync()
-    {
-        ValidateAllProperties();
-
-        if (HasErrors) return;
-        
-        var dto = new SignUpDto
-        {
-            Email = Email, 
-            Password = Password, 
-            ConfirmPassword = ConfirmPassword
-        };
-        
-        await ApiClient.RegisterAsync(dto);
-
-        NavigationService.NavigateTo<SetUpUserCredentialsPage>();
-    }
     
     private void ValidatePassword()
     {

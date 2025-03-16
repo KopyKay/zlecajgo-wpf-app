@@ -17,7 +17,7 @@ public class PostalAddressService
 
     private Dictionary<string, List<string>>? _postalAddresses;
     
-    public async Task<Dictionary<string, List<string>>?> GetPostalAddressesAsync()
+    public async Task<Dictionary<string, List<string>>?> TryGetPostalAddressesAsync()
     {
         if (_postalAddresses is null)
         {

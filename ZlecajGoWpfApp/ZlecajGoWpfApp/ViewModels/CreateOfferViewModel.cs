@@ -172,7 +172,7 @@ public partial class CreateOfferViewModel : BaseViewModel
         {
             IsBusy = true;
             
-            var coordinates = await _mapService.GetCoordinates(PostalCode, SelectedPlace!, street);
+            var coordinates = await _mapService.TryGetCoordinates(PostalCode, SelectedPlace!, street);
             
             var dto = new OfferDto
             {
@@ -196,17 +196,13 @@ public partial class CreateOfferViewModel : BaseViewModel
             var typeName = SelectedOfferType.Id == (int)OfferType.Request ? "zlecenie" : "usługę";
             SnackbarService.EnqueueMessage($"Pomyślnie dodano {typeName}!");
         }
-        catch (InvalidAddressException e)
+        catch (Exception e) when (e is InvalidAddressException or CoordinatesNotFoundException)
         {
             CustomMessageBox.Show(e.Message, CustomMessageBoxType.Warning);
         }
-        catch (CoordinatesNotFoundException e)
-        {
-            CustomMessageBox.Show(e.Message, CustomMessageBoxType.Error);
-        }
         catch (Exception)
         {
-            CustomMessageBox.Show("Wystąpił problem po stronie serwera, spróbuj ponownie później.", CustomMessageBoxType.Error);
+            CustomMessageBox.Show(DefaultErrorMessage, CustomMessageBoxType.Error);
         }
         finally
         {
@@ -222,7 +218,7 @@ public partial class CreateOfferViewModel : BaseViewModel
         try
         {
             IsBusy = true;
-            _places = await _postalAddressService.GetPostalAddressesAsync();
+            _places = await _postalAddressService.TryGetPostalAddressesAsync();
         }
         catch (Exception e)
         {

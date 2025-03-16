@@ -37,15 +37,23 @@ public partial class ConfirmPasswordDialog : BaseDialog
 
     private async void ConfirmButton_OnClick(object sender, RoutedEventArgs e)
     {
-        var isPasswordCorrect = await _apiClient.ConfirmUserPasswordAsync(Password);
-
-        if (!isPasswordCorrect)
+        try
         {
-            CustomMessageBox.Show("Niepoprawne hasło", CustomMessageBoxType.Error, "Błąd");
-            return;
+            var isPasswordCorrect = await _apiClient.ConfirmUserPasswordAsync(Password);
+
+            if (!isPasswordCorrect)
+            {
+                CustomMessageBox.Show("Niepoprawne hasło", CustomMessageBoxType.Error, "Błąd");
+                return;
+            }
+            
+            DialogResult = true;
+            Close();
         }
-        
-        DialogResult = true;
-        Close();
+        catch (Exception)
+        {
+            CustomMessageBox.Show("Wystąpił błąd podczas weryfikacji hasła, spróbuj ponownie później.",
+                CustomMessageBoxType.Error, "Błąd");
+        }
     }
 }

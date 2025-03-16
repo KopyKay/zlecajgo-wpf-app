@@ -44,7 +44,7 @@ public class MapService : IMapService
         MapControl.MouseWheelZoomType = MouseWheelZoomType.MousePositionWithoutCenter;
     }
 
-    public async Task<(double lat, double lon)> GetCoordinates(string postalCode, string place, string street)
+    public async Task<(double lat, double lon)> TryGetCoordinates(string postalCode, string place, string street)
     {
         var nominatimQuery = $"{NominatimUrl}{NominatimSearchEndpoint}" +
                              $"&country=Poland" +

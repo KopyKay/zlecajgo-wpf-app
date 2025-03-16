@@ -6,6 +6,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using ZlecajGoApi;
 using ZlecajGoApi.Dtos;
+using ZlecajGoApi.Exceptions;
 using ZlecajGoWpfApp.CustomControls;
 using ZlecajGoWpfApp.Enums;
 using ZlecajGoWpfApp.Helpers;
@@ -123,14 +124,13 @@ public partial class UserAccountDetailsViewModel
 
             RefreshUser();
         }
-        catch (ArgumentException e)
+        catch (Exception e) when (e is UsernameAlreadyInUseException or PhoneNumberAlreadyInUseException)
         {
-            CustomMessageBox.Show(e.Message, CustomMessageBoxType.Error, "Błąd");
+            CustomMessageBox.Show(e.Message, CustomMessageBoxType.Error);
         }
         catch (Exception)
         {
-            CustomMessageBox.Show("Wystąpił błąd podczas aktualizacji danych użytkownika", 
-                CustomMessageBoxType.Error, "Błąd");
+            CustomMessageBox.Show(DefaultErrorMessage, CustomMessageBoxType.Error);
         }
         finally
         {

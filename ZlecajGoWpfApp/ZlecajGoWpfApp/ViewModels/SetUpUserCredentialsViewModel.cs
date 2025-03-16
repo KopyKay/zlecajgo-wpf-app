@@ -4,6 +4,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using ZlecajGoApi;
 using ZlecajGoApi.Dtos;
+using ZlecajGoApi.Exceptions;
 using ZlecajGoWpfApp.Helpers;
 using ZlecajGoWpfApp.Services.Navigation;
 using ZlecajGoWpfApp.Services.Snackbar;
@@ -54,44 +55,44 @@ public partial class SetUpUserCredentialsViewModel : BaseViewModel
     [RelayCommand]
     private async Task UpdateUserCredentialsAsync()
     {
+        ValidateAllProperties();
+
+        if (HasErrors) return;
+        
         try
         {
             IsBusy = true;
-            await TryUpdateUserCredentialsAsync();
+            
+            var fullName = $"{FirstName} {LastName}";
+            var birthDate = DateOnly.FromDateTime(
+                DateTime.ParseExact(BirthDate, "M/d/yyyy h:mm:ss tt", CultureInfo.InvariantCulture));
+            var phoneNumber = string.Concat(PhoneNumber.Where(c => !char.IsWhiteSpace(c)));
+        
+            var dto = new UpdateUserCredentialsDto
+            {
+                FullName = fullName,
+                BirthDate = birthDate,
+                UserName = UserName,
+                PhoneNumber = phoneNumber
+            };
+        
+            await ApiClient.UpdateUserAsync(dto);
+        
+            SnackbarService.EnqueueMessage("Dane użytkownika zostały zaktualizowane!");
+        
+            NavigationService.NavigateTo<OffersPage>();
         }
-        catch (Exception e)
+        catch (Exception e) when (e is UsernameAlreadyInUseException or PhoneNumberAlreadyInUseException)
         {
             SnackbarService.EnqueueMessage(e.Message);
+        }
+        catch (Exception)
+        {
+            SnackbarService.EnqueueMessage(DefaultErrorMessage);
         }
         finally
         {
             IsBusy = false;
         }
-    }
-    
-    private async Task TryUpdateUserCredentialsAsync()
-    {
-        ValidateAllProperties();
-
-        if (HasErrors) return;
-        
-        var fullName = $"{FirstName} {LastName}";
-        var birthDate = DateOnly.FromDateTime(
-                        DateTime.ParseExact(BirthDate, "M/d/yyyy h:mm:ss tt", CultureInfo.InvariantCulture));
-        var phoneNumber = string.Concat(PhoneNumber.Where(c => !char.IsWhiteSpace(c)));
-        
-        var dto = new UpdateUserCredentialsDto
-        {
-            FullName = fullName,
-            BirthDate = birthDate,
-            UserName = UserName,
-            PhoneNumber = phoneNumber
-        };
-        
-        await ApiClient.UpdateUserAsync(dto);
-        
-        SnackbarService.EnqueueMessage("Dane użytkownika zostały zaktualizowane!");
-        
-        NavigationService.NavigateTo<OffersPage>();
     }
 }

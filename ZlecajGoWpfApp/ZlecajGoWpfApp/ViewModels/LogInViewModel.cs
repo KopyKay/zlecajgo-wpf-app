@@ -7,6 +7,7 @@ using ZlecajGoWpfApp.Helpers;
 using ZlecajGoWpfApp.Services.Navigation;
 using ZlecajGoWpfApp.Services.Snackbar;
 using ZlecajGoWpfApp.Views;
+using UnauthorizedAccessException = ZlecajGoApi.Exceptions.UnauthorizedAccessException;
 
 namespace ZlecajGoWpfApp.ViewModels;
 
@@ -30,14 +31,39 @@ public partial class LogInViewModel : BaseViewModel
     [RelayCommand]
     private async Task LogIn()
     {
+        ValidateAllProperties();
+
+        if (HasErrors) return;
+        
         try
         {
             IsBusy = true;
-            await TryLogInAsync();
+        
+            var dto = new LogInDto
+            {
+                Email = Email, 
+                Password = Password
+            };
+        
+            var result = await ApiClient.LoginAsync(dto);
+
+            if (result is false)
+            {
+                SnackbarService.EnqueueMessage("Należy uzupełnić dane użytkownika!");
+                NavigationService.NavigateTo<SetUpUserCredentialsPage>();
+                return;
+            }
+        
+            SnackbarService.EnqueueMessage("Zalogowano pomyślnie!");
+            NavigationService.NavigateTo<OffersPage>();
         }
-        catch (Exception e)
+        catch (UnauthorizedAccessException e)
         {
             SnackbarService.EnqueueMessage(e.Message);
+        }
+        catch (Exception)
+        {
+            SnackbarService.EnqueueMessage(DefaultErrorMessage);
         }
         finally
         {
@@ -47,29 +73,4 @@ public partial class LogInViewModel : BaseViewModel
     
     [RelayCommand]
     private void GoToSignUpPage() => NavigationService.NavigateTo<SignUpPage>();
-
-    private async Task TryLogInAsync()
-    {
-        ValidateAllProperties();
-
-        if (HasErrors) return;
-        
-        var dto = new LogInDto
-        {
-            Email = Email, 
-            Password = Password
-        };
-        
-        var result = await ApiClient.LoginAsync(dto);
-
-        if (result is false)
-        {
-            SnackbarService.EnqueueMessage("Należy uzupełnić dane użytkownika!");
-            NavigationService.NavigateTo<SetUpUserCredentialsPage>();
-            return;
-        }
-        
-        SnackbarService.EnqueueMessage("Zalogowano pomyślnie!");
-        NavigationService.NavigateTo<OffersPage>();
-    }
 }
