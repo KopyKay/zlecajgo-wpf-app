@@ -57,12 +57,12 @@ public class ApiClient : IApiClient
     private readonly PreparedRequest _deleteOfferRequest = new($"{OffersEndpoint}/delete", Method.Delete);
     
     // OfferContractor requests
-    private readonly PreparedRequest _getContractedOfferOrOffersRequest = new($"{OfferContractorEndpoint}");
+    private readonly PreparedRequest _getContractedOfferOrOffersRequest = new(OfferContractorEndpoint);
     private readonly PreparedRequest _createContractRequest = new($"{OfferContractorEndpoint}/createContract", Method.Post);
     private readonly PreparedRequest _updateContractRequest = new($"{OfferContractorEndpoint}/updateContract", Method.Patch);
     
     // Review requests
-    private readonly PreparedRequest _getReviewsRequest = new($"{ReviewsEndpoint}");
+    private readonly PreparedRequest _getReviewsRequest = new(ReviewsEndpoint);
     private readonly PreparedRequest _getReceivedReviewsRequest = new($"{ReviewsEndpoint}/received");
     private readonly PreparedRequest _getWrittenReviewsRequest = new($"{ReviewsEndpoint}/written");
     private readonly PreparedRequest _getReceivedReviewsFromUserRequest = new($"{ReviewsEndpoint}/receivedFromUser");
@@ -72,9 +72,9 @@ public class ApiClient : IApiClient
     private readonly PreparedRequest _deleteReviewRequest = new($"{ReviewsEndpoint}/delete", Method.Delete);
     
     // Other requests
-    private readonly PreparedRequest _getCategoryOrCategoriesRequest = new($"{CategoriesEndpoint}");
-    private readonly PreparedRequest _getStatusOrStatusesRequest = new($"{StatusesEndpoint}");
-    private readonly PreparedRequest _getTypeOrTypesRequest = new($"{TypesEndpoint}");
+    private readonly PreparedRequest _getCategoryOrCategoriesRequest = new(CategoriesEndpoint);
+    private readonly PreparedRequest _getStatusOrStatusesRequest = new(StatusesEndpoint);
+    private readonly PreparedRequest _getTypeOrTypesRequest = new(TypesEndpoint);
     
     private readonly JsonSerializerOptions _jsonOptions = new()
     {
