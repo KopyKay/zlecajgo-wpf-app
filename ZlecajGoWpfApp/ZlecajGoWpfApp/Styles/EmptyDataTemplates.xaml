@@ -3,25 +3,42 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes">
 
+    <Style
+        x:Key="EmptyStateContainerStyle"
+        TargetType="StackPanel">
+        <Setter Property="HorizontalAlignment" Value="Center"/>
+        <Setter Property="VerticalAlignment" Value="Center"/>
+        <Setter Property="Orientation" Value="Vertical"/>
+    </Style>
+
+    <Style
+        x:Key="EmptyStateTextBlockStyle"
+        TargetType="TextBlock">
+        <Setter Property="FontSize" Value="{StaticResource BigFontSize}"/>
+        <Setter Property="FontWeight" Value="Bold"/>
+        <Setter Property="TextAlignment" Value="Center"/>
+        <Setter Property="Foreground" Value="{StaticResource AccentColorsGradientBrush}"/>
+    </Style>
+
+    <Style
+        x:Key="EmptyStatePackIconStyle"
+        TargetType="materialDesign:PackIcon">
+        <Setter Property="Width" Value="128"/>
+        <Setter Property="Height" Value="128"/>
+        <Setter Property="Margin" Value="0,10,0,0"/>
+        <Setter Property="HorizontalAlignment" Value="Center"/>
+        <Setter Property="VerticalAlignment" Value="Center"/>
+        <Setter Property="Foreground" Value="{StaticResource AccentColorsGradientBrush}"/>
+    </Style>
+
     <DataTemplate x:Key="NoOffersTemplate">
-        <StackPanel
-            HorizontalAlignment="Center"
-            VerticalAlignment="Center"
-            Orientation="Vertical">
+        <StackPanel Style="{StaticResource EmptyStateContainerStyle}">
             <TextBlock
-                FontSize="{StaticResource BigFontSize}"
-                FontWeight="Bold"
-                TextAlignment="Center"
-                Text="Nie znaleziono ofert"
-                Foreground="{StaticResource AccentColorsGradientBrush}"/>
+                Style="{StaticResource EmptyStateTextBlockStyle}"
+                Text="Nie znaleziono ofert"/>
             <materialDesign:PackIcon
-                Width="128"
-                Height="128"
-                Margin="0,10,0,0"
-                HorizontalAlignment="Center"
-                VerticalAlignment="Center"
-                Kind="{Binding RelativeSource={RelativeSource AncestorType=ContentControl}, Path=Tag}"
-                Foreground="{StaticResource AccentColorsGradientBrush}"/>
+                Style="{StaticResource EmptyStatePackIconStyle}"
+                Kind="MapMarkerRemoveVariant"/>
         </StackPanel>
     </DataTemplate>
 

@@ -158,8 +158,7 @@
             Grid.ColumnSpan="2"
             ContentTemplate="{StaticResource NoOffersTemplate}"
             DataContext="{Binding .}"
-            Visibility="{Binding UserOffersView.IsEmpty, Converter={StaticResource BooleanToVisibilityConverter}}"
-            Tag="PlaylistRemove"/>
+            Visibility="{Binding UserOffersView.IsEmpty, Converter={StaticResource BooleanToVisibilityConverter}}"/>
 
         <!--  Offers list  -->
         <ListView

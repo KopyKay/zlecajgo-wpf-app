@@ -186,8 +186,7 @@
                     Grid.Row="0"
                     ContentTemplate="{StaticResource NoOffersTemplate}"
                     DataContext="{Binding .}"
-                    Visibility="{Binding AvailableOffersView.IsEmpty, Converter={StaticResource BooleanToVisibilityConverter}}"
-                    Tag="MapMarkerRemoveVariant"/>
+                    Visibility="{Binding AvailableOffersView.IsEmpty, Converter={StaticResource BooleanToVisibilityConverter}}"/>
 
                 <!--  Offers list  -->
                 <ListView
