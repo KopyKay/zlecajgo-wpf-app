@@ -2,6 +2,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using ZlecajGoApi;
+using ZlecajGoApi.Hubs;
 using ZlecajGoWpfApp.Services.Map;
 using ZlecajGoWpfApp.Services.Navigation;
 using ZlecajGoWpfApp.Services.PostalAddress;
@@ -29,6 +30,7 @@ public partial class App : Application
                 services.AddSingleton<UserAccountMenuNavigationPage>();
                 services.AddTransient<UserAccountOffersPage>();
                 services.AddTransient<UserAccountDetailsPage>();
+                services.AddTransient<ChatWindow>();
                 
                 services.AddTransient<LogInViewModel>();
                 services.AddTransient<SignUpViewModel>();
@@ -39,12 +41,14 @@ public partial class App : Application
                 services.AddSingleton<UserAccountMenuNavigationViewModel>();
                 services.AddTransient<UserAccountOffersViewModel>();
                 services.AddTransient<UserAccountDetailsViewModel>();
+                services.AddTransient<ChatViewModel>();
                 
                 services.AddSingleton<INavigationService, NavigationService>();
                 services.AddSingleton<ISnackbarService, SnackbarService>();
                 services.AddSingleton<IMapService, MapService>();
                 services.AddSingleton<PostalAddressService>();
                 services.AddSingleton<IApiClient, ApiClient>();
+                services.AddSingleton<IChatHubClient, ChatHubClient>();
             })
             .Build();
     }
@@ -65,6 +69,9 @@ public partial class App : Application
 
     protected override async void OnExit(ExitEventArgs e)
     {
+        var chatHubClient = AppHost.Services.GetRequiredService<IChatHubClient>();
+        await chatHubClient.DisconnectAsync();
+        
         await AppHost.StopAsync();
         
         base.OnExit(e);

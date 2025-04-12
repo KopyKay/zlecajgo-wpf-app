@@ -12,6 +12,7 @@ using MaterialDesignThemes.Wpf;
 using Microsoft.Extensions.DependencyInjection;
 using ZlecajGoApi;
 using ZlecajGoApi.Dtos;
+using ZlecajGoApi.Hubs;
 using ZlecajGoWpfApp.CustomControls;
 using ZlecajGoWpfApp.Enums;
 using ZlecajGoWpfApp.Services.Map;
@@ -24,12 +25,13 @@ namespace ZlecajGoWpfApp.ViewModels;
 public partial class OffersViewModel : BaseViewModel
 {
     public OffersViewModel(INavigationService navigationService, ISnackbarService snackbarService, IApiClient apiClient,
-        IServiceProvider serviceProvider, IMapService mapService) 
+        IServiceProvider serviceProvider, IMapService mapService, IChatHubClient chatHubClient) 
         : base(navigationService, snackbarService, apiClient)
     {
         _serviceProvider = serviceProvider;
         _mapService = mapService;
         _mapControl = mapService.MapControl;
+        _chatHubClient = chatHubClient;
         
         Title = "Zlecenia";
     }
@@ -42,6 +44,8 @@ public partial class OffersViewModel : BaseViewModel
     private readonly IServiceProvider _serviceProvider;
     
     private readonly IMapService _mapService;
+    
+    private readonly IChatHubClient _chatHubClient;
     
     [ObservableProperty]
     private GMapControl _mapControl;
@@ -139,10 +143,10 @@ public partial class OffersViewModel : BaseViewModel
     }
 
     [RelayCommand]
-    private void OpenMessages()
+    private void OpenChat()
     {
-        // TODO: Implement OpenMessages logic
-        CustomMessageBox.Show("Ten przycisk nie ma jeszcze implementacji.", CustomMessageBoxType.Warning, "Brak implementacji");
+        var messagesWindow = _serviceProvider.GetService<ChatWindow>();
+        messagesWindow!.ShowDialog();
     }
     
     [RelayCommand]
@@ -153,11 +157,16 @@ public partial class OffersViewModel : BaseViewModel
     }
     
     [RelayCommand]
-    private void LogOut()
+    private async Task LogOut()
     {
+        IsBusy = true;
+        
         ApiClient.LogOutUser();
         NavigationService.NavigateTo<LogInPage>();
         SnackbarService.EnqueueMessage("Wylogowano pomyślnie!");
+        await _chatHubClient.DisconnectAsync();
+        
+        IsBusy = false;
     }
 
     [RelayCommand]
@@ -187,9 +196,25 @@ public partial class OffersViewModel : BaseViewModel
         }
         catch (Exception)
         {
-            LogOut();
+            await LogoutAndShowErrorAsync();
+        }
+        finally
+        {
+            IsBusy = false;
+        }
+    }
+    
+    public async Task ConnectToChatHubAsync()
+    {
+        try
+        {
+            IsBusy = true;
 
-            CustomMessageBox.Show(DefaultErrorMessage, CustomMessageBoxType.Error);
+            await _chatHubClient.ConnectAsync();
+        }
+        catch (Exception)
+        {
+            await LogoutAndShowErrorAsync();
         }
         finally
         {
@@ -203,11 +228,10 @@ public partial class OffersViewModel : BaseViewModel
         await FetchDataAsync(Statuses, ApiClient.GetStatusesAsync!);
         await FetchDataAsync(Types, ApiClient.GetTypesAsync!);
         await FetchDataAsync(Offers, ApiClient.GetOffersAsync);
-
-        var users = await ApiClient.GetUsersAsync();
-
+        
         if (Offers.Count != 0)
         {
+            var users = await ApiClient.GetUsersAsync();
             GetAvailableOffers();
             GetAvailableCities();
         
@@ -305,5 +329,11 @@ public partial class OffersViewModel : BaseViewModel
         {
             AvailableCities.Add(city);
         }
+    }
+    
+    private async Task LogoutAndShowErrorAsync()
+    {
+        await LogOut();
+        CustomMessageBox.Show(DefaultErrorMessage, CustomMessageBoxType.Error);
     }
 }

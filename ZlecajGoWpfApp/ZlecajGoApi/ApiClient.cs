@@ -10,7 +10,7 @@ namespace ZlecajGoApi;
 
 public class ApiClient : IApiClient
 {
-    private const string BaseUrl = "https://localhost:7130/api/";
+    internal const string BaseUrl = "https://localhost:7130/api/";
     private readonly RestClient _client = new(BaseUrl);
 
     private static UserDto SessionUser
@@ -28,6 +28,7 @@ public class ApiClient : IApiClient
     private const string OffersEndpoint = "offers";
     private const string OfferContractorEndpoint = "offerContractor";
     private const string ReviewsEndpoint = "reviews";
+    private const string ChatsEndpoint = "chats";
     private const string CategoriesEndpoint = "categories";
     private const string StatusesEndpoint = "statuses";
     private const string TypesEndpoint = "types";
@@ -70,6 +71,9 @@ public class ApiClient : IApiClient
     private readonly PreparedRequest _createReviewRequest = new($"{ReviewsEndpoint}/create", Method.Post);
     private readonly PreparedRequest _updateReviewRequest = new($"{ReviewsEndpoint}/update", Method.Patch);
     private readonly PreparedRequest _deleteReviewRequest = new($"{ReviewsEndpoint}/delete", Method.Delete);
+    
+    // Chat requests
+    private readonly PreparedRequest _getCurrentUserChatOrChatsRequest = new($"{ChatsEndpoint}/currentUserChatOrChats");
     
     // Other requests
     private readonly PreparedRequest _getCategoryOrCategoriesRequest = new(CategoriesEndpoint);
@@ -192,6 +196,9 @@ public class ApiClient : IApiClient
 
     public async Task<List<OfferDto>?> GetCurrentUserOffersAsync()
         => await GetDataAsync<OfferDto>(_getCurrentUserOffersRequest);
+    
+    public async Task<List<ChatDto>?> GetChatsAsync()
+        => await GetDataAsync<ChatDto>(_getCurrentUserChatOrChatsRequest);
     
     public async Task<List<CategoryDto>> GetCategoriesAsync() 
         => (await GetDataAsync<CategoryDto>(_getCategoryOrCategoriesRequest))!;

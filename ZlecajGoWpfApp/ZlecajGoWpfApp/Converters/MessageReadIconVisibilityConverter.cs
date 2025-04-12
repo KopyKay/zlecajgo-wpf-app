@@ -1,0 +1,26 @@
+﻿using System.Globalization;
+using System.Windows;
+using System.Windows.Data;
+using ZlecajGoApi;
+
+namespace ZlecajGoWpfApp.Converters;
+
+public class MessageReadIconVisibilityConverter : IValueConverter
+{
+    public object? Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
+    {
+        if (value is not string senderId)
+        {
+            return Visibility.Collapsed;
+        }
+        
+        return senderId == UserSession.Instance.CurrentUser.Id 
+            ? Visibility.Visible 
+            : Visibility.Collapsed;
+    }
+
+    public object? ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture)
+    {
+        throw new NotImplementedException();
+    }
+}

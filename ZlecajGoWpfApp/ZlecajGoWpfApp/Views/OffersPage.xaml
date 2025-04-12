@@ -55,7 +55,7 @@
                 <Button
                     Grid.Column="1"
                     Content="Wiadomości"
-                    Command="{Binding OpenMessagesCommand}"
+                    Command="{Binding OpenChatCommand}"
                     Style="{StaticResource HoverTriggerButton}"/>
                 <Button
                     Grid.Column="2"

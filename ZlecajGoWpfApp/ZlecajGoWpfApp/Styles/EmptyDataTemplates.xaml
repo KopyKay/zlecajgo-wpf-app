@@ -42,4 +42,26 @@
         </StackPanel>
     </DataTemplate>
 
+    <DataTemplate x:Key="NoChatsTemplate">
+        <StackPanel Style="{StaticResource EmptyStateContainerStyle}">
+            <TextBlock
+                Style="{StaticResource EmptyStateTextBlockStyle}"
+                Text="Nie znaleziono czatów"/>
+            <materialDesign:PackIcon
+                Style="{StaticResource EmptyStatePackIconStyle}"
+                Kind="ChatAlert"/>
+        </StackPanel>
+    </DataTemplate>
+
+    <DataTemplate x:Key="NoMessagesTemplate">
+        <StackPanel Style="{StaticResource EmptyStateContainerStyle}">
+            <TextBlock
+                Style="{StaticResource EmptyStateTextBlockStyle}"
+                Text="Ten czat nie ma jeszcze żadnych wiadomości"/>
+            <materialDesign:PackIcon
+                Style="{StaticResource EmptyStatePackIconStyle}"
+                Kind="ChatAlert"/>
+        </StackPanel>
+    </DataTemplate>
+
 </ResourceDictionary>

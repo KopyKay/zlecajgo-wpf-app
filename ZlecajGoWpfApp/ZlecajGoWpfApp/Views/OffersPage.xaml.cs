@@ -11,6 +11,10 @@ public partial class OffersPage : Page
 
         DataContext = viewModel;
 
-        Loaded += async (s, e) => await viewModel.InitializeOffersAndMapAsync();
+        Loaded += async (s, e) => 
+        {
+            await viewModel.InitializeOffersAndMapAsync();
+            await viewModel.ConnectToChatHubAsync();
+        };
     }
 }

@@ -12,6 +12,7 @@ public interface IApiClient
     Task<bool> ChangeUserPasswordAsync(ChangeUserPasswordDto dto);
     Task<List<OfferDto>?> GetOffersAsync();
     Task<List<OfferDto>?> GetCurrentUserOffersAsync();
+    Task<List<ChatDto>?> GetChatsAsync();
     Task<List<CategoryDto>> GetCategoriesAsync();
     Task<List<StatusDto>> GetStatusesAsync();
     Task<List<TypeDto>> GetTypesAsync();
