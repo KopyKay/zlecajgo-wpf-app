@@ -1,4 +1,5 @@
 using System.Net;
+using System.Runtime.CompilerServices;
 using System.Text.Json;
 using RestSharp;
 using ZlecajGoApi.Dtos;
@@ -194,11 +195,17 @@ public class ApiClient : IApiClient
     public async Task<List<OfferDto>?> GetOffersAsync() 
         => await GetDataAsync<OfferDto>(_getOfferOrOffersRequest);
 
+    public async Task<OfferDto?> GetOfferAsync(Guid offerId)
+        => (await GetDataAsync<OfferDto>(_getOfferOrOffersRequest, offerId))?.FirstOrDefault();
+        
     public async Task<List<OfferDto>?> GetCurrentUserOffersAsync()
         => await GetDataAsync<OfferDto>(_getCurrentUserOffersRequest);
     
     public async Task<List<ChatDto>?> GetChatsAsync()
         => await GetDataAsync<ChatDto>(_getCurrentUserChatOrChatsRequest);
+    
+    public async Task<ChatDto?> GetChatAsync(Guid chatId)
+        => (await GetDataAsync<ChatDto>(_getCurrentUserChatOrChatsRequest, chatId))?.FirstOrDefault();
     
     public async Task<List<CategoryDto>> GetCategoriesAsync() 
         => (await GetDataAsync<CategoryDto>(_getCategoryOrCategoriesRequest))!;
@@ -211,6 +218,9 @@ public class ApiClient : IApiClient
     
     public async Task<List<UserDto>> GetUsersAsync() 
         => (await GetDataAsync<UserDto>(_getUserOrUsersRequest))!;
+    
+    public async Task<UserDto?> GetUserAsync(string userId)
+        => (await GetDataAsync<UserDto>(_getUserOrUsersRequest, userId))?.FirstOrDefault();
 
     public async Task CreateOfferAsync(OfferDto dto)
     {
@@ -318,13 +328,19 @@ public class ApiClient : IApiClient
         return result;
     }
 
-    private async Task<List<T>?> GetDataAsync<T>(PreparedRequest request)
+    private async Task<List<T>?> GetDataAsync<T>(PreparedRequest request, object? queryParameter = null, [CallerMemberName] string callerMethod = "")
     {
-        var data = await ExecuteRequestAsync<List<T>>
-        (
-            request.ToRestRequest()
-                   .AddHeader(_authHeader.Name, _authHeader.Value(AccessToken))
-        );
+        var restRequest = request.ToRestRequest()
+            .AddHeader(_authHeader.Name, _authHeader.Value(AccessToken));
+
+        if (queryParameter is not null)
+        {
+            var parameterName = GetParameterNameFromCaller(callerMethod);
+            restRequest.AddQueryParameter(parameterName, queryParameter.ToString());
+            return [await ExecuteRequestAsync<T>(restRequest)];
+        }
+        
+        var data = await ExecuteRequestAsync<List<T>>(restRequest);
         
         return data;
     }
@@ -361,5 +377,16 @@ public class ApiClient : IApiClient
 
         if (response.Content is null)
             throw new EmptyContentException();
+    }
+
+    private static string GetParameterNameFromCaller(string callerMethod)
+    {
+        return callerMethod switch
+        {
+            nameof(GetOfferAsync) => "offerId",
+            nameof(GetChatAsync) => "chatId",
+            nameof(GetUserAsync) => "userId",
+            _ => "id"
+        };
     }
 }
