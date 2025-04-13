@@ -170,8 +170,27 @@ public partial class OffersViewModel : BaseViewModel
     }
 
     [RelayCommand]
-    private void ShowOfferDetails(OfferDto dto)
+    private async Task ShowOfferDetailsAsync(OfferDto dto)
     {
+        var offer = (await ApiClient.GetOfferAsync(dto.Id))!;
+        var isOfferValid = offer.StatusId == (int)OfferStatus.Pending &&
+                               offer.ExpiryDateTime >= DateTime.Now;
+
+        if (!isOfferValid)
+        {
+            CustomMessageBox.Show("Ta oferta nie jest już dostępna.", CustomMessageBoxType.Information, "Oferta niedostępna");
+
+            var offerToUpdate = Offers.First(o => o.Id == dto.Id);
+            offerToUpdate.StatusId = offer.StatusId;
+            offerToUpdate.StatusName = Statuses.First(t => t.Id == offer.StatusId).Name;
+            offerToUpdate.ExpiryDateTime = offer.ExpiryDateTime;
+            
+            GetAvailableOffers();
+            GetAvailableCities();
+            
+            return;
+        }
+        
         var offerDetailsWindow = _serviceProvider.GetService<OfferDetailsWindow>();
         
         if (offerDetailsWindow?.DataContext is not OfferDetailsViewModel offerDetailsViewModel)
@@ -293,10 +312,10 @@ public partial class OffersViewModel : BaseViewModel
             Tag = dto
         };
         
-        marker.Shape.MouseLeftButtonDown += (sender, args) =>
+        marker.Shape.MouseLeftButtonDown += async (sender, args) =>
         {
             var offer = (OfferDto)marker.Tag;
-            ShowOfferDetails(offer);
+            await ShowOfferDetailsAsync(offer);
         };
         
         MapControl.Markers.Add(marker);
