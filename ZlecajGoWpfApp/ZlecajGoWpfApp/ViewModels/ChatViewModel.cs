@@ -1,5 +1,6 @@
 ﻿using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Windows.Data;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -33,6 +34,8 @@ public partial class ChatViewModel : BaseViewModel, IDisposable
         _filteredChats = CollectionViewSource.GetDefaultView(Chats);
         _filteredChats.Filter = FilterChats;
     }
+
+    internal static Window? ChatWindow;
     
     private readonly IChatHubClient _chatHubClient;
     private readonly UserDto _currentUser;
@@ -55,6 +58,9 @@ public partial class ChatViewModel : BaseViewModel, IDisposable
     [ObservableProperty]
     private ICollectionView? _filteredChats;
 
+    [RelayCommand]
+    private static void CloseWindow() => ChatWindow!.Close();
+    
     [RelayCommand]
     private async Task SendMessageAsync()
     {
@@ -84,45 +90,14 @@ public partial class ChatViewModel : BaseViewModel, IDisposable
 
             if (users.Count == 0) return;
             
-            // Fulfill the User1FullName, User2FullName properties for each chat and set the LastMessageText
             foreach (var chat in Chats)
             {
-                var currentUserIsUser1 = chat.User1Id == _currentUser.Id;
-                var partnerId = currentUserIsUser1 ? chat.User2Id : chat.User1Id;
-                var partnerUser = users.First(u => u.Id == partnerId);
-                var lastMessage = chat.Messages.OrderByDescending(m => m.SentAt).FirstOrDefault();
-                
-                if (currentUserIsUser1)
-                {
-                    chat.User1FullName = _currentUser.FullName!;
-                    chat.User2FullName = partnerUser.FullName!;
-                }
-                else
-                {
-                    chat.User1FullName = partnerUser.FullName!;
-                    chat.User2FullName = _currentUser.FullName!;
-                }
-                
-                chat.ChatPartnerId = partnerId;
-                chat.ChatPartnerFullName = partnerUser.FullName!;
-                
-                if (lastMessage is not null)
-                {
-                    chat.LastMessageText = lastMessage.SenderId == _currentUser.Id 
-                        ? $"Ty: {lastMessage.MessageText}" 
-                        : lastMessage.MessageText;
-                }
-                else
-                {
-                    chat.LastMessageText = string.Empty;
-                }
-                
-                chat.HasUnreadMessages = chat.Messages.Any(m => !m.IsRead && m.SenderId != _currentUser.Id);
+                await SetChatDetailsAsync(chat, users);
             }
         }
         catch (Exception)
         {
-            NavigationService.NavigateTo<OffersPage>();
+            CloseWindow();
             SnackbarService.EnqueueMessage("Błąd podczas ładowania czatów! Spróbuj ponownie później.");
         }
         finally
@@ -176,7 +151,7 @@ public partial class ChatViewModel : BaseViewModel, IDisposable
     
     private async Task HandleChatReceived(ChatDto chatDto)
     {
-        await Application.Current.Dispatcher.InvokeAsync(() =>
+        await Application.Current.Dispatcher.InvokeAsync(async () =>
         {
             var existingChat = Chats.FirstOrDefault(c => c.Id == chatDto.Id);
 
@@ -187,6 +162,7 @@ public partial class ChatViewModel : BaseViewModel, IDisposable
             }
             else
             {
+                await SetChatDetailsAsync(chatDto);
                 Chats.Add(chatDto);
             }
 
@@ -247,6 +223,43 @@ public partial class ChatViewModel : BaseViewModel, IDisposable
                 }
             }
         });
+    }
+
+    private async Task SetChatDetailsAsync(ChatDto chat, List<UserDto>? users = null)
+    {
+        users ??= await ApiClient.GetUsersAsync();
+        
+        var currentUserIsUser1 = chat.User1Id == _currentUser.Id;
+        var partnerId = currentUserIsUser1 ? chat.User2Id : chat.User1Id;
+        var partnerUser = users!.First(u => u.Id == partnerId);
+        var lastMessage = chat.Messages.OrderByDescending(m => m.SentAt).FirstOrDefault();
+                
+        if (currentUserIsUser1)
+        {
+            chat.User1FullName = _currentUser.FullName!;
+            chat.User2FullName = partnerUser.FullName!;
+        }
+        else
+        {
+            chat.User1FullName = partnerUser.FullName!;
+            chat.User2FullName = _currentUser.FullName!;
+        }
+                
+        chat.ChatPartnerId = partnerId;
+        chat.ChatPartnerFullName = partnerUser.FullName!;
+                
+        if (lastMessage is not null)
+        {
+            chat.LastMessageText = lastMessage.SenderId == _currentUser.Id 
+                ? $"Ty: {lastMessage.MessageText}" 
+                : lastMessage.MessageText;
+        }
+        else
+        {
+            chat.LastMessageText = string.Empty;
+        }
+                
+        chat.HasUnreadMessages = chat.Messages.Any(m => !m.IsRead && m.SenderId != _currentUser.Id);
     }
     
     private static async Task ExecuteChatHubOperationAsync(Func<Task> operation, string? customErrorMessage = null)

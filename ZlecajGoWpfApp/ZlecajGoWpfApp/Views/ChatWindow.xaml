@@ -70,7 +70,7 @@
                     Grid.Column="0"
                     Height="Auto"
                     Padding="0"
-                    IsCancel="True"
+                    Command="{Binding CloseWindowCommand}"
                     Foreground="White"
                     Style="{StaticResource MaterialDesignFlatButton}">
                     <Button.Content>

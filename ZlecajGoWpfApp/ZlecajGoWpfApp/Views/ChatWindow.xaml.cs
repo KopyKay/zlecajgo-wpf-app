@@ -13,6 +13,8 @@ public partial class ChatWindow : Window
         
         DataContext = viewModel;
         
+        ChatViewModel.ChatWindow = this;
+        
         Loaded += async (s, e) =>
         {
             await viewModel.InitializeChatAsync();
