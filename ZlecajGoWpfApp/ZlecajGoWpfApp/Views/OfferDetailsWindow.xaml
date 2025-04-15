@@ -237,7 +237,6 @@
                     Grid.Row="17"
                     Grid.Column="1"
                     Command="{Binding CloseWindowCommand}"
-                    CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=Window}}"
                     Style="{StaticResource HoverTriggerButton}"
                     Content="Zamknij"/>
             </Grid>

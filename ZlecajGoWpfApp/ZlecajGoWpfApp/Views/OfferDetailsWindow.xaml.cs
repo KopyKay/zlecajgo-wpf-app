@@ -10,5 +10,6 @@ public partial class OfferDetailsWindow : Window
         InitializeComponent();
 
         DataContext = viewModel;
+        OfferDetailsViewModel.OfferDetailsWindow = this;
     }
 }
