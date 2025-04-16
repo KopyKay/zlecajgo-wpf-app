@@ -1,6 +1,5 @@
 ﻿using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Windows.Data;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -8,12 +7,11 @@ using CommunityToolkit.Mvvm.Input;
 using ZlecajGoApi;
 using ZlecajGoApi.Dtos;
 using ZlecajGoApi.Exceptions;
-using ZlecajGoApi.Hubs;
+using ZlecajGoApi.Hubs.Chat;
 using ZlecajGoWpfApp.CustomControls;
 using ZlecajGoWpfApp.Enums;
 using ZlecajGoWpfApp.Services.Navigation;
 using ZlecajGoWpfApp.Services.Snackbar;
-using ZlecajGoWpfApp.Views;
 
 namespace ZlecajGoWpfApp.ViewModels;
 

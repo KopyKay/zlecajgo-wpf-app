@@ -3,7 +3,7 @@ using ZlecajGoApi.Dtos;
 using ZlecajGoApi.Exceptions;
 using UnauthorizedAccessException = System.UnauthorizedAccessException;
 
-namespace ZlecajGoApi.Hubs;
+namespace ZlecajGoApi.Hubs.Chat;
 
 public class ChatHubClient : IChatHubClient, IAsyncDisposable
 {

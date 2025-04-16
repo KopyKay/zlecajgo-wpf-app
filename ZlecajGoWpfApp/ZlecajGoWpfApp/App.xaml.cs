@@ -2,7 +2,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using ZlecajGoApi;
-using ZlecajGoApi.Hubs;
+using ZlecajGoApi.Hubs.Chat;
 using ZlecajGoWpfApp.Services.Map;
 using ZlecajGoWpfApp.Services.Navigation;
 using ZlecajGoWpfApp.Services.PostalAddress;

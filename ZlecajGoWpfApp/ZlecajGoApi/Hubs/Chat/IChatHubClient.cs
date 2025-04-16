@@ -1,6 +1,6 @@
 ﻿using ZlecajGoApi.Dtos;
 
-namespace ZlecajGoApi.Hubs;
+namespace ZlecajGoApi.Hubs.Chat;
 
 public interface IChatHubClient
 {
