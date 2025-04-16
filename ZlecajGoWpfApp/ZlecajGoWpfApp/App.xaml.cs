@@ -3,6 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using ZlecajGoApi;
 using ZlecajGoApi.Hubs.Chat;
+using ZlecajGoApi.Hubs.Notification;
 using ZlecajGoWpfApp.Services.Map;
 using ZlecajGoWpfApp.Services.Navigation;
 using ZlecajGoWpfApp.Services.PostalAddress;
@@ -49,6 +50,7 @@ public partial class App : Application
                 services.AddSingleton<PostalAddressService>();
                 services.AddSingleton<IApiClient, ApiClient>();
                 services.AddSingleton<IChatHubClient, ChatHubClient>();
+                services.AddSingleton<INotificationHubClient, NotificationHubClient>();
             })
             .Build();
     }
@@ -70,7 +72,9 @@ public partial class App : Application
     protected override async void OnExit(ExitEventArgs e)
     {
         var chatHubClient = AppHost.Services.GetRequiredService<IChatHubClient>();
+        var notificationHubClient = AppHost.Services.GetRequiredService<INotificationHubClient>();
         await chatHubClient.DisconnectAsync();
+        await notificationHubClient.DisconnectAsync();
         
         await AppHost.StopAsync();
         
