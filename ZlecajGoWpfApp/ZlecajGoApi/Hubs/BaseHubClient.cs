@@ -10,13 +10,14 @@ public interface IBaseHubClient : IAsyncDisposable
 
 public abstract class BaseHubClient(string hubPath) : IBaseHubClient
 {
-    protected readonly string HubUrl = ApiClient.BaseUrl.Replace("api/", $"hubs/{hubPath}");
+    private readonly string _hubUrl = ApiClient.BaseUrl.Replace("api/", $"hubs/{hubPath}");
+    private bool _isConnected;
+    
     protected HubConnection? HubConnection;
-    protected bool IsConnected;
     
     public async Task ConnectAsync()
     {
-        if (IsConnected) return;
+        if (_isConnected) return;
 
         var accessToken = UserSession.Instance.CurrentUser.AccessToken;
 
@@ -26,7 +27,7 @@ public abstract class BaseHubClient(string hubPath) : IBaseHubClient
         }
 
         HubConnection = new HubConnectionBuilder()
-            .WithUrl(HubUrl, options =>
+            .WithUrl(_hubUrl, options =>
             {
                 options.AccessTokenProvider = () => Task.FromResult(accessToken)!;
             })
@@ -36,15 +37,15 @@ public abstract class BaseHubClient(string hubPath) : IBaseHubClient
         RegisterHandlers();
 
         await HubConnection.StartAsync();
-        IsConnected = true;
+        _isConnected = true;
     }
     
     public async Task DisconnectAsync()
     {
-        if (HubConnection != null && IsConnected)
+        if (HubConnection != null && _isConnected)
         {
             await HubConnection.StopAsync();
-            IsConnected = false;
+            _isConnected = false;
         }
     }
     
@@ -54,7 +55,7 @@ public abstract class BaseHubClient(string hubPath) : IBaseHubClient
         {
             await HubConnection.DisposeAsync();
             HubConnection = null;
-            IsConnected = false;
+            _isConnected = false;
         }
 
         GC.SuppressFinalize(this);
@@ -64,7 +65,7 @@ public abstract class BaseHubClient(string hubPath) : IBaseHubClient
     
     protected void ThrowIfNotConnected(Exception exception)
     {
-        if (!IsConnected || HubConnection == null)
+        if (!_isConnected || HubConnection == null)
         {
             throw exception;
         }
