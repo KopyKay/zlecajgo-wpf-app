@@ -15,6 +15,7 @@ public partial class OffersPage : Page
         {
             await viewModel.InitializeOffersAndMapAsync();
             await viewModel.ConnectToChatHubAsync();
+            await viewModel.ConnectToNotificationHubAsync();
         };
     }
 }

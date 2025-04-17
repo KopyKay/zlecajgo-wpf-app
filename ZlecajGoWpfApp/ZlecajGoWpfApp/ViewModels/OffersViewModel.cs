@@ -13,6 +13,7 @@ using Microsoft.Extensions.DependencyInjection;
 using ZlecajGoApi;
 using ZlecajGoApi.Dtos;
 using ZlecajGoApi.Hubs.Chat;
+using ZlecajGoApi.Hubs.Notification;
 using ZlecajGoWpfApp.CustomControls;
 using ZlecajGoWpfApp.Enums;
 using ZlecajGoWpfApp.Services.Map;
@@ -25,13 +26,14 @@ namespace ZlecajGoWpfApp.ViewModels;
 public partial class OffersViewModel : BaseViewModel
 {
     public OffersViewModel(INavigationService navigationService, ISnackbarService snackbarService, IApiClient apiClient,
-        IServiceProvider serviceProvider, IMapService mapService, IChatHubClient chatHubClient) 
+        IServiceProvider serviceProvider, IMapService mapService, IChatHubClient chatHubClient, INotificationHubClient notificationHubClient) 
         : base(navigationService, snackbarService, apiClient)
     {
         _serviceProvider = serviceProvider;
         _mapService = mapService;
         _mapControl = mapService.MapControl;
         _chatHubClient = chatHubClient;
+        _notificationHubClient = notificationHubClient;
         
         Title = "Zlecenia";
     }
@@ -46,6 +48,7 @@ public partial class OffersViewModel : BaseViewModel
     private readonly IMapService _mapService;
     
     private readonly IChatHubClient _chatHubClient;
+    private readonly INotificationHubClient _notificationHubClient;
     
     [ObservableProperty]
     private GMapControl _mapControl;
@@ -166,6 +169,9 @@ public partial class OffersViewModel : BaseViewModel
         SnackbarService.EnqueueMessage("Wylogowano pomyślnie!");
         await _chatHubClient.DisconnectAsync();
         
+        _notificationHubClient.OnOfferContractNotificationReceived -= HandleOfferContractNotificationReceived;
+        await _notificationHubClient.DisconnectAsync();
+        
         IsBusy = false;
     }
 
@@ -225,20 +231,26 @@ public partial class OffersViewModel : BaseViewModel
     
     public async Task ConnectToChatHubAsync()
     {
-        try
-        {
-            IsBusy = true;
-
-            await _chatHubClient.ConnectAsync();
-        }
-        catch (Exception)
-        {
-            await LogoutAndShowErrorAsync();
-        }
-        finally
-        {
-            IsBusy = false;
-        }
+        await ConnectToHubAsync<IChatHubClient>
+        (
+            _chatHubClient.ConnectAsync,
+            LogoutAndShowErrorAsync
+        );
+    }
+    
+    public async Task ConnectToNotificationHubAsync()
+    {
+        await ConnectToHubAsync<INotificationHubClient>
+        (
+            _notificationHubClient.ConnectAsync, 
+            LogoutAndShowErrorAsync,
+            () => _notificationHubClient.OnOfferContractNotificationReceived += HandleOfferContractNotificationReceived
+        );
+    }
+    
+    private async Task HandleOfferContractNotificationReceived(OfferContractorDto offerContractorDto, string message)
+    {
+        throw new NotImplementedException();
     }
     
     private async Task LoadOffersAsync()

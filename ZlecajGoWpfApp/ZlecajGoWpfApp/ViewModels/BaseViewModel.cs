@@ -45,4 +45,22 @@ public abstract partial class BaseViewModel
             collection.Add(item);
         }
     }
+
+    protected virtual async Task ConnectToHubAsync<T>(Func<Task> connectFunc, Func<Task> connectFailFunc, Action? onConnected = null)
+    {
+        try
+        {
+            IsBusy = true;
+            await connectFunc();
+            onConnected?.Invoke();
+        }
+        catch (Exception)
+        {
+            await connectFailFunc();
+        }
+        finally
+        {
+            IsBusy = false;
+        }
+    }
 }
