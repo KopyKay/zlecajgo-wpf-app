@@ -38,6 +38,8 @@ public partial class ChatViewModel : BaseViewModel, IDisposable
     private readonly IChatHubClient _chatHubClient;
     private readonly UserDto _currentUser;
     
+    private ChatDto? _lastSelectedChat;
+    
     [ObservableProperty]
     private ObservableCollection<ChatDto> _chats = [];
 
@@ -120,7 +122,22 @@ public partial class ChatViewModel : BaseViewModel, IDisposable
     
     partial void OnSearchTextChanged(string value)
     {
+        if (!string.IsNullOrWhiteSpace(value) && SelectedChat is not null)
+        {
+            _lastSelectedChat = SelectedChat;
+        }
+    
         FilteredChats?.Refresh();
+        
+        if (_lastSelectedChat is not null && SelectedChat is null)
+        {
+            SelectedChat = _lastSelectedChat;
+        }
+    
+        if (string.IsNullOrWhiteSpace(value) && _lastSelectedChat is not null)
+        {
+            _lastSelectedChat = null;
+        }
     }
     
     partial void OnSelectedChatChanged(ChatDto? oldValue, ChatDto? newValue)
@@ -245,6 +262,7 @@ public partial class ChatViewModel : BaseViewModel, IDisposable
                 
         chat.ChatPartnerId = partnerId;
         chat.ChatPartnerFullName = partnerUser.FullName!;
+        chat.ChatPartnerUserName = partnerUser.UserName!;
                 
         if (lastMessage is not null)
         {

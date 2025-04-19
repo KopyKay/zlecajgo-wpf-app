@@ -60,6 +60,18 @@ public class ChatDto : INotifyPropertyChanged
         }
     }
     
+    private string _chatPartnerUserName = string.Empty;
+    public string ChatPartnerUserName
+    {
+        get => _chatPartnerUserName;
+        set
+        {
+            if (_chatPartnerUserName == value) return;
+            _chatPartnerUserName = value;
+            OnPropertyChanged();
+        }
+    }
+    
     private string _lastMessageText = string.Empty;
     public string LastMessageText
     {

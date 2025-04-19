@@ -231,6 +231,12 @@
                                 FontWeight="Bold"
                                 Text="{Binding SelectedChat.ChatPartnerFullName}"
                                 TextTrimming="WordEllipsis"/>
+                            <TextBlock
+                                VerticalAlignment="Center"
+                                FontSize="{StaticResource RegularFontSize}"
+                                FontWeight="Light"
+                                Text="{Binding SelectedChat.ChatPartnerUserName, StringFormat='{} {0}'}"
+                                TextTrimming="WordEllipsis"/>
                         </StackPanel>
                     </Border>
 
