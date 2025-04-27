@@ -8,6 +8,7 @@ using ZlecajGoApi;
 using ZlecajGoApi.Dtos;
 using ZlecajGoApi.Exceptions;
 using ZlecajGoApi.Hubs.Chat;
+using ZlecajGoApi.Hubs.Notification;
 using ZlecajGoWpfApp.CustomControls;
 using ZlecajGoWpfApp.Enums;
 using ZlecajGoWpfApp.Services.Navigation;
@@ -18,7 +19,7 @@ namespace ZlecajGoWpfApp.ViewModels;
 public partial class ChatViewModel : BaseViewModel, IDisposable
 {
     public ChatViewModel(INavigationService navigationService, ISnackbarService snackbarService, IApiClient apiClient,
-        IChatHubClient chatHubClient) : base(navigationService, snackbarService, apiClient)
+        IChatHubClient chatHubClient, INotificationHubClient notificationHubClient) : base(navigationService, snackbarService, apiClient)
     {
         Title = "Wiadomości";
         
@@ -31,11 +32,14 @@ public partial class ChatViewModel : BaseViewModel, IDisposable
         
         _filteredChats = CollectionViewSource.GetDefaultView(Chats);
         _filteredChats.Filter = FilterChats;
+        
+        _notificationHubClient = notificationHubClient;
     }
 
     internal static Window? ChatWindow;
     
     private readonly IChatHubClient _chatHubClient;
+    private readonly INotificationHubClient _notificationHubClient;
     private readonly UserDto _currentUser;
     
     private ChatDto? _lastSelectedChat;
@@ -72,6 +76,37 @@ public partial class ChatViewModel : BaseViewModel, IDisposable
         
         await ExecuteChatHubOperationAsync(() => 
             _chatHubClient.SendMessageAsync(SelectedChat.Id, message));
+    }
+
+    [RelayCommand]
+    private async Task OpenOfferContractRequestCreator()
+    {
+        var partnerOffers = (await ApiClient.GetOffersAsync())?
+                                        .Where(o => 
+                                            o.ProviderId == SelectedChat?.ChatPartnerId &&
+                                            o.StatusId == (int)OfferStatus.Pending &&
+                                            o.ExpiryDateTime >= DateTime.Now)
+                                        .ToList();
+
+        if (partnerOffers is null || partnerOffers.Count == 0)
+        {
+            CustomMessageBox.Show
+            (
+                "Nie znaleziono ofert od tego użytkownika.", 
+                CustomMessageBoxType.Error,
+                "Błąd"
+            );
+            return;
+        }
+
+        new OfferContractRequestCreatorDialog
+        (
+            _chatHubClient,
+            _notificationHubClient,
+            SelectedChat!,
+            partnerOffers
+        )
+        .ShowDialog();
     }
     
     public async Task InitializeChatAsync()

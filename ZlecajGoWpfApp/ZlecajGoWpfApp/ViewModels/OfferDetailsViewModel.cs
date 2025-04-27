@@ -35,7 +35,7 @@ public partial class OfferDetailsViewModel : BaseViewModel
     [RelayCommand]
     private async Task ReportInterestToProvider()
     {
-        const string messagePart1 = "Jestem zainteresowany Pańską ofertą:";
+        const string messagePart1 = "Jestem zainteresowany(-a) Pańską ofertą:";
         const string messagePart2 = "Czy jest aktualna?";
         var initialMessage = $"{messagePart1}\n\n• {Offer.Title}\n\n{messagePart2}";
         

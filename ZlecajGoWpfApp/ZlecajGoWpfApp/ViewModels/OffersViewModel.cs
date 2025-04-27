@@ -250,7 +250,15 @@ public partial class OffersViewModel : BaseViewModel
     
     private async Task HandleOfferContractNotificationReceived(OfferContractorDto offerContractorDto, string message)
     {
-        throw new NotImplementedException();
+        await Application.Current.Dispatcher.InvokeAsync(() =>
+        {
+            var dialog = new OfferContractRequestApprovalDialog(ApiClient, offerContractorDto, message)
+            {
+                Owner = Application.Current.MainWindow
+            };
+            
+            dialog.ShowDialog();
+        });
     }
     
     private async Task LoadOffersAsync()

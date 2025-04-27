@@ -217,27 +217,56 @@
                                 Direction="270"
                                 ShadowDepth="0"/>
                         </Border.Effect>
-                        <StackPanel Orientation="Horizontal">
+                        <DockPanel LastChildFill="False">
                             <materialDesign:PackIcon
                                 Width="40"
                                 Height="40"
                                 Margin="0,0,10,0"
                                 HorizontalAlignment="Center"
                                 VerticalAlignment="Center"
+                                DockPanel.Dock="Left"
                                 Kind="AccountCircle"/>
                             <TextBlock
                                 VerticalAlignment="Center"
+                                DockPanel.Dock="Left"
                                 FontSize="{StaticResource RegularFontSize}"
                                 FontWeight="Bold"
                                 Text="{Binding SelectedChat.ChatPartnerFullName}"
                                 TextTrimming="WordEllipsis"/>
                             <TextBlock
                                 VerticalAlignment="Center"
+                                DockPanel.Dock="Left"
                                 FontSize="{StaticResource RegularFontSize}"
                                 FontWeight="Light"
                                 Text="{Binding SelectedChat.ChatPartnerUserName, StringFormat='{} {0}'}"
                                 TextTrimming="WordEllipsis"/>
-                        </StackPanel>
+                            <materialDesign:PopupBox
+                                Padding="0"
+                                materialDesign:RippleAssist.IsDisabled="True"
+                                DockPanel.Dock="Right"
+                                PopupMode="Click">
+                                <materialDesign:PopupBox.ToggleContent>
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBlock
+                                            VerticalAlignment="Center"
+                                            Foreground="{StaticResource AccentColorBrush1}"
+                                            FontSize="{StaticResource RegularFontSize}"
+                                            FontWeight="Bold"
+                                            Text="Więcej"/>
+                                        <materialDesign:PackIcon
+                                            Width="30"
+                                            Height="30"
+                                            Kind="DotsVertical"
+                                            Foreground="{StaticResource AccentColorBrush1}"/>
+                                    </StackPanel>
+                                </materialDesign:PopupBox.ToggleContent>
+                                <Button
+                                    Content="Wyślij zgłoszenie do zlecenia/usługi"
+                                    Command="{Binding OpenOfferContractRequestCreatorCommand}"
+                                    BorderThickness="0"
+                                    Style="{StaticResource MaterialDesignFlatButton}"/>
+                            </materialDesign:PopupBox>
+                        </DockPanel>
                     </Border>
 
                     <!--  No messages message  -->
