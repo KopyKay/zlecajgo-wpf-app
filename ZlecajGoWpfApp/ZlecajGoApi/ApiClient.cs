@@ -27,7 +27,7 @@ public class ApiClient : IApiClient
     private const string IdentityEndpoint = "identity";
     private const string UsersEndpoint = "users";
     private const string OffersEndpoint = "offers";
-    private const string OfferContractorEndpoint = "offerContractor";
+    private const string OfferContractorEndpoint = "offerContractors";
     private const string ReviewsEndpoint = "reviews";
     private const string ChatsEndpoint = "chats";
     private const string CategoriesEndpoint = "categories";
@@ -59,7 +59,8 @@ public class ApiClient : IApiClient
     private readonly PreparedRequest _deleteOfferRequest = new($"{OffersEndpoint}/delete", Method.Delete);
     
     // OfferContractor requests
-    private readonly PreparedRequest _getContractedOfferOrOffersRequest = new(OfferContractorEndpoint);
+    private readonly PreparedRequest _getProvidedOfferOrOffersWithContractor = new($"{OfferContractorEndpoint}/providedOfferOrOffersWithContractor");
+    private readonly PreparedRequest _getContractedOfferOrOffersRequest = new($"{OfferContractorEndpoint}/contractedOfferOrOffers");
     private readonly PreparedRequest _createContractRequest = new($"{OfferContractorEndpoint}/createContract", Method.Post);
     private readonly PreparedRequest _updateContractRequest = new($"{OfferContractorEndpoint}/updateContract", Method.Patch);
     
@@ -201,6 +202,18 @@ public class ApiClient : IApiClient
     public async Task<List<OfferDto>?> GetCurrentUserOffersAsync()
         => await GetDataAsync<OfferDto>(_getCurrentUserOffersRequest);
     
+    public async Task<List<OfferContractorDto>?> GetProvidedOffersWithContractorAsync()
+        => await GetDataAsync<OfferContractorDto>(_getProvidedOfferOrOffersWithContractor);
+    
+    public async Task<OfferContractorDto?> GetProvidedOfferWithContractorAsync(string contractorId)
+        => (await GetDataAsync<OfferContractorDto>(_getProvidedOfferOrOffersWithContractor, contractorId))?.FirstOrDefault();
+    
+    public async Task<List<OfferContractorDto>?> GetContractedOffersAsync()
+        => await GetDataAsync<OfferContractorDto>(_getContractedOfferOrOffersRequest);
+    
+    public async Task<OfferContractorDto?> GetContractedOfferAsync(Guid offerId)
+        => (await GetDataAsync<OfferContractorDto>(_getContractedOfferOrOffersRequest, offerId))?.FirstOrDefault();
+    
     public async Task<List<ChatDto>?> GetChatsAsync()
         => await GetDataAsync<ChatDto>(_getCurrentUserChatOrChatsRequest);
     
@@ -252,6 +265,26 @@ public class ApiClient : IApiClient
             _deleteOfferRequest.ToRestRequest()
                                .AddHeader(_authHeader.Name, _authHeader.Value(AccessToken))
                                .AddQueryParameter("offerId", dto.Id)
+        );
+    }
+
+    public async Task CreateOfferContractAsync(OfferContractorDto dto)
+    {
+        await ExecuteRequestAsync<object>
+        (
+            _createContractRequest.ToRestRequest()
+                                  .AddHeader(_authHeader.Name, _authHeader.Value(AccessToken))
+                                  .AddJsonBody(dto)
+        );
+    }
+
+    public async Task UpdateOfferContractAsync(OfferContractorDto dto)
+    {
+        await ExecuteRequestAsync<object>
+        (
+            _updateContractRequest.ToRestRequest()
+                                  .AddHeader(_authHeader.Name, _authHeader.Value(AccessToken))
+                                  .AddJsonBody(dto)
         );
     }
     
@@ -384,6 +417,8 @@ public class ApiClient : IApiClient
         return callerMethod switch
         {
             nameof(GetOfferAsync) => "offerId",
+            nameof(GetProvidedOfferWithContractorAsync) => "contractorId",
+            nameof(GetContractedOfferAsync) => "offerId",
             nameof(GetChatAsync) => "chatId",
             nameof(GetUserAsync) => "userId",
             _ => "id"

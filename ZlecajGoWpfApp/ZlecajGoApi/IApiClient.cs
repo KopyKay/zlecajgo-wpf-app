@@ -13,6 +13,10 @@ public interface IApiClient
     Task<List<OfferDto>?> GetOffersAsync();
     Task<OfferDto?> GetOfferAsync(Guid id);
     Task<List<OfferDto>?> GetCurrentUserOffersAsync();
+    Task<List<OfferContractorDto>?> GetProvidedOffersWithContractorAsync();
+    Task<OfferContractorDto?> GetProvidedOfferWithContractorAsync(string contractorId);
+    Task<List<OfferContractorDto>?> GetContractedOffersAsync();
+    Task<OfferContractorDto?> GetContractedOfferAsync(Guid offerId);
     Task<List<ChatDto>?> GetChatsAsync();
     Task<ChatDto?> GetChatAsync(Guid chatId);
     Task<List<CategoryDto>> GetCategoriesAsync();
@@ -23,4 +27,6 @@ public interface IApiClient
     Task CreateOfferAsync(OfferDto dto);
     Task UpdateOfferAsync(OfferDto dto);
     Task DeleteOfferAsync(OfferDto dto);
+    Task CreateOfferContractAsync(OfferContractorDto dto);
+    Task UpdateOfferContractAsync(OfferContractorDto dto);
 }
