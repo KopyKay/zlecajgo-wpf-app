@@ -1,0 +1,316 @@
+﻿<Window
+    x:Class="ZlecajGoWpfApp.Views.CalendarWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+    xmlns:model="clr-namespace:ZlecajGoApi.Dtos;assembly=ZlecajGoApi"
+    xmlns:converters="clr-namespace:ZlecajGoWpfApp.Converters"
+    xmlns:viewModel="clr-namespace:ZlecajGoWpfApp.ViewModels"
+    Title="CalendarWindow"
+    Width="980"
+    Height="670"
+    d:DataContext="{d:DesignInstance Type=viewModel:CalendarViewModel,
+                                     IsDesignTimeCreatable=True}"
+    IsEnabled="{Binding IsNotBusy}"
+    AllowsTransparency="True"
+    Background="Transparent"
+    FontFamily="{DynamicResource MaterialDesignFont}"
+    ResizeMode="NoResize"
+    TextElement.FontSize="{StaticResource SmallFontSize}"
+    TextElement.FontWeight="Regular"
+    TextElement.Foreground="{DynamicResource MaterialDesignBody}"
+    TextOptions.TextFormattingMode="Ideal"
+    TextOptions.TextRenderingMode="Auto"
+    WindowStartupLocation="CenterScreen"
+    WindowStyle="None"
+    mc:Ignorable="d">
+
+    <Window.Resources>
+        <ResourceDictionary>
+            <Style
+                x:Key="CalendarComboBox"
+                TargetType="ComboBox"
+                BasedOn="{StaticResource MaterialDesignDataGridComboBox}">
+                <Setter Property="VerticalAlignment" Value="Center"/>
+                <Setter Property="HorizontalAlignment" Value="Center"/>
+                <Setter Property="Foreground" Value="White"/>
+                <Setter Property="FontSize" Value="{StaticResource BigFontSize}"/>
+                <Setter Property="ItemContainerStyle">
+                    <Setter.Value>
+                        <Style
+                            TargetType="ComboBoxItem"
+                            BasedOn="{StaticResource MaterialDesignComboBoxItemStyle}">
+                            <Setter Property="Foreground" Value="Black"/>
+                        </Style>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+
+            <Style
+                x:Key="IndicatorBorder"
+                TargetType="Border">
+                <Setter Property="Margin" Value="0,1"/>
+                <Setter Property="Padding" Value="3,1"/>
+                <Setter Property="CornerRadius" Value="3"/>
+                <Style.Triggers>
+                    <DataTrigger
+                        Binding="{Binding IsPastDate}"
+                        Value="True">
+                        <Setter Property="Opacity" Value="0.7"/>
+                    </DataTrigger>
+                </Style.Triggers>
+            </Style>
+
+            <Style
+                x:Key="IndicatorTextBlock"
+                TargetType="TextBlock">
+                <Setter Property="HorizontalAlignment" Value="Center"/>
+                <Setter Property="Foreground" Value="White"/>
+                <Setter Property="FontSize" Value="{StaticResource TinyFontSize}"/>
+                <Style.Triggers>
+                    <DataTrigger
+                        Binding="{Binding IsPastDate}"
+                        Value="True">
+                        <Setter Property="TextDecorations" Value="Strikethrough"/>
+                    </DataTrigger>
+                </Style.Triggers>
+            </Style>
+
+            <converters:BooleanToBackgroundConverter x:Key="BooleanToBackgroundConverter"/>
+            <converters:BooleanToFontWeightConverter x:Key="BooleanToFontWeightConverter"/>
+            <converters:BooleanToForegroundConverter x:Key="BooleanToForegroundConverter"/>
+        </ResourceDictionary>
+    </Window.Resources>
+
+    <materialDesign:Card
+        Margin="20"
+        Visibility="{Binding IsNotBusy, Converter={StaticResource BooleanToVisibilityConverter}}"
+        Background="{StaticResource MaterialDesignBackground}">
+        <materialDesign:Card.Effect>
+            <DropShadowEffect
+                BlurRadius="20"
+                ShadowDepth="0"/>
+        </materialDesign:Card.Effect>
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="35"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
+            <!--  Title bar  -->
+            <Grid
+                Grid.Row="0"
+                Background="{StaticResource AccentColorBrush1}">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="40"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="40"/>
+                </Grid.ColumnDefinitions>
+
+                <Button
+                    Grid.Column="0"
+                    Height="Auto"
+                    Padding="0"
+                    Command="{Binding CloseWindowCommand}"
+                    Foreground="White"
+                    Style="{StaticResource MaterialDesignFlatButton}">
+                    <Button.Content>
+                        <materialDesign:PackIcon Kind="KeyboardBackspace"/>
+                    </Button.Content>
+                </Button>
+
+                <Label
+                    Grid.Column="1"
+                    HorizontalAlignment="Stretch"
+                    VerticalAlignment="Stretch"
+                    HorizontalContentAlignment="Center"
+                    VerticalContentAlignment="Center"
+                    FontWeight="Bold"
+                    FontSize="{StaticResource MediumFontSize}"
+                    Foreground="White"
+                    Content="{Binding Title}"/>
+            </Grid>
+
+            <!--  Main content  -->
+            <Grid Grid.Row="1">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="50"/>
+                    <RowDefinition Height="25"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+
+                <!--  Date selection  -->
+                <Grid
+                    Grid.Row="0"
+                    Background="{StaticResource AccentColorBrush1}">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <ComboBox
+                        Grid.Column="0"
+                        ItemsSource="{Binding Months}"
+                        SelectedItem="{Binding SelectedMonth}"
+                        Style="{StaticResource CalendarComboBox}"/>
+                    <ComboBox
+                        Grid.Column="1"
+                        ItemsSource="{Binding Years}"
+                        SelectedItem="{Binding SelectedYear}"
+                        Style="{StaticResource CalendarComboBox}"/>
+                    <StackPanel
+                        Grid.Column="2"
+                        HorizontalAlignment="Center"
+                        Orientation="Horizontal">
+                        <Button
+                            Style="{StaticResource MaterialDesignFlatButton}"
+                            Command="{Binding GoToPreviousMonthCommand}">
+                            <Button.Content>
+                                <materialDesign:PackIcon
+                                    Kind="LessThan"
+                                    Foreground="White"/>
+                            </Button.Content>
+                        </Button>
+                        <Button
+                            Style="{StaticResource MaterialDesignFlatButton}"
+                            Command="{Binding GoToNextMonthCommand}">
+                            <Button.Content>
+                                <materialDesign:PackIcon
+                                    Kind="GreaterThan"
+                                    Foreground="White"/>
+                            </Button.Content>
+                        </Button>
+                    </StackPanel>
+                </Grid>
+
+                <!--  Calendar  -->
+                <UniformGrid
+                    Grid.Row="1"
+                    Columns="7">
+                    <Label
+                        HorizontalAlignment="Center"
+                        Content="Pon"/>
+                    <Label
+                        HorizontalAlignment="Center"
+                        Content="Wt"/>
+                    <Label
+                        HorizontalAlignment="Center"
+                        Content="Śr"/>
+                    <Label
+                        HorizontalAlignment="Center"
+                        Content="Czw"/>
+                    <Label
+                        HorizontalAlignment="Center"
+                        Content="Pt"/>
+                    <Label
+                        HorizontalAlignment="Center"
+                        Content="Sob"/>
+                    <Label
+                        HorizontalAlignment="Center"
+                        Content="Nd"/>
+                </UniformGrid>
+
+                <ItemsControl
+                    Grid.Row="2"
+                    ItemsSource="{Binding Days}">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <UniformGrid
+                                Rows="6"
+                                Columns="7"/>
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Border
+                                Margin="2"
+                                BorderThickness="1"
+                                BorderBrush="LightGray"
+                                Background="{Binding IsCurrentMonth, Converter={StaticResource BooleanToBackgroundConverter}}"
+                                CornerRadius="4">
+                                <Grid>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="*"/>
+                                    </Grid.RowDefinitions>
+
+                                    <!--  Day number  -->
+                                    <Grid Grid.Row="0">
+                                        <Ellipse
+                                            Width="24"
+                                            Height="24"
+                                            Fill="{StaticResource AccentColorsGradientBrush}"
+                                            Visibility="{Binding IsToday, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+                                        <TextBlock
+                                            Margin="2"
+                                            HorizontalAlignment="Center"
+                                            Text="{Binding Day}"
+                                            FontWeight="{Binding IsToday, Converter={StaticResource BooleanToFontWeightConverter}}">
+                                            <TextBlock.Style>
+                                                <Style
+                                                    TargetType="TextBlock"
+                                                    BasedOn="{StaticResource MaterialDesignTextBlock}">
+                                                    <Setter Property="Foreground" Value="{Binding IsCurrentMonth, Converter={StaticResource BooleanToForegroundConverter}}"/>
+                                                    <Style.Triggers>
+                                                        <DataTrigger
+                                                            Binding="{Binding IsToday}"
+                                                            Value="True">
+                                                            <Setter Property="Foreground" Value="White"/>
+                                                        </DataTrigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </TextBlock.Style>
+                                        </TextBlock>
+                                    </Grid>
+
+                                    <!--  Indicators for offers  -->
+                                    <StackPanel
+                                        Grid.Row="1"
+                                        Margin="2,1"
+                                        HorizontalAlignment="Center"
+                                        VerticalAlignment="Center"
+                                        Orientation="Vertical">
+                                        <Border
+                                            Style="{StaticResource IndicatorBorder}"
+                                            Background="SaddleBrown"
+                                            Visibility="{Binding HasContractor, Converter={StaticResource BooleanToVisibilityConverter}}">
+                                            <TextBlock
+                                                Style="{StaticResource IndicatorTextBlock}"
+                                                Text="{Binding Contracts.Count, StringFormat='Kontrakty: {0}'}"/>
+                                        </Border>
+
+                                        <Border
+                                            Style="{StaticResource IndicatorBorder}"
+                                            Background="{StaticResource AccentColorBrush1}"
+                                            Visibility="{Binding HasRequest, Converter={StaticResource BooleanToVisibilityConverter}}">
+                                            <TextBlock
+                                                Style="{StaticResource IndicatorTextBlock}"
+                                                Text="{Binding Requests.Count, StringFormat='Zlecenia: {0}'}"/>
+                                        </Border>
+
+                                        <Border
+                                            Style="{StaticResource IndicatorBorder}"
+                                            Background="{StaticResource AccentColorBrush2}"
+                                            Visibility="{Binding HasService, Converter={StaticResource BooleanToVisibilityConverter}}">
+                                            <TextBlock
+                                                Style="{StaticResource IndicatorTextBlock}"
+                                                Text="{Binding Services.Count, StringFormat='Usługi: {0}'}"/>
+                                        </Border>
+                                    </StackPanel>
+                                </Grid>
+                            </Border>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </Grid>
+            <Border
+                Grid.Row="0"
+                Grid.RowSpan="2"
+                Style="{StaticResource ProgressBarBorderDefaultStyle}">
+                <ProgressBar Style="{StaticResource ProgressBarDefaultStyle}"/>
+            </Border>
+        </Grid>
+    </materialDesign:Card>
+</Window>

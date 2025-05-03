@@ -19,6 +19,7 @@
                 <ResourceDictionary Source="/Styles/BorderStyles.xaml"/>
             </ResourceDictionary.MergedDictionaries>
 
+            <system:Double x:Key="TinyFontSize">10</system:Double>
             <system:Double x:Key="SmallFontSize">14</system:Double>
             <system:Double x:Key="RegularFontSize">16</system:Double>
             <system:Double x:Key="MediumFontSize">18</system:Double>

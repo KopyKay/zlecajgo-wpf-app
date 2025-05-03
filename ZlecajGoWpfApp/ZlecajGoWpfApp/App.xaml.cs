@@ -32,6 +32,7 @@ public partial class App : Application
                 services.AddTransient<UserAccountOffersPage>();
                 services.AddTransient<UserAccountDetailsPage>();
                 services.AddTransient<ChatWindow>();
+                services.AddTransient<CalendarWindow>();
                 
                 services.AddTransient<LogInViewModel>();
                 services.AddTransient<SignUpViewModel>();
@@ -43,6 +44,7 @@ public partial class App : Application
                 services.AddTransient<UserAccountOffersViewModel>();
                 services.AddTransient<UserAccountDetailsViewModel>();
                 services.AddTransient<ChatViewModel>();
+                services.AddTransient<CalendarViewModel>();
                 
                 services.AddSingleton<INavigationService, NavigationService>();
                 services.AddSingleton<ISnackbarService, SnackbarService>();

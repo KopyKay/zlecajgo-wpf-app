@@ -141,8 +141,8 @@ public partial class OffersViewModel : BaseViewModel
     [RelayCommand]
     private void OpenCalendar()
     {
-        // TODO: Implement OpenCalendar logic
-        CustomMessageBox.Show("Ten przycisk nie ma jeszcze implementacji.", CustomMessageBoxType.Warning, "Brak implementacji");
+        var calendarWindow = _serviceProvider.GetService<CalendarWindow>();
+        calendarWindow!.ShowDialog();
     }
 
     [RelayCommand]
