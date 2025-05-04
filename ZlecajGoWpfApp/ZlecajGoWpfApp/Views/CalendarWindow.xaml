@@ -275,7 +275,9 @@
                                         <Border
                                             Style="{StaticResource IndicatorBorder}"
                                             Background="SaddleBrown"
-                                            Visibility="{Binding HasContractor, Converter={StaticResource BooleanToVisibilityConverter}}">
+                                            Visibility="{Binding HasContractor, Converter={StaticResource BooleanToVisibilityConverter}}"
+                                            Cursor="Hand"
+                                            MouseLeftButtonDown="Contracts_MouseLeftButtonDown">
                                             <TextBlock
                                                 Style="{StaticResource IndicatorTextBlock}"
                                                 Text="{Binding Contracts.Count, StringFormat='Kontrakty: {0}'}"/>
@@ -284,7 +286,9 @@
                                         <Border
                                             Style="{StaticResource IndicatorBorder}"
                                             Background="{StaticResource AccentColorBrush1}"
-                                            Visibility="{Binding HasRequest, Converter={StaticResource BooleanToVisibilityConverter}}">
+                                            Visibility="{Binding HasRequest, Converter={StaticResource BooleanToVisibilityConverter}}"
+                                            Cursor="Hand"
+                                            MouseLeftButtonDown="Requests_MouseLeftButtonDown">
                                             <TextBlock
                                                 Style="{StaticResource IndicatorTextBlock}"
                                                 Text="{Binding Requests.Count, StringFormat='Zlecenia: {0}'}"/>
@@ -293,7 +297,9 @@
                                         <Border
                                             Style="{StaticResource IndicatorBorder}"
                                             Background="{StaticResource AccentColorBrush2}"
-                                            Visibility="{Binding HasService, Converter={StaticResource BooleanToVisibilityConverter}}">
+                                            Visibility="{Binding HasService, Converter={StaticResource BooleanToVisibilityConverter}}"
+                                            Cursor="Hand"
+                                            MouseLeftButtonDown="Services_MouseLeftButtonDown">
                                             <TextBlock
                                                 Style="{StaticResource IndicatorTextBlock}"
                                                 Text="{Binding Services.Count, StringFormat='Usługi: {0}'}"/>
