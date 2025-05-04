@@ -142,7 +142,13 @@ public partial class OffersViewModel : BaseViewModel
     private void OpenCalendar()
     {
         var calendarWindow = _serviceProvider.GetService<CalendarWindow>();
-        calendarWindow!.ShowDialog();
+        
+        if (calendarWindow!.DataContext is CalendarViewModel viewModel)
+        {
+            viewModel.Offers = Offers.ToList();
+        }
+        
+        calendarWindow.ShowDialog();
     }
 
     [RelayCommand]

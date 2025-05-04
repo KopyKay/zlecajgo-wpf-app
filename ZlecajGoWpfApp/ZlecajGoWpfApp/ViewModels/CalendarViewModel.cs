@@ -20,8 +20,10 @@ public partial class CalendarViewModel : BaseViewModel
     }
     
     internal static Window? CalendarWindow;
+    internal List<OfferDto> Offers = [];
+    internal List<UserDto> Users { get; private set; }
+    
     private readonly CultureInfo _polishCultureInfo = new("pl-PL");
-    private List<OfferDto> _offers = [];
     
     [ObservableProperty]
     private ObservableCollection<OfferContractorDto> _providedOffers = [];
@@ -127,16 +129,20 @@ public partial class CalendarViewModel : BaseViewModel
 
             var contracts = ProvidedOffers
                 .Where(oc => oc.StartDateTime.Date == currentDate.Date)
-                .Where(oc => _offers.Any(o => o.Id == oc.OfferId && o.TypeId != (int)OfferType.Service))
+                .Where(oc => Offers.Any(o => o.Id == oc.OfferId && o.TypeId != (int)OfferType.Service))
+                .Concat(ContractedOffers
+                    .Where(oc => oc.StartDateTime.Date == currentDate.Date)
+                    .Where(oc => Offers.Any(o => o.Id == oc.OfferId && o.TypeId == (int)OfferType.Service)))
                 .ToList();
 
             var requests = ContractedOffers
                 .Where(oc => oc.StartDateTime.Date == currentDate.Date)
+                .Where(oc => Offers.Any(o => o.Id == oc.OfferId && o.TypeId == (int)OfferType.Request))
                 .ToList();
 
             var services = ProvidedOffers
                 .Where(oc => oc.StartDateTime.Date == currentDate.Date)
-                .Where(oc => _offers.Any(o => o.Id == oc.OfferId && o.TypeId == (int)OfferType.Service))
+                .Where(oc => Offers.Any(o => o.Id == oc.OfferId && o.TypeId == (int)OfferType.Service))
                 .ToList();
 
             day.HasContractor = contracts.Count > 0;
@@ -172,7 +178,7 @@ public partial class CalendarViewModel : BaseViewModel
             SelectedMonth = Months[DateTime.Now.Month - 1];
             SelectedYear = currentYear.ToString();
 
-            _offers = (await ApiClient.GetOffersAsync())!;
+            Users = await ApiClient.GetUsersAsync();
             await FetchDataAsync(ProvidedOffers, ApiClient.GetProvidedOffersWithContractorAsync);
             await FetchDataAsync(ContractedOffers, ApiClient.GetContractedOffersAsync);
             UpdateCalendarDays();
