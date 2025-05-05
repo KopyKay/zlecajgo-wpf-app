@@ -229,7 +229,7 @@
                                 FontSize="{StaticResource RegularFontSize}"
                                 Foreground="White"
                                 TextWrapping="Wrap"
-                                Text="Wykonawca: brak"/>
+                                Text="{Binding ContractorFullName, StringFormat='Wykonawca: {0}'}"/>
                             <materialDesign:Card Grid.Row="4">
                                 <TextBlock
                                     VerticalAlignment="Center"

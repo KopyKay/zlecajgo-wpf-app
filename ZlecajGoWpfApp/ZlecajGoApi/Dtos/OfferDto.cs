@@ -70,6 +70,18 @@ public class OfferDto : INotifyPropertyChanged
         }
     }
 
+    private string _contractorFullName = "brak";
+    public string ContractorFullName
+    {
+        get => _contractorFullName;
+        set
+        {
+            if (_contractorFullName == value) return;
+            _contractorFullName = value;
+            OnPropertyChanged();
+        }
+    }
+    
     public event PropertyChangedEventHandler? PropertyChanged;
 
     private void OnPropertyChanged([CallerMemberName] string propertyName = null!)

@@ -31,6 +31,12 @@ public partial class UserAccountOffersViewModel
     private static ObservableCollection<OfferDto> _userOffers = [];
     
     [ObservableProperty]
+    private static ObservableCollection<OfferContractorDto> _offerContractors = [];
+    
+    [ObservableProperty]
+    private static ObservableCollection<UserDto> _users = [];
+    
+    [ObservableProperty]
     private static ObservableCollection<TypeDto> _types = [];
     
     [ObservableProperty]
@@ -182,6 +188,8 @@ public partial class UserAccountOffersViewModel
             IsBusy = true;
 
             await FetchDataAsync(UserOffers, ApiClient.GetCurrentUserOffersAsync);
+            await FetchDataAsync(OfferContractors, ApiClient.GetProvidedOffersWithContractorAsync);
+            await FetchDataAsync(Users, ApiClient.GetUsersAsync!);
             await FetchDataAsync(Types, ApiClient.GetTypesAsync!);
             await FetchDataAsync(Categories, ApiClient.GetCategoriesAsync!);
             await FetchDataAsync(Statuses, ApiClient.GetStatusesAsync!);
@@ -196,6 +204,15 @@ public partial class UserAccountOffersViewModel
                     offer.TypeName = Types.First(t => t.Id == offer.TypeId).Name;
                     offer.CategoryName = Categories.First(c => c.Id == offer.CategoryId).Name;
                     offer.StatusName = Statuses.First(s => s.Id == offer.StatusId).Name;
+
+                    // Find contractor for this offer
+                    var offerContractor = OfferContractors.FirstOrDefault(oc => oc.OfferId == offer.Id);
+                    if (offerContractor == null) continue;
+                    var contractor = Users.FirstOrDefault(u => u.Id == offerContractor.ContractorId);
+                    if (contractor != null)
+                    {
+                        offer.ContractorFullName = contractor.FullName ?? "brak";
+                    }
                 }
             }
         }

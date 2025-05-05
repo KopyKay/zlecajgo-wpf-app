@@ -39,7 +39,8 @@
             Grid.Row="0"
             Grid.Column="0"
             Grid.ColumnSpan="2"
-            Margin="{StaticResource ContainerMargin}">
+            Margin="{StaticResource ContainerMargin}"
+            IsEnabled="{Binding IsNotBusy}">
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*"/>
@@ -102,6 +103,7 @@
                     VerticalAlignment="Top"
                     Panel.ZIndex="1"
                     materialDesign:RippleAssist.IsDisabled="True"
+                    IsEnabled="{Binding IsNotBusy}"
                     PopupMode="Click"
                     StaysOpen="True">
                     <materialDesign:PopupBox.Effect>
@@ -281,6 +283,7 @@
                 <Border
                     Grid.Row="1"
                     Height="75"
+                    IsEnabled="{Binding IsNotBusy}"
                     Background="{StaticResource MaterialDesignBackground}">
                     <Border.Effect>
                         <DropShadowEffect
