@@ -1,4 +1,5 @@
 using System.Globalization;
+using System.IO;
 using System.Net.Http;
 using System.Windows.Input;
 using GMap.NET;
@@ -20,6 +21,7 @@ public class MapService : IMapService
 
     private const string NominatimUrl = "https://nominatim.openstreetmap.org/";
     private const string NominatimSearchEndpoint = "search?format=jsonv2";
+    private const string UserAgentInf = "ZlecajGoWpfApp/1.0 (11924@puz.wloclawek.pl)";
     
     private void InitializeMap()
     {
@@ -28,7 +30,18 @@ public class MapService : IMapService
         const double lat = 52.65208303015435;
         const double lng = 19.06536041557555;
         
-        MapControl.CacheLocation = Environment.CurrentDirectory + @"\GMapCache\";
+        MapControl.CacheLocation = Path.Combine(
+            Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+            "ZlecajGoWpfApp",
+            "GMapCache");
+
+        GMapProvider.UserAgent = UserAgentInf;
+#if DEBUG
+        GMaps.Instance.Mode = AccessMode.CacheOnly;
+#else
+        GMaps.Instance.Mode = AccessMode.ServerAndCache;
+#endif
+        
         GMapProvider.Language = LanguageType.Polish;
         MapControl.MapProvider = GMapProviders.OpenStreetMap;
 
@@ -54,7 +67,8 @@ public class MapService : IMapService
                              $"&addressdetails=1";
         
         using var httpClient = new HttpClient();
-        httpClient.DefaultRequestHeaders.Add("User-Agent", "WpfApp");
+        httpClient.DefaultRequestHeaders.UserAgent.ParseAdd(UserAgentInf);
+        httpClient.DefaultRequestHeaders.AcceptLanguage.ParseAdd("pl-PL,pl;q=0.9");
         
         var response = await httpClient.GetAsync(nominatimQuery);
         response.EnsureSuccessStatusCode();
