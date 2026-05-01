@@ -58,5 +58,15 @@
   &lt;Assembly Path="C:\Users\kopac\.nuget\packages\communitytoolkit.mvvm\8.3.2\lib\net8.0\CommunityToolkit.Mvvm.dll" /&gt;&#xD;
   &lt;Assembly Path="C:\Users\kopac\.nuget\packages\epplus\7.5.2\lib\net8.0\EPPlus.dll" /&gt;&#xD;
 &lt;/AssemblyExplorer&gt;</s:String>
+	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=c1e23439_002Dfbdc_002D448c_002Dae54_002Da196a43c22ac/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" IsActive="True" Name="All tests from LogInViewModelTests.cs" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;&#xD;
+  &lt;Or&gt;&#xD;
+    &lt;ProjectFile&gt;B8AE9EB5-BE4F-458E-9DC4-DE2B4F5B8019/f:LogInViewModelTests.cs&lt;/ProjectFile&gt;&#xD;
+    &lt;ProjectFile&gt;B8AE9EB5-BE4F-458E-9DC4-DE2B4F5B8019/f:OffersViewModelTests.cs&lt;/ProjectFile&gt;&#xD;
+    &lt;ProjectFile&gt;B8AE9EB5-BE4F-458E-9DC4-DE2B4F5B8019/f:SignUpViewModelTests.cs&lt;/ProjectFile&gt;&#xD;
+    &lt;ProjectFile&gt;B8AE9EB5-BE4F-458E-9DC4-DE2B4F5B8019/f:CreateOfferViewModelTests.cs&lt;/ProjectFile&gt;&#xD;
+    &lt;ProjectFile&gt;B8AE9EB5-BE4F-458E-9DC4-DE2B4F5B8019/f:ChatViewModelTests.cs&lt;/ProjectFile&gt;&#xD;
+    &lt;ProjectFile&gt;B8AE9EB5-BE4F-458E-9DC4-DE2B4F5B8019/f:CalendarViewModelTests.cs&lt;/ProjectFile&gt;&#xD;
+  &lt;/Or&gt;&#xD;
+&lt;/SessionState&gt;</s:String>
 	<s:Boolean x:Key="/Default/UserDictionary/Words/=hwnd/@EntryIndexedValue">True</s:Boolean>
 	<s:Boolean x:Key="/Default/UserDictionary/Words/=sysmenu/@EntryIndexedValue">True</s:Boolean></wpf:ResourceDictionary>

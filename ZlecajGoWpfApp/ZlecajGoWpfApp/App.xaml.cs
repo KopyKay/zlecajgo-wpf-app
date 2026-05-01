@@ -49,7 +49,7 @@ public partial class App : Application
                 services.AddSingleton<INavigationService, NavigationService>();
                 services.AddSingleton<ISnackbarService, SnackbarService>();
                 services.AddSingleton<IMapService, MapService>();
-                services.AddSingleton<PostalAddressService>();
+                services.AddSingleton<IPostalAddressService, PostalAddressService>();
                 services.AddSingleton<IApiClient, ApiClient>();
                 services.AddSingleton<IChatHubClient, ChatHubClient>();
                 services.AddSingleton<INotificationHubClient, NotificationHubClient>();

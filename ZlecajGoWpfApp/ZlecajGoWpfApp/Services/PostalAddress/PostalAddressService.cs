@@ -3,7 +3,7 @@ using OfficeOpenXml;
 
 namespace ZlecajGoWpfApp.Services.PostalAddress;
 
-public class PostalAddressService
+public class PostalAddressService : IPostalAddressService
 {
     public PostalAddressService()
     {

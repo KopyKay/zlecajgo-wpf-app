@@ -21,7 +21,7 @@ namespace ZlecajGoWpfApp.ViewModels;
 public partial class CreateOfferViewModel : BaseViewModel
 {
     public CreateOfferViewModel(INavigationService navigationService, ISnackbarService snackbarService, IApiClient apiClient,
-        PostalAddressService postalAddressService, IMapService mapService) 
+        IPostalAddressService postalAddressService, IMapService mapService) 
         : base(navigationService, snackbarService, apiClient)
     {
         _postalAddressService = postalAddressService;
@@ -30,7 +30,7 @@ public partial class CreateOfferViewModel : BaseViewModel
         Title = "Nowe zlecenie/usługa";
     }
     
-    private readonly PostalAddressService _postalAddressService;
+    private readonly IPostalAddressService _postalAddressService;
     
     private readonly IMapService _mapService;
     

@@ -7,6 +7,8 @@ namespace ZlecajGoWpfApp.CustomControls;
 
 public partial class CustomMessageBox : BaseDialog
 {
+    internal static Action<string, CustomMessageBoxType, string?>? ShowHandler;
+
     public CustomMessageBox()
     {
         InitializeComponent();
@@ -14,6 +16,12 @@ public partial class CustomMessageBox : BaseDialog
     
     public static void Show(string message, CustomMessageBoxType type, string? title = null)
     {
+        if (ShowHandler is not null)
+        {
+            ShowHandler(message, type, title);
+            return;
+        }
+        
         title ??= "Powiadomienie";
         
         var cmb = new CustomMessageBox
